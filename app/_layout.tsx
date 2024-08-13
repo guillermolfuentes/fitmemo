@@ -3,6 +3,9 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SessionProvider } from "./ctx";
+import { Provider as PaperProvider } from 'react-native-paper';
+import { Slot } from "expo-router";
+
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,12 +43,14 @@ export default function RootLayout() {
 
   return <RootLayoutNav />;
 }
-import { Slot } from "expo-router";
+
 
 function RootLayoutNav() {
   return (
     <SessionProvider>
-      <Slot />
+      <PaperProvider>
+        <Slot />
+      </PaperProvider>
     </SessionProvider>
   );
 }

@@ -1,7 +1,9 @@
-import { Button, StyleSheet, TextInput } from "react-native";
+import { StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useSession } from "./ctx";
 import { router } from "expo-router";
+import Logo from "../assets/images/FitMemo_Logo.svg";
+import { Button, TextInput } from "react-native-paper";
 
 export default function Login() {
   const { signIn } = useSession();
@@ -14,54 +16,50 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome! 🌈 </Text>
-      <Text style={styles.paragraph}>
-        This is a simple repo that emulates a login authentication workflow
-        using Expo Router, focused on the navigation aspect.
+      <Logo width={400} height={200} />
+      <Text style={styles.title}>Bienvenido </Text>
+      <Text style={styles.paragraph}>Todo comienza aquí.
       </Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <TextInput placeholder="Username(not required)" style={styles.input} />
+      
+
+
       <TextInput
-        placeholder="Password(not required)"
-        secureTextEntry
+        label="Email"
+        value="Email"
         style={styles.input}
       />
-      <Button title="Login" onPress={handleLogin} />
-    </View>
+      <TextInput
+        label="Contraseña"
+        value="Contraseña"
+        style={styles.input}
+      />
+      <Button icon="login" mode="contained" onPress={handleLogin} style={styles.input}>
+        Iniciar sesión
+      </Button>
+
+    </View >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'white',
+    marginTop: 150,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 35,
+    fontWeight: 'bold',
+    textAlign: 'center',  // Centra el texto dentro del componente Text
+    marginBottom: 10,    // Espacio debajo del título
   },
   paragraph: {
-    margin: 24,
-    fontSize: 18,
-    textAlign: "center",
-  },
-
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',  // Centra el texto dentro del componente Text
+    marginBottom: 20,    // Espacio debajo del párrafo
   },
   input: {
-    width: "80%",
-    borderWidth: 1,
-    borderColor: "#000",
-    padding: 10,
-    margin: 10,
-    borderRadius: 4,
+    margin: 20,
   },
 });
