@@ -1,2 +1,2 @@
-# fitmemo-backend
-Backend of FitMemo. A fitness journal app. 
+# fitmemo
+A fitness journal app
