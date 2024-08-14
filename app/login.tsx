@@ -1,65 +1,108 @@
-import { StyleSheet } from "react-native";
+import { Keyboard, StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useSession } from "./ctx";
 import { router } from "expo-router";
 import Logo from "../assets/images/FitMemo_Logo.svg";
 import { Button, TextInput } from "react-native-paper";
+import { useEffect, useState } from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Login() {
   const { signIn } = useSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   const handleLogin = () => {
-    //Adicione sua lógica de login aqui
     signIn();
-    //Antes de navegar, tenha certeza de que o usuário está autenticado
     router.replace("/");
   };
 
+  const handleRegister = () => {
+    router.replace("/register");
+  };
+
   return (
-    <View style={styles.container}>
-      <Logo width={400} height={200} />
-      <Text style={styles.title}>Bienvenido </Text>
-      <Text style={styles.paragraph}>Todo comienza aquí.
-      </Text>
-      
+    <KeyboardAwareScrollView scrollEnabled={isKeyboardVisible}>
+      <View style={styles.container}>
+        <Logo width={400} height={200} />
+        <Text style={styles.title}>Bienvenido 👋 </Text>
+        <Text style={styles.subtitle}>Todo comienza aquí.</Text>
 
+        <View style={styles.inputContainer}>
+          <TextInput
+            label="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            style={styles.input}
+          />
+          <TextInput
+            label="Contraseña"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry
+            style={styles.input}
+          />
+          <Button icon="login" mode="contained" onPress={handleLogin}>
+            Inicia sesión
+          </Button>
+        </View>
 
-      <TextInput
-        label="Email"
-        value="Email"
-        style={styles.input}
-      />
-      <TextInput
-        label="Contraseña"
-        value="Contraseña"
-        style={styles.input}
-      />
-      <Button icon="login" mode="contained" onPress={handleLogin} style={styles.input}>
-        Iniciar sesión
-      </Button>
-
-    </View >
+        <View style={styles.registerContainer}>
+          <Button icon="account-plus" mode="contained" onPress={handleRegister}>
+            ¡Regístrate ya!
+          </Button>
+        </View>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    marginTop: 150,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 100,
+  },
+  inputContainer: {
+    width: "80%",
+    marginTop: 20,
+  },
+  input: {
+    marginBottom: 20,
+  },
+  registerContainer: {
+    marginTop: 20,
   },
   title: {
     fontSize: 35,
-    fontWeight: 'bold',
-    textAlign: 'center',  // Centra el texto dentro del componente Text
-    marginBottom: 10,    // Espacio debajo del título
+    fontWeight: "bold",
+    marginBottom: 20,
   },
-  paragraph: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',  // Centra el texto dentro del componente Text
-    marginBottom: 20,    // Espacio debajo del párrafo
-  },
-  input: {
-    margin: 20,
+  subtitle: {
+    fontSize: 15,
+    fontWeight: "bold",
   },
 });
