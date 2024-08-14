@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Keyboard, Dimensions, LayoutChangeEvent } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Keyboard,
+  Dimensions,
+  LayoutChangeEvent,
+} from "react-native";
 import { Button, Menu, ProgressBar, TextInput } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Logo from "../assets/images/FitMemo_Logo.svg";
+import { Dropdown } from "react-native-paper-dropdown";
 
 const { height } = Dimensions.get("window");
 
@@ -13,20 +21,15 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState(0);
+  const [gender, setGender] = useState<string>();
   const [password, setPassword] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [genderMenuVisible, setGenderMenuVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("Elige una opción");
   const [isScrollable, setScrollable] = useState(false);
-  const [layoutHeight, setLayoutHeight] = useState(0);
 
-  const openMenu = () => setGenderMenuVisible(true);
-  const closeMenu = () => setGenderMenuVisible(false);
-
-  const handleOptionSelect = (option: string) => {
-    setSelectedOption(option);
-    closeMenu();
-  };
+  const OPTIONS = [
+    { label: "Hombre", value: "male" },
+    { label: "Mujer", value: "female" },
+  ];
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -51,8 +54,6 @@ export default function Register() {
   const handleLayout = (event: LayoutChangeEvent) => {
     const { height: screenHeight } = Dimensions.get("window");
     const { height: contentHeight } = event.nativeEvent.layout;
-
-    // Determine if the content is larger than the screen
     setScrollable(contentHeight > screenHeight);
   };
 
@@ -73,25 +74,17 @@ export default function Register() {
           keyboardType="numeric"
           style={styles.input}
         />
-        <Menu
-          visible={genderMenuVisible}
-          mode="elevated"
-          onDismiss={closeMenu}
-          anchor={<Button onPress={openMenu}>{selectedOption}</Button>}
-        >
-          <Menu.Item
-            onPress={() => handleOptionSelect("Opción 1")}
-            title="Opción 1"
+        <View style={styles.input}>
+          <Dropdown
+            label="Sexo"
+            placeholder="Selecciona un género"
+            options={OPTIONS}
+            value={gender}
+            onSelect={setGender}
+            hideMenuHeader={true}
           />
-          <Menu.Item
-            onPress={() => handleOptionSelect("Opción 2")}
-            title="Opción 2"
-          />
-          <Menu.Item
-            onPress={() => handleOptionSelect("Opción 3")}
-            title="Opción 3"
-          />
-        </Menu>
+        </View>
+
         <TextInput
           label="Email"
           value={email}
@@ -136,11 +129,12 @@ export default function Register() {
 
   return (
     <KeyboardAwareScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollViewContent}
       scrollEnabled={isScrollable || isKeyboardVisible}
       keyboardShouldPersistTaps="handled"
-      style={styles.scrollView}
     >
-      <View style={styles.container}>
+      <View style={styles.innerContainer}>
         <Logo width={250} height={100} />
         <Text style={styles.title}>Comienza tu camino fitness.</Text>
 
@@ -165,7 +159,7 @@ export default function Register() {
             </Button>
           )}
         </View>
-        {activeStep == 0 && (
+        {activeStep === 0 && (
           <Button
             icon="arrow-left"
             mode="outlined"
@@ -182,13 +176,16 @@ export default function Register() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-around",
+    flexGrow: 1,
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: height * 0.05,
-    marginBottom: height * 0.05,
     backgroundColor: "white",
+  },
+  innerContainer: {
+    flexGrow: 1,
+    alignItems: "center",
+    padding: 20,
+    marginTop: 50
   },
   title: {
     fontSize: 24,
@@ -204,8 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   stepContainer: {
-    flex: 1,
-    flexDirection: "column",
+    flexGrow: 1,
     width: "100%",
     backgroundColor: "white",
   },
@@ -213,24 +209,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     width: "80%",
-    marginTop: 20,
+    marginTop: 0,
     backgroundColor: "white",
   },
   returnButton: {
-    marginTop: 50,
+    marginTop: 30,
+    marginBottom: 0,
   },
   input: {
     margin: 10,
   },
   inputContainer: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-around",
     width: "80%",
-    marginTop: 10,
+    marginTop: 20,
     backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: "center",
   },
 });

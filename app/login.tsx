@@ -4,7 +4,7 @@ import { useSession } from "./ctx";
 import { router } from "expo-router";
 import Logo from "../assets/images/FitMemo_Logo.svg";
 import { Button, TextInput } from "react-native-paper";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Login() {
