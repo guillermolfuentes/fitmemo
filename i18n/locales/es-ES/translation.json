@@ -1,0 +1,58 @@
+{
+  "language": "Español",
+  "screens": {
+    "login": {
+      "welcome_title": "Bienvenido 👋",
+      "welcome_subtitle": "Todo comienza aquí",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "login_button": "Iniciar sesión",
+      "register_button": "¡Regístrate ya!",
+      "errors": {
+        "authentication_error": "Inicio de sesión fallido. Revise su correo electrónico y contraseña",
+        "network_error": "Ha ocurrido un error red. Por favor, inténtelo de nuevo",
+        "unknown_error": "Error desconocido. Por favor, inténtelo de nuevo"
+      }
+    },
+    "register": {
+      "step1": {
+        "confirm_password": "Confirmar contraseña",
+        "register_button": "Registrarse",
+        "login_button": "Iniciar sesión"
+      },
+      "step2": {},
+      "step3": {},
+      "step4": {},
+      "confirm_password": "Confirmar contraseña",
+      "register_button": "Registrarse",
+      "login_button": "Iniciar sesión"
+    },
+    "home": {
+      "title": "Inicio",
+      "welcome_message": "Bienvenido a la aplicación"
+    },
+    "training": {
+      "title": "Entrenamiento",
+      "start_button": "Comenzar entrenamiento",
+      "stop_button": "Detener entrenamiento"
+    },
+    "progress": {
+      "title": "Progreso",
+      "view_details": "Ver detalles",
+      "no_data": "No hay datos disponibles"
+    }
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "loading": "Cargando...",
+    "error": "Error"
+  },
+  "errors": {
+    "network_error": "Error de red",
+    "server_error": "Error del servidor",
+    "validation_error": "Error de validación"
+  }
+}

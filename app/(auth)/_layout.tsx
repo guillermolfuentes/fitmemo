@@ -1,10 +1,13 @@
 import { Redirect, Stack } from 'expo-router';
 
-import { useSession } from '../ctx';
+// Add the missing import statement for 'useSession' from '../../context/AuthContext'.
+import { AuthContext } from '../../context/AuthContext';
+
 import { Text } from '@/components/Themed';
+import { useContext } from 'react';
 
 export default function AppLayout() {
-  const { session, isLoading } = useSession();
+  const { session, isLoading } = useContext(AuthContext);
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
     return <Text>Loading...</Text>;

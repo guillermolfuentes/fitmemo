@@ -2,14 +2,20 @@ import { Button, StyleSheet } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
-import { useSession } from "../../ctx";
+import { useStorageState } from "../../../hooks/useStorageState";
+import { AuthContext } from '../../../context/AuthContext';
+import { useContext } from "react";
+
+
 
 export default function TabOneScreen() {
-  const { signOut, session } = useSession();
+  const { signOut } = useContext(AuthContext);
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
-      <Text>Welcome, {session}</Text>
+      <Text>Welcome, Guillermo</Text>
       <View
         style={styles.separator}
         lightColor="#eee"

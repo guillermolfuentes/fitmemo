@@ -2,22 +2,20 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { SessionProvider } from "./ctx";
-import { Provider as PaperProvider } from 'react-native-paper';
+import { SessionProvider } from "../context/AuthContext";
+import { Provider as PaperProvider } from "react-native-paper";
 import { Slot } from "expo-router";
+import i18n from "../i18n/i18n";
+import { I18nextProvider } from "react-i18next";
+import LoadingOverlay from "@/components/LoadingOverlay";
+import { UIProvider } from "@/context/UIContext";
 
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: "login",
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -26,7 +24,6 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -44,13 +41,17 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-
 function RootLayoutNav() {
   return (
-    <SessionProvider>
-      <PaperProvider>
-        <Slot />
-      </PaperProvider>
-    </SessionProvider>
+    <I18nextProvider i18n={i18n}>
+      <UIProvider>
+        <SessionProvider>
+          <PaperProvider>
+            <Slot />
+            <LoadingOverlay />
+          </PaperProvider>
+        </SessionProvider>
+      </UIProvider>
+    </I18nextProvider>
   );
 }
