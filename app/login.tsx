@@ -1,6 +1,7 @@
 import { Keyboard, StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
-import { AuthContext, SignInResult } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
+import * as Yup from "yup";
 
 import { router } from "expo-router";
 import Logo from "../assets/images/FitMemo_Logo.svg";
@@ -8,16 +9,23 @@ import { Button, TextInput } from "react-native-paper";
 import React, { useContext, useEffect, useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useTranslation } from "react-i18next";
-import { useUIContext } from "@/context/UIContext";
+import { Formik } from "formik";
+import { SignInResult } from "@/types/auth";
+
+
 
 export default function Login() {
-  const {signIn } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
   const { t } = useTranslation();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [errorLoginMessage, setErrorLoginMessage] = useState("");
+
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string()
+      .email(t("screens.login.errors.invalid_email"))
+      .required(t("screens.login.errors.required_email")),
+    password: Yup.string().required(t("screens.login.errors.required_password")),
+  });
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -39,14 +47,14 @@ export default function Login() {
     };
   }, []);
 
-  const handleLogin = async () => {
+  const handleLogin = async (values: { email: string; password: string }) => {
     try {
       let result: SignInResult;
 
-      result = await signIn(email, password);
-    
+      result = await signIn(values.email, values.password);
 
       if (result.success) {
+        console.log("Login success");
         router.replace("/");
       } else if (result.error === "AUTHENTICATION_ERROR") {
         setErrorLoginMessage(t("screens.login.errors.authentication_error"));
@@ -57,7 +65,6 @@ export default function Login() {
       }
     } catch (error) {
       setErrorLoginMessage(t("screens.login.errors.unknown_error"));
-      console.error("Error al iniciar sesión:", error);
     }
   };
 
@@ -74,28 +81,52 @@ export default function Login() {
           {t("screens.login.welcome_subtitle")}
         </Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            label={t("screens.login.email")}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            style={styles.input}
-          />
-          <TextInput
-            label={t("screens.login.password")}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            secureTextEntry
-            style={styles.input}
-          />
-          <Button icon="login" mode="contained" onPress={handleLogin}>
-            {t("screens.login.login_button")}
-          </Button>
-          {errorLoginMessage ? (
-            <Text style={styles.errorText}>{errorLoginMessage}</Text>
-          ) : null}
-         
-        </View>
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={LoginSchema}
+          onSubmit={handleLogin}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            submitForm,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View style={styles.inputContainer}>
+              <TextInput
+                label={t("screens.login.email")}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                value={values.email}
+                error={touched.email && !!errors.email}
+                style={styles.input}
+              />
+              {touched.email && errors.email ? (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              ) : null}
+              <TextInput
+                label={t("screens.login.password")}
+                secureTextEntry
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                value={values.password}
+                error={touched.password && !!errors.password}
+                style={styles.input}
+              />
+              {touched.password && errors.password ? (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              ) : null}
+              <Button icon="login" mode="contained" onPress={submitForm}>
+                {t("screens.login.login_button")}
+              </Button>
+              {errorLoginMessage ? (
+                <Text style={styles.errorText}>{errorLoginMessage}</Text>
+              ) : null}
+            </View>
+          )}
+        </Formik>
 
         <View style={styles.registerContainer}>
           <Button icon="account-plus" mode="contained" onPress={handleRegister}>
@@ -136,7 +167,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginTop: 10, 
     textAlign: "center",
+    marginBottom: 10,
   },
 });

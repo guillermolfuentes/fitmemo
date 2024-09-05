@@ -1,23 +1,19 @@
+import { AuthResponse } from "@/types/auth";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
+import { string } from "yup";
 
-const API_URL = "https://user1719412282323.requestly.tech"; // Reemplaza con la URL de tu API
-//https://user1719412282323.requestly.tech
-
-// Interceptor para registrar las solicitudes
+const API_URL = "https://user1719412282323.requestly.tech";
 axios.interceptors.request.use((request) => {
   console.log("Starting Request", JSON.stringify(request, null, 2));
   return request;
 });
 
-// Interceptor para registrar las respuestas
 axios.interceptors.response.use(
   (response) => {
-    console.log("Response:", JSON.stringify(response, null, 2));
     return response;
   },
   (error) => {
-    console.log("Error Response:", JSON.stringify(error.response, null, 2));
     return Promise.reject(error);
   }
 );
@@ -43,26 +39,13 @@ export const register = async (
   }
 };
 
-/*export const login = async (email: string, password: string) => {
-  try {
-    const response = await axios.post(`https://user1719412282323.requestly.tech/login`, {
-      email,
-      password,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    const { token, user } = response.data.data;
-    await SecureStore.setItemAsync('token', token);
-    return user;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
-  }
-};*/
-const delayTest = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delayTest = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
-export const login = async (email: string, password: string) => {
+export const login = async (
+  email: string,
+  password: string
+): Promise<AuthResponse> => {
   try {
     const response = await axios.post(
       `https://requestly.tech/api/mockv2/login?username=user1719412282323`,
@@ -74,26 +57,26 @@ export const login = async (email: string, password: string) => {
         headers: {
           "Content-Type": "application/json",
         },
-        maxRedirects: 5, 
+        maxRedirects: 5,
       }
     );
-    //console.log("Response:", response); 
 
-    const { token, user } = response.data.data;
-    await SecureStore.setItemAsync("token", token);
-    await delayTest(3000);
-
-    return user;
+    return {
+      data: {
+        token: response.data.data.token,
+        user: response.data.data.user,
+      },
+      success: true,
+    };
   } catch (error: any) {
-    console.error("Error Response:", error.response); 
-
     if (error.response) {
       if (error.response.status === 401) {
-        throw new Error("AUTHENTICATION_ERROR");
+        return { success: false, errorMessage: "AUTHENTICATION_ERROR" };
       }
     } else {
-      throw new Error("NETWORK_ERROR");
+      return { success: false, errorMessage: "NETWORK_ERROR" };
     }
+    return { success: false, errorMessage: "UNKNOWN_ERROR" };
   }
 };
 

@@ -9,6 +9,9 @@
       "login_button": "Iniciar sesión",
       "register_button": "¡Regístrate ya!",
       "errors": {
+        "required_email": "El correo electrónico es obligatorio",
+        "invalid_email": "Correo electrónico inválido",
+        "required_password": "La contraseña es obligatoria",
         "authentication_error": "Inicio de sesión fallido. Revise su correo electrónico y contraseña",
         "network_error": "Ha ocurrido un error red. Por favor, inténtelo de nuevo",
         "unknown_error": "Error desconocido. Por favor, inténtelo de nuevo"

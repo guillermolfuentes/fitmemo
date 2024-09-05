@@ -7,11 +7,11 @@ import { Text } from '@/components/Themed';
 import { useContext } from 'react';
 
 export default function AppLayout() {
-  const { session, isLoading } = useContext(AuthContext);
+  const { session } = useContext(AuthContext);
   // You can keep the splash screen open, or render a loading screen like we do here.
-  if (isLoading) {
+  /*if (isLoading) {
     return <Text>Loading...</Text>;
-  }
+  }*/
 
   // Only require authentication within the (app) group's layout as users
   // need to be able to access the (auth) group and sign in again.

@@ -8,7 +8,7 @@ const locales = Localization.getLocales();
 
 let deviceLanguage = locales.length > 0 && locales[0].languageTag ? locales[0].languageTag : "en-US";
 
-deviceLanguage = "en-US";
+//deviceLanguage = "en-US";
 
 const resources = {
   "en-US": { translation: translationEn },

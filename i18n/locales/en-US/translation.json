@@ -1,58 +1,61 @@
 {
-  "language": "Español",
+  "language": "English",
   "screens": {
     "login": {
-      "welcome_title": "Bienvenido 👋",
-      "welcome_subtitle": "Todo comienza aquí",
-      "email": "Correo electrónico",
-      "password": "Contraseña",
-      "login_button": "Iniciar sesión",
-      "register_button": "¡Regístrate ya!",
+      "welcome_title": "Welcome 👋",
+      "welcome_subtitle": "Everything starts here",
+      "email": "Email",
+      "password": "Password",
+      "login_button": "Log in",
+      "register_button": "Sign up now!",
       "errors": {
-        "authentication_error": "Inicio de sesión fallido. Revise su correo electrónico y contraseña",
-        "network_error": "Ha ocurrido un error red. Por favor, inténtelo de nuevo",
-        "unknown_error": "Error desconocido. Por favor, inténtelo de nuevo"
+        "required_email": "Email is required",
+        "invalid_email": "Invalid email",
+        "required_password": "Password is required",
+        "authentication_error": "Login failed. Please check your email and password",
+        "network_error": "A network error occurred. Please try again",
+        "unknown_error": "Unknown error. Please try again"
       }
     },
     "register": {
       "step1": {
-        "confirm_password": "Confirmar contraseña",
-        "register_button": "Registrarse",
-        "login_button": "Iniciar sesión"
+        "confirm_password": "Confirm password",
+        "register_button": "Register",
+        "login_button": "Log in"
       },
       "step2": {},
       "step3": {},
       "step4": {},
-      "confirm_password": "Confirmar contraseña",
-      "register_button": "Registrarse",
-      "login_button": "Iniciar sesión"
+      "confirm_password": "Confirm password",
+      "register_button": "Register",
+      "login_button": "Log in"
     },
     "home": {
-      "title": "Inicio",
-      "welcome_message": "Bienvenido a la aplicación"
+      "title": "Home",
+      "welcome_message": "Welcome to the app"
     },
     "training": {
-      "title": "Entrenamiento",
-      "start_button": "Comenzar entrenamiento",
-      "stop_button": "Detener entrenamiento"
+      "title": "Training",
+      "start_button": "Start training",
+      "stop_button": "Stop training"
     },
     "progress": {
-      "title": "Progreso",
-      "view_details": "Ver detalles",
-      "no_data": "No hay datos disponibles"
+      "title": "Progress",
+      "view_details": "View details",
+      "no_data": "No data available"
     }
   },
   "common": {
-    "cancel": "Cancelar",
-    "confirm": "Confirmar",
-    "yes": "Sí",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "yes": "Yes",
     "no": "No",
-    "loading": "Cargando...",
+    "loading": "Loading...",
     "error": "Error"
   },
   "errors": {
-    "network_error": "Error de red",
-    "server_error": "Error del servidor",
-    "validation_error": "Error de validación"
+    "network_error": "Network error",
+    "server_error": "Server error",
+    "validation_error": "Validation error"
   }
 }

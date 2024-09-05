@@ -1,56 +1,46 @@
-import React, { createContext } from "react";
-import { useStorageState } from "../hooks/useStorageState";
+import React, { createContext, useState } from "react";
 import { login } from "../services/authService";
 import { useUIContext } from "./UIContext";
-
-export type SignInResult = {
-  success: boolean;
-  error?: "AUTHENTICATION_ERROR" | "NETWORK_ERROR" | "UNKNOWN_ERROR";
-};
+import { AuthResponse, SignInResult } from "@/types/auth";
+import { Session } from "@/types/session";
+import { useStorageState } from "@/hooks/useStorageState";
 
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<SignInResult>;
   signOut: () => void;
-};
+  session?: string | null;};
 
 export const AuthContext = createContext<AuthContextType>({
   signIn: async () => ({ success: false, error: "UNKNOWN_ERROR" }),
   signOut: () => null,
+  session: null
 });
 
 export function SessionProvider(props: React.PropsWithChildren) {
-  const [session, setSession] = useStorageState("session");
-  const { isLoading, setLoading } = useUIContext();
+  //const [session, setSession] = useStorageState('userSession');
+  const [session, setSession] = useStorageState('userSession');
+
+  const { setLoading } = useUIContext();
 
   const signIn = async (
     email: string,
     password: string
   ): Promise<SignInResult> => {
     try {
-      console.log("la viarbale is loading antes del seteo", isLoading);
       setLoading(true);
-      console.log("la viarbale is loading despues del seteo", isLoading);
-
-      const user = await login(email, password);
-      console.log("la viarbale is loading durante", isLoading);
-
+      let authResponse: AuthResponse = await login(email, password);
       setLoading(false);
-      console.log("la viarbale is loading despues", isLoading);
 
-      setSession(user);
-      return { success: true };
-    } catch (error) {
-      if ((error as Error).message === "AUTHENTICATION_ERROR") {
-        console.error(
-          "Error de autenticación: combinación de email y contraseña incorrecta."
-        );
-        return { success: false, error: "AUTHENTICATION_ERROR" };
-      } else if ((error as Error).message === "NETWORK_ERROR") {
-        console.error("Error de red: no se pudo conectar al servidor.");
-        return { success: false, error: "NETWORK_ERROR" };
+      if (authResponse.success) {
+        const newSession: Session = {
+          token: authResponse.data?.token || null,
+          user: authResponse.data?.user || null,
+          isAuthenticated: true,
+        };
+        setSession(JSON.stringify(newSession));
+        return { success: true };
       } else {
-        console.error("Error desconocido:", error);
-        return { success: false, error: "UNKNOWN_ERROR" };
+        return { success: false, error: authResponse.errorMessage };
       }
     } finally {
       setLoading(false);
@@ -67,6 +57,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
       value={{
         signIn,
         signOut,
+        session
       }}
     >
       {props.children}

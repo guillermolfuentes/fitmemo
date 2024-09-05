@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Portal, Modal, ActivityIndicator } from 'react-native-paper';
-import { useUIContext } from '../context/UIContext'; // Asegúrate de importar tu contexto correctamente
+import { useUIContext } from '../context/UIContext'; 
 
 const LoadingOverlay = () => {
   const { isLoading } = useUIContext();
@@ -10,7 +10,7 @@ const LoadingOverlay = () => {
     <Portal>
       <Modal
         visible={isLoading}
-        dismissable={false} // Evita que el modal se cierre al tocar fuera de él
+        dismissable={false} 
         contentContainerStyle={styles.modal}
       >
         <View style={styles.container}>
