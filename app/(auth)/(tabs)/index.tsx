@@ -2,7 +2,6 @@ import { Button, StyleSheet } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
-import { useStorageState } from "../../../hooks/useStorageState";
 import { AuthContext } from '../../../context/AuthContext';
 import { useContext } from "react";
 

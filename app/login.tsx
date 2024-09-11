@@ -72,6 +72,9 @@ export default function Login() {
     router.replace("/register");
   };
 
+  console.log("RENDERIZANDO LOGIN");
+
+
   return (
     <KeyboardAwareScrollView scrollEnabled={isKeyboardVisible}>
       <View style={styles.container}>

@@ -42,6 +42,10 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+
+  console.log("RENDERIZANDO LAYOUT DE INICIO");
+
+
   return (
     <I18nextProvider i18n={i18n}>
       <UIProvider>
