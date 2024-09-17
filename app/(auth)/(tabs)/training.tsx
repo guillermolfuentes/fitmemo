@@ -1,9 +1,8 @@
 import { StyleSheet } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 
-export default function TabTwoScreen() {
+export default function TrainingScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab Two</Text>
@@ -12,7 +11,7 @@ export default function TabTwoScreen() {
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <EditScreenInfo path="app/(auth)/(tabs)/two.tsx" />
+      <Text>PANTALLA ENTRENAMIENTO</Text>
     </View>
   );
 }

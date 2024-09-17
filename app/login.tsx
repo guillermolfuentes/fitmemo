@@ -12,8 +12,6 @@ import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { SignInResult } from "@/types/auth";
 
-
-
 export default function Login() {
   const { signIn } = useContext(AuthContext);
   const { t } = useTranslation();
@@ -24,7 +22,9 @@ export default function Login() {
     email: Yup.string()
       .email(t("screens.login.errors.invalid_email"))
       .required(t("screens.login.errors.required_email")),
-    password: Yup.string().required(t("screens.login.errors.required_password")),
+    password: Yup.string().required(
+      t("screens.login.errors.required_password")
+    ),
   });
 
   useEffect(() => {
@@ -74,9 +74,8 @@ export default function Login() {
 
   console.log("RENDERIZANDO LOGIN");
 
-
   return (
-    <KeyboardAwareScrollView scrollEnabled={isKeyboardVisible}>
+    <KeyboardAwareScrollView scrollEnabled={true} bounces={false}>
       <View style={styles.container}>
         <Logo width={400} height={200} />
         <Text style={styles.title}>{t("screens.login.welcome_title")}</Text>

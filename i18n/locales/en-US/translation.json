@@ -3,32 +3,62 @@
   "screens": {
     "login": {
       "welcome_title": "Welcome 👋",
-      "welcome_subtitle": "Everything starts here",
+      "welcome_subtitle": "It all starts here",
       "email": "Email",
       "password": "Password",
-      "login_button": "Log in",
-      "register_button": "Sign up now!",
+      "login_button": "Log In",
+      "register_button": "Sign Up Now!",
       "errors": {
         "required_email": "Email is required",
         "invalid_email": "Invalid email",
         "required_password": "Password is required",
-        "authentication_error": "Login failed. Please check your email and password",
+        "authentication_error": "Login failed. Check your email and password",
         "network_error": "A network error occurred. Please try again",
         "unknown_error": "Unknown error. Please try again"
       }
     },
     "register": {
       "step1": {
-        "confirm_password": "Confirm password",
+        "confirm_password": "Confirm Password",
         "register_button": "Register",
-        "login_button": "Log in"
+        "login_button": "Log In",
+        "errors": {
+          "required_name": "Name is required",
+          "required_age": "Age is required",
+          "invalid_age": "Age must be a number between 1 and 120",
+          "required_gender": "Gender is required"
+        }
       },
-      "step2": {},
-      "step3": {},
-      "step4": {},
-      "confirm_password": "Confirm password",
+      "step2": {
+        "errors": {
+          "required_training_days": "Number of training days is required",
+          "invalid_training_days": "Number of training days must be between 1 and 7",
+          "required_training_level": "Training level is required",
+          "required_available_equipment": "Available equipment is required",
+          "required_activity_level": "Activity level is required",
+          "required_target_muscle_group": "Target muscle group is required"
+        }
+      },
+      "step3": {
+        "errors": {
+          "required_height": "Height is required",
+          "invalid_height": "Height must be a number between 50 and 300 cm",
+          "required_weight": "Weight is required",
+          "invalid_weight": "Weight must be a number between 10 and 500 kg",
+          "invalid_waist_circumference": "Waist circumference must be a number between 30 and 200 cm",
+          "invalid_hip_circumference": "Hip circumference must be a number between 30 and 200 cm",
+          "invalid_thigh_circumference": "Thigh circumference must be a number between 30 and 200 cm"
+        }
+      },
+      "step4": {
+        "errors": {
+          "required_confirm_password": "Password confirmation is required",
+          "passwords_must_match": "Passwords must match"
+        }
+      },
+      "confirm_password": "Confirm Password",
       "register_button": "Register",
-      "login_button": "Log in"
+      "login_button": "Log In"
     },
     "home": {
       "title": "Home",
@@ -36,12 +66,12 @@
     },
     "training": {
       "title": "Training",
-      "start_button": "Start training",
-      "stop_button": "Stop training"
+      "start_button": "Start Training",
+      "stop_button": "Stop Training"
     },
     "progress": {
       "title": "Progress",
-      "view_details": "View details",
+      "view_details": "View Details",
       "no_data": "No data available"
     }
   },

@@ -21,11 +21,41 @@
       "step1": {
         "confirm_password": "Confirmar contraseña",
         "register_button": "Registrarse",
-        "login_button": "Iniciar sesión"
+        "login_button": "Iniciar sesión",
+        "errors": {
+          "required_name": "El nombre es obligatorio",
+          "required_age": "La edad es obligatoria",
+          "invalid_age": "La edad debe ser un número entre 1 y 120",
+          "required_gender": "El género es obligatorio"
+        }
       },
-      "step2": {},
-      "step3": {},
-      "step4": {},
+      "step2": {
+        "errors": {
+          "required_training_days": "El número de días de entrenamiento es obligatorio",
+          "invalid_training_days": "El número de días de entrenamiento debe ser entre 1 y 7",
+          "required_training_level": "El nivel de entrenamiento es obligatorio",
+          "required_available_equipment": "El material disponible es obligatorio",
+          "required_activity_level": "El nivel de actividad física es obligatorio",
+          "required_target_muscle_group": "El grupo muscular a priorizar es obligatorio"
+        }
+      },
+      "step3": {
+        "errors": {
+          "required_height": "La altura es obligatoria",
+          "invalid_height": "La altura debe ser un número entre 50 y 300 cm",
+          "required_weight": "El peso es obligatorio",
+          "invalid_weight": "El peso debe ser un número entre 10 y 500 kg",
+          "invalid_waist_circumference": "El perímetro del ombligo debe ser un número entre 30 y 200 cm",
+          "invalid_hip_circumference": "El perímetro de la cadera debe ser un número entre 30 y 200 cm",
+          "invalid_thigh_circumference": "El perímetro del muslo debe ser un número entre 30 y 200 cm"
+        }
+      },
+      "step4": {
+        "errors": {
+          "required_confirm_password": "La confirmación de la contraseña es obligatoria",
+          "passwords_must_match": "Las contraseñas deben coincidir"
+        }
+      },
       "confirm_password": "Confirmar contraseña",
       "register_button": "Registrarse",
       "login_button": "Iniciar sesión"

@@ -1,6 +1,5 @@
 import { Button, StyleSheet } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { AuthContext } from '../../../context/AuthContext';
 import { useContext } from "react";
@@ -20,7 +19,6 @@ export default function TabOneScreen() {
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <EditScreenInfo path="app/(auth)/(tabs)/index.tsx" />
       <Button
         title="Sign Out"
         onPress={() => {
