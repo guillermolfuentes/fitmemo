@@ -3,28 +3,18 @@ import { StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 
 import { Button, ProgressBar, TextInput } from "react-native-paper";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Logo from "../assets/images/FitMemo_Logo.svg";
 import { Dropdown } from "react-native-paper-dropdown";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
-import { Formik, FormikProps } from "formik";
+import { Formik, FormikHelpers, FormikProps } from "formik";
 
 export default function Register() {
   const router = useRouter();
 
   const [activeStep, setActiveStep] = useState(0);
-  /*
-  const [name, setName] = useState("");
-  const [age, setAge] = useState(0);
-  const [gender, setGender] = useState<string>();
-
-  const [trainingDays, setTrainingDays] = useState(0);
-  const [trainingLevel, setTrainingLevel] = useState<string>();
-  const [availableEquipment, setAvailableEquipment] = useState<string>();
-  const [activityLevel, setActivityLevel] = useState<string>();
-  const [targetMuscleGroup, setTargetMuscleGroup] = useState<string>();*/
 
   const [height, setHeight] = useState<number | string>("");
   const [weight, setWeight] = useState<number | string>("");
@@ -41,49 +31,6 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const { t } = useTranslation();
-
-  const formikRefStep1 = useRef<
-    FormikProps<{
-      name: string;
-      age: string;
-      gender: string;
-    }>
-  >(null);
-
-  const formikRefStep2 = useRef<
-    FormikProps<{
-      trainingDays: string;
-      trainingLevel: string;
-      availableEquipment: string;
-      activityLevel: string;
-      targetMuscleGroup: string;
-    }>
-  >(null);
-
-  const formikRefStep3 = useRef<
-    FormikProps<{
-      height: string;
-      weight: string;
-      waistCircumference?: string;
-      hipCircumference?: string;
-      thighCircumference?: string;
-    }>
-  >(null);
-
-  const formikRefStep4 = useRef<
-    FormikProps<{
-      email: string;
-      password: string;
-      confirmPassword: string;
-    }>
-  >(null);
-
-  const formikRefs = [
-    formikRefStep1,
-    formikRefStep2,
-    formikRefStep3,
-    formikRefStep4,
-  ];
 
   const FirstStepSchema = Yup.object().shape({
     name: Yup.string().required(
@@ -191,170 +138,134 @@ export default function Register() {
     { label: "Abdomen", value: "abs" },
   ];
 
-  const handleNext = () => {
-    console.log("validando formulario");
-    const currentRef = formikRefs[activeStep];
+  const FirstStepView = ({
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    touched,
+  }: FormikProps<FirstStepValues>) => (
+    <View style={styles.container}>
+      <Text>Empecemos a conocernos</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Nombre"
+          onChangeText={handleChange("name")}
+          onBlur={handleBlur("name")}
+          value={values.name}
+          error={touched.name && !!errors.name}
+          style={styles.input}
+        />
+        {touched.name && errors.name ? (
+          <Text style={styles.errorText}>{errors.name}</Text>
+        ) : null}
+        <TextInput
+          label="Edad"
+          value={values.age}
+          onChangeText={handleChange("age")}
+          onBlur={handleBlur("age")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.age && errors.age ? (
+          <Text style={styles.errorText}>{errors.age}</Text>
+        ) : null}
+        <View style={styles.input}>
+          <Dropdown
+            label="Sexo"
+            placeholder="Selecciona un género"
+            options={GENDER_OPTIONS}
+            value={values.gender}
+            onSelect={(value) => handleChange("gender")(value || "")}
+            hideMenuHeader={true}
+          />
+          {touched.gender && errors.gender ? (
+            <Text style={styles.errorText}>{errors.gender}</Text>
+          ) : null}
+        </View>
+      </View>
+    </View>
+  );
 
-    if (currentRef.current) {
-      currentRef.current.validateForm().then((errors) => {
-        if (Object.keys(errors).length === 0) {
-          if (activeStep < steps.length - 1) {
-            setActiveStep((prevStep) => prevStep + 1);
-          }
-        } else {
-          console.log("validacion erronea: " + errors);
-          currentRef.current.setTouched(errors);
-        }
-      });
-    }
-  };
+  const SecondStepView = ({
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    touched,
+  }: FormikProps<SecondStepValues>) => (
+    <View style={styles.container}>
+      <Text>Vamos a construir tu rutina de ejercicio</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="¿Cuántos días a la semana quieres entrenar?"
+          value={values.trainingDays}
+          onChangeText={handleChange("trainingDays")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.trainingDays && errors.trainingDays ? (
+          <Text style={styles.errorText}>{errors.trainingDays}</Text>
+        ) : null}
+        <View style={styles.input}>
+          <Dropdown
+            label="Nivel de entrenamiento"
+            placeholder="Selecciona un nivel"
+            options={TRAINING_LEVELS_OPTIONS}
+            value={values.trainingLevel}
+            onSelect={(value) => handleChange("trainingLevel")(value || "")}
+            hideMenuHeader={true}
+          />
+          {touched.trainingLevel && errors.trainingLevel ? (
+            <Text style={styles.errorText}>{errors.trainingLevel}</Text>
+          ) : null}
+        </View>
 
-  const firstStepView =
-    (console.log("RENDERIZANDO PASO 1 DEL REGISTRO"),
-    (
-      <Formik
-        innerRef={formikRefStep1}
-        initialValues={{ name: "", age: "", gender: "" }}
-        validationSchema={FirstStepSchema}
-        onSubmit={handleNext}
-      >
-        {({ handleChange, handleBlur, values, errors, touched }) => (
-          <View style={styles.container}>
-            <Text>Empecemos a conocernos</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                label="Nombre"
-                onChangeText={handleChange("name")}
-                onBlur={handleBlur("name")}
-                value={values.name}
-                error={touched.name && !!errors.name}
-                style={styles.input}
-              />
-              {touched.name && errors.name ? (
-                <Text style={styles.errorText}>{errors.name}</Text>
-              ) : null}
-              <TextInput
-                label="Edad"
-                value={values.age}
-                onChangeText={handleChange("age")}
-                onBlur={handleBlur("age")}
-                keyboardType="numeric"
-                style={styles.input}
-              />
-              {touched.age && errors.age ? (
-                <Text style={styles.errorText}>{errors.age}</Text>
-              ) : null}
-              <View style={styles.input}>
-                <Dropdown
-                  label="Sexo"
-                  placeholder="Selecciona un género"
-                  options={GENDER_OPTIONS}
-                  value={values.gender}
-                  onSelect={handleChange("gender")}
-                  hideMenuHeader={true}
-                />
-                {touched.gender && errors.gender ? (
-                  <Text style={styles.errorText}>{errors.gender}</Text>
-                ) : null}
-              </View>
-            </View>
-          </View>
-        )}
-      </Formik>
-    ));
+        <View style={styles.input}>
+          <Dropdown
+            label="Material disponible"
+            placeholder="Selecciona material"
+            options={AVAILABLE_TRAINING_EQUIPMENT_OPTIONS}
+            value={values.availableEquipment}
+            onSelect={(value) =>
+              handleChange("availableEquipment")(value || "")
+            }
+            hideMenuHeader={true}
+          />
+          {touched.availableEquipment && errors.availableEquipment ? (
+            <Text style={styles.errorText}>{errors.availableEquipment}</Text>
+          ) : null}
+        </View>
 
-  const secondStepView =
-    (console.log("RENDERIZANDO PASO 2 DEL REGISTRO"),
-    (
-      <Formik
-        innerRef={formikRefStep2}
-        initialValues={{
-          trainingDays: "",
-          trainingLevel: "",
-          availableEquipment: "",
-          activityLevel: "",
-          targetMuscleGroup: "",
-        }}
-        validationSchema={SecondStepSchema}
-        onSubmit={handleNext}
-      >
-        {({ handleChange, handleBlur, values, errors, touched }) => (
-          <View style={styles.container}>
-            <Text>Vamos a construir tu rutina de ejercicio</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                label="¿Cuántos días a la semana quieres entrenar?"
-                value={values.trainingDays}
-                onChangeText={handleChange("trainingDays")}
-                keyboardType="numeric"
-                style={styles.input}
-              />
-              {touched.trainingDays && errors.trainingDays ? (
-                <Text style={styles.errorText}>{errors.trainingDays}</Text>
-              ) : null}
-              <View style={styles.input}>
-                <Dropdown
-                  label="Nivel de entrenamiento"
-                  placeholder="Selecciona un nivel"
-                  options={TRAINING_LEVELS_OPTIONS}
-                  value={values.trainingLevel}
-                  onSelect={handleChange("trainingLevel")}
-                  hideMenuHeader={true}
-                />
-                {touched.trainingLevel && errors.trainingLevel ? (
-                  <Text style={styles.errorText}>{errors.trainingLevel}</Text>
-                ) : null}
-              </View>
-
-              <View style={styles.input}>
-                <Dropdown
-                  label="Material disponible"
-                  placeholder="Selecciona material"
-                  options={AVAILABLE_TRAINING_EQUIPMENT_OPTIONS}
-                  value={values.availableEquipment}
-                  onSelect={handleChange("availableEquipment")}
-                  hideMenuHeader={true}
-                />
-                {touched.availableEquipment && errors.availableEquipment ? (
-                  <Text style={styles.errorText}>
-                    {errors.availableEquipment}
-                  </Text>
-                ) : null}
-              </View>
-
-              <View style={styles.input}>
-                <Dropdown
-                  label="Nivel de actividad física"
-                  placeholder="Selecciona un nivel"
-                  options={DAILY_ACTIVITY_LEVEL_OPTIONS}
-                  value={values.activityLevel}
-                  onSelect={handleChange("activityLevel")}
-                  hideMenuHeader={true}
-                />
-                {touched.activityLevel && errors.activityLevel ? (
-                  <Text style={styles.errorText}>{errors.activityLevel}</Text>
-                ) : null}
-              </View>
-              <View style={styles.input}>
-                <Dropdown
-                  label="Grupo muscular a priorizar"
-                  placeholder="Selecciona un grupo muscular"
-                  options={TARGET_MUSCLE_GROUP_OPTIONS}
-                  value={values.targetMuscleGroup}
-                  onSelect={handleChange("targetMuscleGroup")}
-                  hideMenuHeader={true}
-                />
-                {touched.targetMuscleGroup && errors.targetMuscleGroup ? (
-                  <Text style={styles.errorText}>
-                    {errors.targetMuscleGroup}
-                  </Text>
-                ) : null}
-              </View>
-            </View>
-          </View>
-        )}
-      </Formik>
-    ));
+        <View style={styles.input}>
+          <Dropdown
+            label="Nivel de actividad física"
+            placeholder="Selecciona un nivel"
+            options={DAILY_ACTIVITY_LEVEL_OPTIONS}
+            value={values.activityLevel}
+            onSelect={(value) => handleChange("activityLevel")(value || "")}
+            hideMenuHeader={true}
+          />
+          {touched.activityLevel && errors.activityLevel ? (
+            <Text style={styles.errorText}>{errors.activityLevel}</Text>
+          ) : null}
+        </View>
+        <View style={styles.input}>
+          <Dropdown
+            label="Grupo muscular a priorizar"
+            placeholder="Selecciona un grupo muscular"
+            options={TARGET_MUSCLE_GROUP_OPTIONS}
+            value={values.targetMuscleGroup}
+            onSelect={(value) => handleChange("targetMuscleGroup")(value || "")}
+            hideMenuHeader={true}
+          />
+          {touched.targetMuscleGroup && errors.targetMuscleGroup ? (
+            <Text style={styles.errorText}>{errors.targetMuscleGroup}</Text>
+          ) : null}
+        </View>
+      </View>
+    </View>
+  );
 
   const thirdStepView =
     (console.log("RENDERIZANDO PASO 3 DEL REGISTRO"),
@@ -439,12 +350,116 @@ export default function Register() {
       </View>
     ));
 
-  const steps = [
-    { label: "Register step 1", content: firstStepView },
-    { label: "Register step 2", content: secondStepView },
-    { label: "Register step 3", content: thirdStepView },
-    { label: "Register step 4", content: fourthStepView },
+  /* const steps = [
+    { component: firstStepView, validationSchema: FirstStepSchema },
+    { component: secondStepView, validationSchema: SecondStepSchema },
+    { component: thirdStepView, validationSchema: ThirdStepSchema },
+    { component: fourthStepView, validationSchema: FourthStepSchema },
+  ];*/
+
+  const steps: {
+    component: (props: FormikProps<any>) => JSX.Element;
+    validationSchema: Yup.ObjectSchema<any>;
+  }[] = [
+    {
+      component: (props: FormikProps<FirstStepValues>) => (
+        <FirstStepView {...props} />
+      ),
+      validationSchema: FirstStepSchema,
+    },
+    {
+      component: (props: FormikProps<SecondStepValues>) => (
+        <SecondStepView {...props} />
+      ),
+      validationSchema: SecondStepSchema,
+    },
   ];
+
+  interface FirstStepValues {
+    name: string;
+    age: string;
+    gender: string;
+  }
+
+  interface SecondStepValues {
+    trainingDays: string;
+    trainingLevel: string;
+    availableEquipment: string;
+    activityLevel: string;
+    targetMuscleGroup: string;
+  }
+
+  interface ThirdStepValues {
+    height: string;
+    weight: string;
+    waistCircumference: string;
+    hipCircumference: string;
+    thighCircumference: string;
+  }
+
+  interface FourthStepValues {
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }
+
+  type FormValues = FirstStepValues &
+    SecondStepValues &
+    ThirdStepValues &
+    FourthStepValues;
+
+  const handleNext = async (
+    values: FormValues,
+    actions: FormikHelpers<FormValues>
+  ) => {
+    const currentStepSchema = steps[activeStep].validationSchema;
+
+    console.log("ENTRANDO EN HANDLE NEXT");
+
+    try {
+      await currentStepSchema.validate(values, { abortEarly: false });
+      setActiveStep((prevStep) => prevStep + 1);
+    } catch (errors) {
+      const formattedErrors = (errors as Yup.ValidationError).inner.reduce(
+        (acc: any, error: any) => {
+          acc[error.path] = error.message;
+          return acc;
+        },
+        {}
+      );
+      actions.setErrors(formattedErrors);
+
+      const touchedFields = (errors as Yup.ValidationError).inner.reduce(
+        (acc: any, error: any) => {
+          acc[error.path] = true;
+          return acc;
+        },
+        {}
+      );
+      actions.setTouched(touchedFields);
+    }
+  };
+
+  /*
+    const handleNext = () => {
+    console.log("validando formulario");
+    const currentRef = formikRefs[activeStep];
+
+    if (currentRef.current) {
+      currentRef.current.validateForm().then((errors) => {
+        if (Object.keys(errors).length === 0) {
+          if (activeStep < steps.length - 1) {
+            setActiveStep((prevStep) => prevStep + 1);
+          }
+        } else {
+          console.log("validacion erronea: " + errors);
+          currentRef.current.setTouched(errors);
+        }
+      });
+    }
+  };
+
+  */
 
   const handleBack = () => {
     if (activeStep > 0) {
@@ -452,6 +467,9 @@ export default function Register() {
     }
   };
 
+  const handleSubmit = () => {
+    console.log("SUBMITTING FORM");
+  };
   const returnLogin = () => {
     router.replace("/login");
   };
@@ -464,42 +482,75 @@ export default function Register() {
       keyboardShouldPersistTaps="handled"
       bounces={false}
     >
-      <View style={styles.innerContainer}>
-        <Logo width={250} height={100} />
-        <Text style={styles.title}>Comienza tu camino fitness.</Text>
+      <Formik
+        initialValues={{
+          name: "",
+          age: "",
+          gender: "",
+          trainingDays: "",
+          trainingLevel: "",
+          availableEquipment: "",
+          activityLevel: "",
+          targetMuscleGroup: "",
+          height: "",
+          weight: "",
+          waistCircumference: "",
+          hipCircumference: "",
+          thighCircumference: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        }}
+        validationSchema={steps[activeStep].validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {(formikProps) => (
+          <View style={styles.innerContainer}>
+            <Logo width={250} height={100} />
+            <Text style={styles.title}>Comienza tu camino fitness.</Text>
 
-        <ProgressBar
-          progress={(activeStep + 1) / steps.length}
-          style={styles.progressBar}
-        />
-        <View style={styles.stepContainer}>{steps[activeStep].content}</View>
-        <View style={styles.buttonContainer}>
-          {activeStep !== 0 && (
-            <Button icon="arrow-left" mode="contained" onPress={handleBack}>
-              Anterior
-            </Button>
-          )}
-          {activeStep !== steps.length - 1 ? (
-            <Button icon="arrow-right" mode="contained" onPress={handleNext}>
-              Siguiente
-            </Button>
-          ) : (
-            <Button icon="check" mode="contained" onPress={handleNext}>
-              Empezar
-            </Button>
-          )}
-        </View>
-        {activeStep === 0 && (
-          <Button
-            icon="arrow-left"
-            mode="outlined"
-            onPress={returnLogin}
-            style={styles.returnButton}
-          >
-            Volver al login
-          </Button>
+            <ProgressBar
+              progress={(activeStep + 1) / steps.length}
+              style={styles.progressBar}
+            />
+
+            <View style={styles.stepContainer}>
+              {steps[activeStep].component(formikProps)}
+            </View>
+
+            <View style={styles.buttonContainer}>
+              {activeStep !== 0 && (
+                <Button icon="arrow-left" mode="contained" onPress={handleBack}>
+                  Anterior
+                </Button>
+              )}
+              {activeStep !== steps.length - 1 ? (
+                <Button
+                  icon="arrow-right"
+                  mode="contained"
+                  onPress={() => handleNext(formikProps.values, formikProps)}
+                >
+                  Siguiente
+                </Button>
+              ) : (
+                <Button icon="check" mode="contained" onPress={handleSubmit}>
+                  Empezar
+                </Button>
+              )}
+            </View>
+            {activeStep === 0 && (
+              <Button
+                icon="arrow-left"
+                mode="outlined"
+                onPress={returnLogin}
+                style={styles.returnButton}
+              >
+                Volver al login
+              </Button>
+            )}
+          </View>
         )}
-      </View>
+      </Formik>
     </KeyboardAwareScrollView>
   );
 }
