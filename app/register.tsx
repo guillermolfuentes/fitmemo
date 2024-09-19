@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 
@@ -12,25 +12,9 @@ import { useTranslation } from "react-i18next";
 import { Formik, FormikHelpers, FormikProps } from "formik";
 
 export default function Register() {
-  const router = useRouter();
-
-  const [activeStep, setActiveStep] = useState(0);
-
-  const [height, setHeight] = useState<number | string>("");
-  const [weight, setWeight] = useState<number | string>("");
-  const [waistCircumference, setWaistCircumference] = useState<number | string>(
-    ""
-  );
-  const [hipCircumference, setHipCircumference] = useState<number | string>("");
-  const [thighCircumference, setThighCircumference] = useState<number | string>(
-    ""
-  );
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const { t } = useTranslation();
+  const router = useRouter();
+  const [activeStep, setActiveStep] = useState(0);
 
   const FirstStepSchema = Yup.object().shape({
     name: Yup.string().required(
@@ -74,17 +58,26 @@ export default function Register() {
       .min(10, t("screens.register.step3.errors.invalid_weight"))
       .max(500, t("screens.register.step3.errors.invalid_weight")),
     waistCircumference: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? null : value
+      )
       .min(30, t("screens.register.step3.errors.invalid_waist_circumference"))
       .max(200, t("screens.register.step3.errors.invalid_waist_circumference"))
-      .nullable(),
+      .notRequired(),
     hipCircumference: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? null : value
+      )
       .min(30, t("screens.register.step3.errors.invalid_hip_circumference"))
       .max(200, t("screens.register.step3.errors.invalid_hip_circumference"))
-      .nullable(),
+      .notRequired(),
     thighCircumference: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? null : value
+      )
       .min(30, t("screens.register.step3.errors.invalid_thigh_circumference"))
       .max(200, t("screens.register.step3.errors.invalid_thigh_circumference"))
-      .nullable(),
+      .notRequired(),
   });
 
   const FourthStepSchema = Yup.object().shape({
@@ -267,95 +260,118 @@ export default function Register() {
     </View>
   );
 
-  const thirdStepView =
-    (console.log("RENDERIZANDO PASO 3 DEL REGISTRO"),
-    (
-      <View style={styles.container}>
-        <Text>Algunos detalles más sobre ti</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            label="Altura (cms)"
-            value={height.toString()}
-            onChangeText={(height) => setHeight(parseInt(height))}
-            keyboardType="numeric"
-            style={styles.input}
-          />
-          <TextInput
-            label="Peso (kgs)"
-            value={weight.toString()}
-            onChangeText={(weight) => setWeight(parseInt(weight))}
-            keyboardType="numeric"
-            style={styles.input}
-          />
-          <TextInput
-            label="Perímetro ombligo en cms (opcional)"
-            value={waistCircumference.toString()}
-            onChangeText={(waistCircumference) =>
-              setWaistCircumference(parseInt(waistCircumference))
-            }
-            keyboardType="numeric"
-            style={styles.input}
-          />
-          <TextInput
-            label="Perímetro cadera en cms (opcional)"
-            value={hipCircumference.toString()}
-            onChangeText={(hipCircumference) =>
-              setHipCircumference(parseInt(hipCircumference))
-            }
-            keyboardType="numeric"
-            style={styles.input}
-          />
-          <TextInput
-            label="Perímetro muslo en cms (opcional)"
-            value={thighCircumference.toString()}
-            onChangeText={(thighCircumference) =>
-              setThighCircumference(parseInt(thighCircumference))
-            }
-            keyboardType="numeric"
-            style={styles.input}
-          />
-        </View>
+  const ThirdStepView = ({
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    touched,
+  }: FormikProps<ThirdStepValues>) => (
+    <View style={styles.container}>
+      <Text>Algunos detalles más sobre ti</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Altura (cms)"
+          value={values.height}
+          onChangeText={handleChange("height")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.height && errors.height ? (
+          <Text style={styles.errorText}>{errors.height}</Text>
+        ) : null}
+        <TextInput
+          label="Peso (kgs)"
+          value={values.weight}
+          onChangeText={handleChange("weight")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.weight && errors.weight ? (
+          <Text style={styles.errorText}>{errors.weight}</Text>
+        ) : null}
+        <TextInput
+          label="Perímetro ombligo en cms (opcional)"
+          value={values.waistCircumference}
+          onChangeText={handleChange("waistCircumference")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.waistCircumference && errors.waistCircumference ? (
+          <Text style={styles.errorText}>{errors.waistCircumference}</Text>
+        ) : null}
+        <TextInput
+          label="Perímetro cadera en cms (opcional)"
+          value={values.hipCircumference}
+          onChangeText={handleChange("hipCircumference")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.hipCircumference && errors.hipCircumference ? (
+          <Text style={styles.errorText}>{errors.hipCircumference}</Text>
+        ) : null}
+        <TextInput
+          label="Perímetro muslo en cms (opcional)"
+          value={values.thighCircumference}
+          onChangeText={handleChange("thighCircumference")}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        {touched.hipCircumference && errors.thighCircumference ? (
+          <Text style={styles.errorText}>{errors.thighCircumference}</Text>
+        ) : null}
       </View>
-    ));
+    </View>
+  );
 
-  const fourthStepView =
-    (console.log("RENDERIZANDO PASO 4 DEL REGISTRO"),
-    (
-      <View style={styles.container}>
-        <Text>Ya casi terminamos</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            label="Email"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            style={styles.input}
-          />
-          <TextInput
-            label="Contraseña"
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            secureTextEntry
-            style={styles.input}
-          />
-          <TextInput
-            label="Confirma contraseña"
-            value={confirmPassword}
-            onChangeText={(confirmPassword) =>
-              setConfirmPassword(confirmPassword)
-            }
-            secureTextEntry
-            style={styles.input}
-          />
-        </View>
+  const FourthStepView = ({
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    touched,
+  }: FormikProps<FourthStepValues>) => (
+    <View style={styles.container}>
+      <Text>Algunos detalles más sobre ti</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Email"
+          onChangeText={handleChange("email")}
+          onBlur={handleBlur("email")}
+          value={values.email}
+          error={touched.email && !!errors.email}
+          style={styles.input}
+        />
+        {touched.email && errors.email ? (
+          <Text style={styles.errorText}>{errors.email}</Text>
+        ) : null}
+
+        <TextInput
+          label="Contraseña"
+          onChangeText={handleChange("password")}
+          onBlur={handleBlur("password")}
+          value={values.password}
+          error={touched.password && !!errors.password}
+          style={styles.input}
+        />
+        {touched.password && errors.password ? (
+          <Text style={styles.errorText}>{errors.password}</Text>
+        ) : null}
+
+        <TextInput
+          label="Email"
+          onChangeText={handleChange("confirmPassword")}
+          onBlur={handleBlur("confirmPassword")}
+          value={values.confirmPassword}
+          error={touched.confirmPassword && !!errors.confirmPassword}
+          style={styles.input}
+        />
+        {touched.confirmPassword && errors.confirmPassword ? (
+          <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+        ) : null}
       </View>
-    ));
-
-  /* const steps = [
-    { component: firstStepView, validationSchema: FirstStepSchema },
-    { component: secondStepView, validationSchema: SecondStepSchema },
-    { component: thirdStepView, validationSchema: ThirdStepSchema },
-    { component: fourthStepView, validationSchema: FourthStepSchema },
-  ];*/
+    </View>
+  );
 
   const steps: {
     component: (props: FormikProps<any>) => JSX.Element;
@@ -372,6 +388,18 @@ export default function Register() {
         <SecondStepView {...props} />
       ),
       validationSchema: SecondStepSchema,
+    },
+    {
+      component: (props: FormikProps<ThirdStepValues>) => (
+        <ThirdStepView {...props} />
+      ),
+      validationSchema: ThirdStepSchema,
+    },
+    {
+      component: (props: FormikProps<FourthStepValues>) => (
+        <FourthStepView {...props} />
+      ),
+      validationSchema: FourthStepSchema,
     },
   ];
 
@@ -440,36 +468,46 @@ export default function Register() {
     }
   };
 
-  /*
-    const handleNext = () => {
-    console.log("validando formulario");
-    const currentRef = formikRefs[activeStep];
-
-    if (currentRef.current) {
-      currentRef.current.validateForm().then((errors) => {
-        if (Object.keys(errors).length === 0) {
-          if (activeStep < steps.length - 1) {
-            setActiveStep((prevStep) => prevStep + 1);
-          }
-        } else {
-          console.log("validacion erronea: " + errors);
-          currentRef.current.setTouched(errors);
-        }
-      });
-    }
-  };
-
-  */
-
   const handleBack = () => {
     if (activeStep > 0) {
       setActiveStep((prevStep) => prevStep - 1);
     }
   };
 
-  const handleSubmit = () => {
-    console.log("SUBMITTING FORM");
+  const handleSubmit = async (
+    values: FormValues,
+    actions: FormikHelpers<FormValues>
+  ) => {
+    const currentStepSchema = steps[activeStep].validationSchema;
+
+    console.log("ENTRANDO EN HANDLE SUBMIT");
+
+    try {
+      await currentStepSchema.validate(values, { abortEarly: false });
+      console.log("ENVIA FORMULARIO");
+
+      router.replace("/");
+    } catch (errors) {
+      const formattedErrors = (errors as Yup.ValidationError).inner.reduce(
+        (acc: any, error: any) => {
+          acc[error.path] = error.message;
+          return acc;
+        },
+        {}
+      );
+      actions.setErrors(formattedErrors);
+
+      const touchedFields = (errors as Yup.ValidationError).inner.reduce(
+        (acc: any, error: any) => {
+          acc[error.path] = true;
+          return acc;
+        },
+        {}
+      );
+      actions.setTouched(touchedFields);
+    }
   };
+
   const returnLogin = () => {
     router.replace("/login");
   };
@@ -533,7 +571,11 @@ export default function Register() {
                   Siguiente
                 </Button>
               ) : (
-                <Button icon="check" mode="contained" onPress={handleSubmit}>
+                <Button
+                  icon="check"
+                  mode="contained"
+                  onPress={() => formikProps.handleSubmit()}
+                >
                   Empezar
                 </Button>
               )}
