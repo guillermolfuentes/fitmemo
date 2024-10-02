@@ -82,53 +82,140 @@ export default function Register() {
 
   const FourthStepSchema = Yup.object().shape({
     email: Yup.string()
-      .email(t("screens.login.errors.invalid_email"))
-      .required(t("screens.login.errors.required_email")),
+      .email(t("screens.register.step4.errors.invalid_email"))
+      .required(t("screens.register.step4.errors.required_email")),
     password: Yup.string()
-      .required(t("screens.login.errors.required_password"))
-      .min(8, t("screens.login.errors.password_too_short")),
+      .required(t("screens.register.step4.errors.required_confirm_password"))
+      .min(8, t("screens.register.step4.errors.password_too_short")),
     confirmPassword: Yup.string()
       .oneOf(
         [Yup.ref("password"), null],
-        t("screens.register.errors.passwords_must_match")
+        t("screens.register.step4.errors.passwords_must_match")
       )
-      .required(t("screens.register.errors.required_confirm_password")),
+      .required(t("screens.register.step4.errors.passwords_must_match")),
   });
 
   const GENDER_OPTIONS = [
-    { label: "Hombre", value: "male" },
-    { label: "Mujer", value: "female" },
+    {
+      label: t("screens.register.step1.gender_input.options.male"),
+      value: "male",
+    },
+    {
+      label: t("screens.register.step1.gender_input.options.female"),
+      value: "female",
+    },
   ];
 
   const TRAINING_LEVELS_OPTIONS = [
-    { label: "Principiante", value: "beginner" },
-    { label: "Intermedio", value: "intermediate" },
-    { label: "Avanzado", value: "advanced" },
+    {
+      label: t("screens.register.step2.training_level_input.options.beginner"),
+      value: "beginner",
+    },
+    {
+      label: t(
+        "screens.register.step2.training_level_input.options.intermediate"
+      ),
+      value: "intermediate",
+    },
+    {
+      label: t("screens.register.step2.training_level_input.options.advanced"),
+      value: "advanced",
+    },
   ];
 
   const AVAILABLE_TRAINING_EQUIPMENT_OPTIONS = [
-    { label: "Mancuernas", value: "dumbbells" },
-    { label: "Barra", value: "barbell" },
-    { label: "Banda de resistencia", value: "resistance_band" },
-    { label: "Sin material", value: "no_equipment" },
-    { label: "Gimnasio", value: "gym" },
+    {
+      label: t(
+        "screens.register.step2.training_equipment_input.options.dumbbells"
+      ),
+      value: "dumbbells",
+    },
+    {
+      label: t(
+        "screens.register.step2.training_equipment_input.options.barbell"
+      ),
+      value: "barbell",
+    },
+    {
+      label: t(
+        "screens.register.step2.training_equipment_input.options.resistance_band"
+      ),
+      value: "resistance_band",
+    },
+    {
+      label: t(
+        "screens.register.step2.training_equipment_input.options.no_equipment"
+      ),
+      value: "no_equipment",
+    },
+    {
+      label: t("screens.register.step2.training_equipment_input.options.gym"),
+      value: "gym",
+    },
   ];
 
   const DAILY_ACTIVITY_LEVEL_OPTIONS = [
-    { label: "Sedentario", value: "sedentary" },
-    { label: "Ligero", value: "light" },
-    { label: "Moderado", value: "moderate" },
-    { label: "Activo", value: "active" },
-    { label: "Muy activo", value: "very_active" },
+    {
+      label: t(
+        "screens.register.step2.daily_activity_level_input.options.sedentary"
+      ),
+      value: "sedentary",
+    },
+    {
+      label: t(
+        "screens.register.step2.daily_activity_level_input.options.light"
+      ),
+      value: "light",
+    },
+    {
+      label: t(
+        "screens.register.step2.daily_activity_level_input.options.moderate"
+      ),
+      value: "moderate",
+    },
+    {
+      label: t(
+        "screens.register.step2.daily_activity_level_input.options.active"
+      ),
+      value: "active",
+    },
+    {
+      label: t(
+        "screens.register.step2.daily_activity_level_input.options.very_active"
+      ),
+      value: "very_active",
+    },
   ];
 
   const TARGET_MUSCLE_GROUP_OPTIONS = [
-    { label: "Pecho", value: "chest" },
-    { label: "Espalda", value: "back" },
-    { label: "Piernas", value: "legs" },
-    { label: "Brazos", value: "arms" },
-    { label: "Hombros", value: "shoulders" },
-    { label: "Abdomen", value: "abs" },
+    {
+      label: t(
+        "screens.register.step2.target_muscle_group_input.options.chest"
+      ),
+      value: "chest",
+    },
+    {
+      label: t("screens.register.step2.target_muscle_group_input.options.back"),
+      value: "back",
+    },
+    {
+      label: t("screens.register.step2.target_muscle_group_input.options.legs"),
+      value: "legs",
+    },
+    {
+      label: t("screens.register.step2.target_muscle_group_input.options.arms"),
+      value: "arms",
+    },
+    {
+      label: t(
+        "screens.register.step2.target_muscle_group_input.options.shoulders"
+      ),
+      value: "shoulders",
+    },
+    {
+      label: t("screens.register.step2.target_muscle_group_input.options.abs"),
+      value: "abs",
+    },
   ];
 
   const FirstStepView = ({
@@ -142,7 +229,7 @@ export default function Register() {
       <Text>Empecemos a conocernos</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          label="Nombre"
+          label={t("screens.register.step1.name_input")}
           onChangeText={handleChange("name")}
           onBlur={handleBlur("name")}
           value={values.name}
@@ -153,7 +240,7 @@ export default function Register() {
           <Text style={styles.errorText}>{errors.name}</Text>
         ) : null}
         <TextInput
-          label="Edad"
+          label={t("screens.register.step1.age_input")}
           value={values.age}
           onChangeText={handleChange("age")}
           onBlur={handleBlur("age")}
@@ -165,8 +252,8 @@ export default function Register() {
         ) : null}
         <View style={styles.input}>
           <Dropdown
-            label="Sexo"
-            placeholder="Selecciona un género"
+            label={t("screens.register.step1.gender_input.label")}
+            placeholder={t("screens.register.step1.gender_input.placerholder")}
             options={GENDER_OPTIONS}
             value={values.gender}
             onSelect={(value) => handleChange("gender")(value || "")}
@@ -191,7 +278,7 @@ export default function Register() {
       <Text>Vamos a construir tu rutina de ejercicio</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          label="¿Cuántos días a la semana quieres entrenar?"
+          label={t("screens.register.step2.training_days_input")}
           value={values.trainingDays}
           onChangeText={handleChange("trainingDays")}
           keyboardType="numeric"
@@ -202,8 +289,10 @@ export default function Register() {
         ) : null}
         <View style={styles.input}>
           <Dropdown
-            label="Nivel de entrenamiento"
-            placeholder="Selecciona un nivel"
+            label={t("screens.register.step2.training_level_input.label")}
+            placeholder={t(
+              "screens.register.step2.training_level_input.placeholder"
+            )}
             options={TRAINING_LEVELS_OPTIONS}
             value={values.trainingLevel}
             onSelect={(value) => handleChange("trainingLevel")(value || "")}
@@ -216,8 +305,10 @@ export default function Register() {
 
         <View style={styles.input}>
           <Dropdown
-            label="Material disponible"
-            placeholder="Selecciona material"
+            label={t("screens.register.step2.training_equipment_input.label")}
+            placeholder={t(
+              "screens.register.step2.training_equipment_input.placeholder"
+            )}
             options={AVAILABLE_TRAINING_EQUIPMENT_OPTIONS}
             value={values.availableEquipment}
             onSelect={(value) =>
@@ -232,8 +323,10 @@ export default function Register() {
 
         <View style={styles.input}>
           <Dropdown
-            label="Nivel de actividad física"
-            placeholder="Selecciona un nivel"
+            label={t("screens.register.step2.daily_activity_level_input.label")}
+            placeholder={t(
+              "screens.register.step2.daily_activity_level_input.placeholder"
+            )}
             options={DAILY_ACTIVITY_LEVEL_OPTIONS}
             value={values.activityLevel}
             onSelect={(value) => handleChange("activityLevel")(value || "")}
@@ -245,8 +338,10 @@ export default function Register() {
         </View>
         <View style={styles.input}>
           <Dropdown
-            label="Grupo muscular a priorizar"
-            placeholder="Selecciona un grupo muscular"
+            label={t("screens.register.step2.target_muscle_group_input.label")}
+            placeholder={t(
+              "screens.register.step2.target_muscle_group_input.placeholder"
+            )}
             options={TARGET_MUSCLE_GROUP_OPTIONS}
             value={values.targetMuscleGroup}
             onSelect={(value) => handleChange("targetMuscleGroup")(value || "")}
@@ -271,7 +366,7 @@ export default function Register() {
       <Text>Algunos detalles más sobre ti</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          label="Altura (cms)"
+          label={t("screens.register.step3.height_input")}
           value={values.height}
           onChangeText={handleChange("height")}
           keyboardType="numeric"
@@ -281,7 +376,7 @@ export default function Register() {
           <Text style={styles.errorText}>{errors.height}</Text>
         ) : null}
         <TextInput
-          label="Peso (kgs)"
+          label={t("screens.register.step3.weight_input")}
           value={values.weight}
           onChangeText={handleChange("weight")}
           keyboardType="numeric"
@@ -291,7 +386,7 @@ export default function Register() {
           <Text style={styles.errorText}>{errors.weight}</Text>
         ) : null}
         <TextInput
-          label="Perímetro ombligo en cms (opcional)"
+          label={t("screens.register.step3.waist_circumference_input")}
           value={values.waistCircumference}
           onChangeText={handleChange("waistCircumference")}
           keyboardType="numeric"
@@ -301,7 +396,7 @@ export default function Register() {
           <Text style={styles.errorText}>{errors.waistCircumference}</Text>
         ) : null}
         <TextInput
-          label="Perímetro cadera en cms (opcional)"
+          label={t("screens.register.step3.hip_circumference_input")}
           value={values.hipCircumference}
           onChangeText={handleChange("hipCircumference")}
           keyboardType="numeric"
@@ -311,7 +406,7 @@ export default function Register() {
           <Text style={styles.errorText}>{errors.hipCircumference}</Text>
         ) : null}
         <TextInput
-          label="Perímetro muslo en cms (opcional)"
+          label={t("screens.register.step3.thigh_circumference_input")}
           value={values.thighCircumference}
           onChangeText={handleChange("thighCircumference")}
           keyboardType="numeric"
@@ -335,7 +430,7 @@ export default function Register() {
       <Text>Algunos detalles más sobre ti</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          label="Email"
+          label={t("screens.register.step4.email_input")}
           onChangeText={handleChange("email")}
           onBlur={handleBlur("email")}
           value={values.email}
@@ -347,24 +442,26 @@ export default function Register() {
         ) : null}
 
         <TextInput
-          label="Contraseña"
+          label={t("screens.register.step4.password_input")}
           onChangeText={handleChange("password")}
           onBlur={handleBlur("password")}
           value={values.password}
           error={touched.password && !!errors.password}
           style={styles.input}
+          secureTextEntry
         />
         {touched.password && errors.password ? (
           <Text style={styles.errorText}>{errors.password}</Text>
         ) : null}
 
         <TextInput
-          label="Email"
+          label={t("screens.register.step4.confirm_password_input")}
           onChangeText={handleChange("confirmPassword")}
           onBlur={handleBlur("confirmPassword")}
           value={values.confirmPassword}
           error={touched.confirmPassword && !!errors.confirmPassword}
           style={styles.input}
+          secureTextEntry
         />
         {touched.confirmPassword && errors.confirmPassword ? (
           <Text style={styles.errorText}>{errors.confirmPassword}</Text>
@@ -480,11 +577,10 @@ export default function Register() {
   ) => {
     const currentStepSchema = steps[activeStep].validationSchema;
 
-    console.log("ENTRANDO EN HANDLE SUBMIT");
-
     try {
       await currentStepSchema.validate(values, { abortEarly: false });
       console.log("ENVIA FORMULARIO");
+      console.log("Datos formulario: ", values);
 
       router.replace("/");
     } catch (errors) {

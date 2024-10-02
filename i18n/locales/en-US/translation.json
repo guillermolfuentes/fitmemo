@@ -6,22 +6,29 @@
       "welcome_subtitle": "It all starts here",
       "email": "Email",
       "password": "Password",
-      "login_button": "Log In",
-      "register_button": "Sign Up Now!",
+      "login_button": "Log in",
+      "register_button": "Sign up now!",
       "errors": {
         "required_email": "Email is required",
         "invalid_email": "Invalid email",
         "required_password": "Password is required",
-        "authentication_error": "Login failed. Check your email and password",
+        "authentication_error": "Login failed. Please check your email and password",
         "network_error": "A network error occurred. Please try again",
         "unknown_error": "Unknown error. Please try again"
       }
     },
     "register": {
       "step1": {
-        "confirm_password": "Confirm Password",
-        "register_button": "Register",
-        "login_button": "Log In",
+        "name_input": "Name",
+        "age_input": "Age",
+        "gender_input": {
+          "label": "Gender",
+          "placeholder": "Select a gender",
+          "options": {
+            "male": "Male",
+            "female": "Female"
+          }
+        },
         "errors": {
           "required_name": "Name is required",
           "required_age": "Age is required",
@@ -30,16 +37,65 @@
         }
       },
       "step2": {
+        "training_days_input": "How many days a week do you want to train?",
+        "training_level_input": {
+          "label": "Training level",
+          "placeholder": "Select a level",
+          "options": {
+            "beginner": "Beginner",
+            "intermediate": "Intermediate",
+            "advanced": "Advanced"
+          }
+        },
+        "training_equipment_input": {
+          "label": "Available equipment",
+          "placeholder": "Select equipment",
+          "options": {
+            "dumbbells": "Dumbbells",
+            "barbell": "Barbell",
+            "resistance_band": "Resistance band",
+            "no_equipment": "No equipment",
+            "gym": "Gym"
+          }
+        },
+        "daily_activity_level_input": {
+          "label": "Physical activity level",
+          "placeholder": "Select a level",
+          "options": {
+            "sedentary": "Sedentary",
+            "light": "Light",
+            "moderate": "Moderate",
+            "active": "Active",
+            "very_active": "Very active"
+          }
+        },
+        "target_muscle_group_input": {
+          "label": "Muscle group to prioritize",
+          "placeholder": "Select a muscle group",
+          "options": {
+            "chest": "Chest",
+            "back": "Back",
+            "legs": "Legs",
+            "arms": "Arms",
+            "shoulders": "Shoulders",
+            "abs": "Abs"           
+          }
+        },
         "errors": {
-          "required_training_days": "Number of training days is required",
-          "invalid_training_days": "Number of training days must be between 1 and 7",
+          "required_training_days": "The number of training days is required",
+          "invalid_training_days": "The number of training days must be between 1 and 7",
           "required_training_level": "Training level is required",
           "required_available_equipment": "Available equipment is required",
-          "required_activity_level": "Activity level is required",
-          "required_target_muscle_group": "Target muscle group is required"
+          "required_activity_level": "Physical activity level is required",
+          "required_target_muscle_group": "Muscle group to prioritize is required"
         }
       },
       "step3": {
+        "height_input": "Height (cms)",
+        "weight_input": "Weight (kgs)",
+        "waist_circumference_input": "Waist circumference in cms (optional)",
+        "hip_circumference_input": "Hip circumference in cms (optional)",
+        "thigh_circumference_input": "Thigh circumference in cms (optional)",
         "errors": {
           "required_height": "Height is required",
           "invalid_height": "Height must be a number between 50 and 300 cm",
@@ -51,14 +107,21 @@
         }
       },
       "step4": {
+        "email_input": "Email",
+        "password_input": "Password",
+        "confirm_password_input": "Confirm password",
         "errors": {
+          "height_input": "Height (cms)",
+          "required_email": "Email is required",
+          "invalid_email": "Invalid email",
           "required_confirm_password": "Password confirmation is required",
-          "passwords_must_match": "Passwords must match"
+          "passwords_must_match": "Passwords must match",
+          "password_too_short": "Password is too short"
         }
       },
-      "confirm_password": "Confirm Password",
+      "confirm_password": "Confirm password",
       "register_button": "Register",
-      "login_button": "Log In"
+      "login_button": "Log in"
     },
     "home": {
       "title": "Home",
@@ -66,12 +129,12 @@
     },
     "training": {
       "title": "Training",
-      "start_button": "Start Training",
-      "stop_button": "Stop Training"
+      "start_button": "Start training",
+      "stop_button": "Stop training"
     },
     "progress": {
       "title": "Progress",
-      "view_details": "View Details",
+      "view_details": "View details",
       "no_data": "No data available"
     }
   },

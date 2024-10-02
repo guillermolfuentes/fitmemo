@@ -19,9 +19,16 @@
     },
     "register": {
       "step1": {
-        "confirm_password": "Confirmar contraseña",
-        "register_button": "Registrarse",
-        "login_button": "Iniciar sesión",
+        "name_input": "Nombre",
+        "age_input": "Edad",
+        "gender_input": {
+          "label": "Sexo",
+          "placeholder": "Selecciona un género",
+          "options": {
+            "male": "Hombre",
+            "female": "Mujer"
+          }
+        },
         "errors": {
           "required_name": "El nombre es obligatorio",
           "required_age": "La edad es obligatoria",
@@ -30,6 +37,50 @@
         }
       },
       "step2": {
+        "training_days_input":"¿Cuántos días a la semana quieres entrenar?",
+        "training_level_input": {
+          "label": "Nivel de entrenamiento",
+          "placeholder": "Selecciona un nivel",
+          "options": {
+            "beginner": "Principiante",
+            "intermediate": "Intermedio",
+            "advanced": "Avanzado"
+          }
+        },
+        "training_equipment_input": {
+          "label": "Material disponible",
+          "placeholder": "Selecciona material",
+          "options": {
+            "dumbbells": "Mancuernas",
+            "barbell": "Barra",
+            "resistance_band": "Banda de resistencia",
+            "no_equipment": "Sin material",
+            "gym": "Gimnasio"
+          }
+        },
+        "daily_activity_level_input": {
+          "label": "Nivel de actividad física",
+          "placeholder": "Selecciona un nivel",
+          "options": {
+            "sedentary": "Sedentario",
+            "light": "Ligero",
+            "moderate": "Moderado",
+            "active": "Activo",
+            "very_active": "Muy activo"
+          }
+        },
+        "target_muscle_group_input": {
+          "label": "Grupo muscular a priorizar",
+          "placeholder": "Selecciona un grupo muscular",
+          "options": {
+            "chest": "Pecho",
+            "back": "Espalda",
+            "legs": "Piernas",
+            "arms": "Brazos",
+            "shoulders": "Hombros",
+            "abs": "Abdomen"           
+          }
+        },
         "errors": {
           "required_training_days": "El número de días de entrenamiento es obligatorio",
           "invalid_training_days": "El número de días de entrenamiento debe ser entre 1 y 7",
@@ -40,6 +91,11 @@
         }
       },
       "step3": {
+        "height_input":"Altura (cms)",
+        "weight_input":"Peso (kgs)",
+        "waist_circumference_input":"Perímetro ombligo en cms (opcional)",
+        "hip_circumference_input":"Perímetro cadera en cms (opcional)",
+        "thigh_circumference_input":"Perímetro muslo en cms (opcional)",
         "errors": {
           "required_height": "La altura es obligatoria",
           "invalid_height": "La altura debe ser un número entre 50 y 300 cm",
@@ -51,9 +107,16 @@
         }
       },
       "step4": {
+        "email_input":"Correo electrónico",
+        "password_input":"Contraseña",
+        "confirm_password_input":"Confirmar contraseña",
         "errors": {
+          "height_input":"Altura (cms)",
+          "required_email": "El correo electrónico es obligatorio",
+          "invalid_email": "Correo electrónico inválido",
           "required_confirm_password": "La confirmación de la contraseña es obligatoria",
-          "passwords_must_match": "Las contraseñas deben coincidir"
+          "passwords_must_match": "Las contraseñas deben coincidir",
+          "password_too_short": "La contraseña es demasiado corta"
         }
       },
       "confirm_password": "Confirmar contraseña",
