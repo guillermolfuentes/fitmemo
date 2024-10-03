@@ -23,7 +23,10 @@ export const register = async (
   userData: RegisterRequest
 ): Promise<RegisterResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData);
+    const url_register_success = `https://requestly.tech/api/mockv2/success/register?username=user1719412282323`;
+    //const url_register_failed = `https://requestly.tech/api/mockv2/fails/register?username=user1719412282323`;
+
+    const response = await axios.post(url_register_success, userData);
 
     const registerResponse: RegisterResponse = {
       success: true,

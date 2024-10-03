@@ -37,7 +37,7 @@
         }
       },
       "step2": {
-        "training_days_input":"¿Cuántos días a la semana quieres entrenar?",
+        "training_days_input": "¿Cuántos días a la semana quieres entrenar?",
         "training_level_input": {
           "label": "Nivel de entrenamiento",
           "placeholder": "Selecciona un nivel",
@@ -78,7 +78,7 @@
             "legs": "Piernas",
             "arms": "Brazos",
             "shoulders": "Hombros",
-            "abs": "Abdomen"           
+            "abs": "Abdomen"
           }
         },
         "errors": {
@@ -91,11 +91,11 @@
         }
       },
       "step3": {
-        "height_input":"Altura (cms)",
-        "weight_input":"Peso (kgs)",
-        "waist_circumference_input":"Perímetro ombligo en cms (opcional)",
-        "hip_circumference_input":"Perímetro cadera en cms (opcional)",
-        "thigh_circumference_input":"Perímetro muslo en cms (opcional)",
+        "height_input": "Altura (cms)",
+        "weight_input": "Peso (kgs)",
+        "waist_circumference_input": "Perímetro ombligo en cms (opcional)",
+        "hip_circumference_input": "Perímetro cadera en cms (opcional)",
+        "thigh_circumference_input": "Perímetro muslo en cms (opcional)",
         "errors": {
           "required_height": "La altura es obligatoria",
           "invalid_height": "La altura debe ser un número entre 50 y 300 cm",
@@ -107,21 +107,25 @@
         }
       },
       "step4": {
-        "email_input":"Correo electrónico",
-        "password_input":"Contraseña",
-        "confirm_password_input":"Confirmar contraseña",
+        "email_input": "Correo electrónico",
+        "password_input": "Contraseña",
+        "confirm_password_input": "Confirmar contraseña",
         "errors": {
-          "height_input":"Altura (cms)",
+          "height_input": "Altura (cms)",
           "required_email": "El correo electrónico es obligatorio",
           "invalid_email": "Correo electrónico inválido",
           "required_confirm_password": "La confirmación de la contraseña es obligatoria",
           "passwords_must_match": "Las contraseñas deben coincidir",
-          "password_too_short": "La contraseña es demasiado corta"
+          "password_too_short": "La contraseña es demasiado corta",
+          "authentication_error": "Registro fallido. Por favor, inténtelo de nuevo",
+          "network_error": "Ha ocurrido un error red. Por favor, inténtelo de nuevo",
+          "unknown_error": "Error desconocido. Por favor, inténtelo de nuevo"
         }
       },
-      "confirm_password": "Confirmar contraseña",
-      "register_button": "Registrarse",
-      "login_button": "Iniciar sesión"
+      "previous_button": "Anterior",
+      "next_button": "Siguiente",
+      "register_button": "Empezar",
+      "login_return_button": "Volver al login"
     },
     "home": {
       "title": "Inicio",

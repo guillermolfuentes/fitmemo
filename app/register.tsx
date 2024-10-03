@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 
@@ -10,11 +10,16 @@ import { Dropdown } from "react-native-paper-dropdown";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import { Formik, FormikHelpers, FormikProps } from "formik";
+import { AuthContext } from "@/context/AuthContext";
+import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
+import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
 
 export default function Register() {
   const { t } = useTranslation();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
+  const { register } = useContext(AuthContext);
+  const [errorRegisterMessage, setErrorRegisterMessage] = useState("");
 
   const FirstStepSchema = Yup.object().shape({
     name: Yup.string().required(
@@ -467,6 +472,9 @@ export default function Register() {
           <Text style={styles.errorText}>{errors.confirmPassword}</Text>
         ) : null}
       </View>
+      {errorRegisterMessage ? (
+        <Text style={styles.errorText}>{errorRegisterMessage}</Text>
+      ) : null}
     </View>
   );
 
@@ -503,15 +511,25 @@ export default function Register() {
   interface FirstStepValues {
     name: string;
     age: string;
-    gender: string;
+    gender: "male" | "female";
   }
 
   interface SecondStepValues {
     trainingDays: string;
-    trainingLevel: string;
-    availableEquipment: string;
-    activityLevel: string;
-    targetMuscleGroup: string;
+    trainingLevel: "beginner" | "intermediate" | "advanced";
+    availableEquipment:
+      | "dumbbells"
+      | "barbell"
+      | "resistance_band"
+      | "no_equipment"
+      | "gym";
+    activityLevel:
+      | "sedentary"
+      | "light"
+      | "moderate"
+      | "active"
+      | "very_active";
+    targetMuscleGroup: "chest" | "back" | "legs" | "arms" | "shoulders" | "abs";
   }
 
   interface ThirdStepValues {
@@ -579,7 +597,44 @@ export default function Register() {
       await currentStepSchema.validate(values, { abortEarly: false });
       console.log("Enviando formulario con datos: ", values);
 
-      router.replace("/");
+      let result: AuthResponse;
+      let userRegisterData: AuthRegisterRequest = {
+        name: values.name,
+        age: Number(values.age),
+        gender: values.gender as "male" | "female",
+        trainingDays: Number(values.trainingDays),
+        trainingLevel: values.trainingLevel,
+        availableEquipment: values.availableEquipment,
+        activityLevel: values.activityLevel,
+        targetMuscleGroup: values.targetMuscleGroup,
+        height: Number(values.height),
+        weight: Number(values.weight),
+        waistCircumference: Number(values.waistCircumference),
+        hipCircumference: Number(values.hipCircumference),
+        thighCircumference: Number(values.thighCircumference),
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+      };
+
+      result = await register(userRegisterData);
+
+      if (result.success) {
+        console.log("Registro exitoso");
+        router.replace("/");
+      } else if (result.errorMessage === "AUTHENTICATION_ERROR") {
+        setErrorRegisterMessage(
+          t("screens.register.step4.errors.authentication_error")
+        );
+      } else if (result.errorMessage === "NETWORK_ERROR") {
+        setErrorRegisterMessage(
+          t("screens.register.step4.errors.network_error")
+        );
+      } else {
+        setErrorRegisterMessage(
+          t("screens.register.step4.errors.unknown_error")
+        );
+      }
     } catch (errors) {
       const formattedErrors = (errors as Yup.ValidationError).inner.reduce(
         (acc: any, error: any) => {
@@ -661,7 +716,7 @@ export default function Register() {
                   mode="contained"
                   onPress={() => handleNext(formikProps.values, formikProps)}
                 >
-                  Siguiente
+                  {t("screens.register.next_button")}
                 </Button>
               ) : (
                 <Button
@@ -669,7 +724,7 @@ export default function Register() {
                   mode="contained"
                   onPress={() => formikProps.handleSubmit()}
                 >
-                  Empezar
+                  {t("screens.register.register_button")}
                 </Button>
               )}
             </View>
@@ -680,7 +735,7 @@ export default function Register() {
                 onPress={returnLogin}
                 style={styles.returnButton}
               >
-                Volver al login
+                {t("screens.register.login_return_button")}
               </Button>
             )}
           </View>

@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { login } from "../services/authService";
+import { login, register as registerService } from "../services/authService";
 import { useUIContext } from "./UIContext";
 import { router } from "expo-router";
 import { useSecureStore } from "@/hooks/useSecureStore";
@@ -13,12 +13,17 @@ import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
 import { RegisterRequest } from "@/types/auth/services/RegisterRequest";
 
 type AuthContextType = {
-  signIn: (userData: AuthRequest) => Promise<LoginResponse>;
+  register: (userData: AuthRegisterRequest) => Promise<AuthResponse>;
+  signIn: (userData: AuthRequest) => Promise<AuthResponse>;
   signOut: () => void;
   currentSession: Session;
 };
 
 export const AuthContext = createContext<AuthContextType>({
+  register: async () => ({
+    success: false,
+    error: { message: "UNKNOWN_ERROR" },
+  }),
   signIn: async () => ({ success: false, error: { message: "UNKNOWN_ERROR" } }),
   signOut: () => null,
   currentSession: {
@@ -52,7 +57,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
       let registerRequest: RegisterRequest = { ...userData };
 
-      const registerResponse: RegisterResponse = await register(
+      const registerResponse: RegisterResponse = await registerService(
         registerRequest
       );
 
@@ -142,6 +147,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
+        register,
         signIn,
         signOut,
         currentSession,
