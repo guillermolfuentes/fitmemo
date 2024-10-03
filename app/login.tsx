@@ -10,7 +10,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
-import { SignInResult } from "@/types/auth";
+import { AuthRequest } from "@/types/auth/contexts/AuthLoginRequest";
+import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
 
 export default function Login() {
   const { signIn } = useContext(AuthContext);
@@ -49,16 +50,21 @@ export default function Login() {
 
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
-      let result: SignInResult;
+      let result: AuthResponse;
 
-      result = await signIn(values.email, values.password);
+      let userData: AuthRequest = {
+        email: values.email,
+        password: values.password,
+      };
+
+      result = await signIn(userData);
 
       if (result.success) {
         console.log("Login success");
         router.replace("/");
-      } else if (result.error === "AUTHENTICATION_ERROR") {
+      } else if (result.errorMessage === "AUTHENTICATION_ERROR") {
         setErrorLoginMessage(t("screens.login.errors.authentication_error"));
-      } else if (result.error === "NETWORK_ERROR") {
+      } else if (result.errorMessage === "NETWORK_ERROR") {
         setErrorLoginMessage(t("screens.login.errors.network_error"));
       } else {
         setErrorLoginMessage(t("screens.login.errors.unknown_error"));
@@ -72,7 +78,7 @@ export default function Login() {
     router.replace("/register");
   };
 
-  console.log("RENDERIZANDO LOGIN");
+  console.log("Renderizando Login");
 
   return (
     <KeyboardAwareScrollView scrollEnabled={true} bounces={false}>

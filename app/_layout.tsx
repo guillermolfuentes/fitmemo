@@ -43,7 +43,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 
-  console.log("RENDERIZANDO LAYOUT DE INICIO");
+  console.log("Renderizando layout incio");
 
 
   return (

@@ -539,8 +539,6 @@ export default function Register() {
   ) => {
     const currentStepSchema = steps[activeStep].validationSchema;
 
-    console.log("ENTRANDO EN HANDLE NEXT");
-
     try {
       await currentStepSchema.validate(values, { abortEarly: false });
       setActiveStep((prevStep) => prevStep + 1);
@@ -579,8 +577,7 @@ export default function Register() {
 
     try {
       await currentStepSchema.validate(values, { abortEarly: false });
-      console.log("ENVIA FORMULARIO");
-      console.log("Datos formulario: ", values);
+      console.log("Enviando formulario con datos: ", values);
 
       router.replace("/");
     } catch (errors) {

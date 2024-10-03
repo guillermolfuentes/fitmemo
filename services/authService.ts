@@ -1,7 +1,9 @@
-import { AuthResponse } from "@/types/auth";
-import axios from "axios";
+import { LoginResponse } from "@/types/auth/services/LoginResponse";
+import { RegisterRequest } from "@/types/auth/services/RegisterRequest";
+import axios, { AxiosError } from "axios";
 import * as SecureStore from "expo-secure-store";
-import { string } from "yup";
+import { LoginRequest } from "@/types/auth/services/LoginRequest";
+import { RegisterResponse } from "@/types/auth/services/RegisterResponse";
 
 const API_URL = "https://user1719412282323.requestly.tech";
 axios.interceptors.request.use((request) => {
@@ -18,68 +20,91 @@ axios.interceptors.response.use(
 );
 
 export const register = async (
-  name: string,
-  email: string,
-  password: string,
-  age: number,
-  gender: string
-) => {
+  userData: RegisterRequest
+): Promise<RegisterResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/register`, {
-      name,
-      email,
-      password,
-      age,
-      gender,
-    });
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Error al registrar");
-  }
-};
+    const response = await axios.post(`${API_URL}/register`, userData);
 
-const delayTest = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+    const registerResponse: RegisterResponse = {
+      success: true,
+      token: response.data.token,
+      user: response.data.user,
+    };
+
+    return registerResponse;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+
+      console.log("Error durante el registro es:", axiosError);
+
+      if (axiosError.response) {
+        if (axiosError.response.status === 400) {
+          return {
+            success: false,
+            error: {
+              code: axiosError.response.status || 400,
+              message: "NETWORK_ERROR",
+            },
+          };
+        } else {
+          return {
+            success: false,
+            error: { code: 500, message: "NETWORK_ERROR" },
+          };
+        }
+      }
+    }
+  }
+  return {
+    success: false,
+    error: { code: 500, message: "UNKNOWN_ERROR" },
+  };
+};
 
 export const login = async (
-  email: string,
-  password: string
-): Promise<AuthResponse> => {
+  loginData: LoginRequest
+): Promise<LoginResponse> => {
+  //const url = `https://requestly.tech/api/mockv2/login?username=user1719412282323`;
 
-
-
-
-
-
-
-  const url = `https://requestly.tech/api/mockv2/login?username=user1719412282323`;
-
-  const payload = {
-    email: email,
-    password: password
-};
+  const url_login_exitoso = `https://requestly.tech/api/mockv2/fails/login?username=user1719412282323`;
+  //const url_login_unauthorized = `https://requestly.tech/api/mockv2/success/login?username=user1719412282323`;
 
   try {
+    const response = await axios.post(url_login_exitoso, loginData);
+    console.log("La respuesta del login es:", response.data);
+    const authResponse: LoginResponse = {
+      token: response.data.token,
+      user: response.data.user,
+      success: true,
+    };
 
-    const response = await axios.post(url, payload);
-    const authResponse: AuthResponse = response.data;
-
-
-    
     return authResponse;
-  } catch (error: any) {
-    if (error.response) {
-      if (error.response.status === 401) {
-        return { success: false, errorMessage: "AUTHENTICATION_ERROR" };
+  } catch (error: unknown) {
+    const axiosError = error as AxiosError;
+    console.log("Error durante el login es:", axiosError);
+
+    if (axiosError.response) {
+      if (axiosError.response.status === 401) {
+        return {
+          success: false,
+          error: {
+            code: axiosError.response.status || 401,
+            message: "AUTHENTICATION_ERROR",
+          },
+        };
+      } else {
+        return {
+          success: false,
+          error: { code: 500, message: "NETWORK_ERROR" },
+        };
       }
-    } else {
-      return { success: false, errorMessage: "NETWORK_ERROR" };
     }
-    return { success: false, errorMessage: "UNKNOWN_ERROR" };
   }
-
-
-  
+  return {
+    success: false,
+    error: { code: 500, message: "UNKNOWN_ERROR" },
+  };
 };
 
 export const logout = async () => {

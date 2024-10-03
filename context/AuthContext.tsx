@@ -1,20 +1,26 @@
 import React, { createContext, useEffect, useState } from "react";
 import { login } from "../services/authService";
 import { useUIContext } from "./UIContext";
-import { AuthResponse, SignInResult } from "@/types/auth";
-import { Session } from "@/types/session";
 import { router } from "expo-router";
 import { useSecureStore } from "@/hooks/useSecureStore";
+import { Session } from "@/types/auth/contexts/Session";
+import { LoginResponse } from "@/types/auth/services/LoginResponse";
+import { AuthRequest } from "@/types/auth/contexts/AuthLoginRequest";
+import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
+import { LoginRequest } from "@/types/auth/services/LoginRequest";
+import { RegisterResponse } from "@/types/auth/services/RegisterResponse";
+import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
+import { RegisterRequest } from "@/types/auth/services/RegisterRequest";
 
 type AuthContextType = {
-  signIn: (email: string, password: string) => Promise<SignInResult>;
+  signIn: (userData: AuthRequest) => Promise<LoginResponse>;
   signOut: () => void;
   currentSession: Session;
 };
 
 export const AuthContext = createContext<AuthContextType>({
-  signIn: async () => ({ success: false, error: "UNKNOWN_ERROR" }),
-  signOut: () => null,  
+  signIn: async () => ({ success: false, error: { message: "UNKNOWN_ERROR" } }),
+  signOut: () => null,
   currentSession: {
     isAuthenticated: false,
     token: null,
@@ -23,10 +29,8 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export function SessionProvider(props: React.PropsWithChildren) {
-  const {
-    setItem: setSession,
-    deleteItem: deleteSession,
-  } = useSecureStore("userSession");
+  const { setItem: setSession, deleteItem: deleteSession } =
+    useSecureStore("userSession");
 
   const [currentSession, setCurrentSession] = useState<Session>({
     isAuthenticated: false,
@@ -35,31 +39,84 @@ export function SessionProvider(props: React.PropsWithChildren) {
   });
 
   useEffect(() => {
-    console.log("AuthContext currentSession changed:", currentSession);
+    console.log("AuthContext: la sesión actual ha cambiado:", currentSession);
   }, [currentSession]);
 
   const { setLoading } = useUIContext();
 
-  const signIn = async (
-    email: string,
-    password: string
-  ): Promise<SignInResult> => {
+  const register = async (
+    userData: AuthRegisterRequest
+  ): Promise<AuthResponse> => {
     try {
       setLoading(true);
-      let authResponse: AuthResponse = await login(email, password);
+
+      let registerRequest: RegisterRequest = { ...userData };
+
+      const registerResponse: RegisterResponse = await register(
+        registerRequest
+      );
+
       setLoading(false);
 
-      if (authResponse.success) {
+      if (registerResponse.success) {
         const newSession: Session = {
-          token: authResponse.data?.token || null,
-          user: authResponse.data?.user || null,
+          token: registerResponse.token || null,
+          user: registerResponse.user || null,
           isAuthenticated: true,
         };
         await setSession("userSession", JSON.stringify(newSession));
         setCurrentSession(newSession);
-        return { success: true };
+        return {
+          success: true,
+          token: registerResponse.token,
+          user: registerResponse.user,
+        };
       } else {
-        return { success: false, error: authResponse.errorMessage };
+        return { success: false, errorMessage: "UNKNOWN_ERROR" };
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signIn = async (userData: AuthRequest): Promise<AuthResponse> => {
+    try {
+      setLoading(true);
+
+      console.log("Inicio de sesión con:", userData);
+
+      let loginRequest: LoginRequest = {
+        email: userData.email,
+        password: userData.password,
+      };
+
+      let loginResponse: LoginResponse = await login(loginRequest);
+      setLoading(false);
+
+      if (loginResponse.success) {
+        const newSession: Session = {
+          token: loginResponse.token || null,
+          user: loginResponse.user || null,
+          isAuthenticated: true,
+        };
+        await setSession("userSession", JSON.stringify(newSession));
+        setCurrentSession(newSession);
+        return {
+          success: true,
+          token: loginResponse.token,
+          user: loginResponse.user,
+        };
+      } else {
+        let authResponse: AuthResponse;
+        if (loginResponse.error?.code === 401) {
+          authResponse = {
+            success: false,
+            errorMessage: "AUTHENTICATION_ERROR",
+          };
+        } else {
+          authResponse = { success: false, errorMessage: "UNKNOWN_ERROR" };
+        }
+        return authResponse;
       }
     } finally {
       setLoading(false);
