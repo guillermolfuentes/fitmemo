@@ -1,5 +1,6 @@
 import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Link, Tabs } from "expo-router";
 import { Pressable } from "react-native";
 
@@ -30,14 +31,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Inicio",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Bienvenido, Guillermo",
+          tabBarLabel: "Inicio",
+          tabBarIcon: ({ color }) => <FontAwesome5 name="home" color={color} size={24} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome
-                    name="info-circle"
+                    name="cog"
                     size={25}
                     color={Colors[colorScheme ?? "light"].text}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
@@ -52,14 +54,16 @@ export default function TabLayout() {
         name="training"
         options={{
           title: "Entrenamiento",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="dumbbell" color={color} size={24} />
+          ),
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: "Progreso",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome5 name="chart-bar" color={color} size={24} />,
         }}
       />
     </Tabs>

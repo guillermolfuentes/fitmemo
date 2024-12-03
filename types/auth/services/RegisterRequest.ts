@@ -21,5 +21,4 @@ export interface RegisterRequest {
   // Step 4
   email: string;
   password: string;
-  confirmPassword: string; 
 }
