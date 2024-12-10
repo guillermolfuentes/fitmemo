@@ -35,6 +35,15 @@
     "experiments": {
       "typedRoutes": true
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4cc579c2-5eda-4ac7-8a30-de3269b727cd"
+      }
+    },
+    "owner": "guillermolf"
   }
 }
