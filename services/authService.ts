@@ -5,7 +5,6 @@ import * as SecureStore from "expo-secure-store";
 import { LoginRequest } from "@/types/auth/services/LoginRequest";
 import { RegisterResponse } from "@/types/auth/services/RegisterResponse";
 
-const API_URL = "https://user1719412282323.requestly.tech";
 axios.interceptors.request.use((request) => {
   return request;
 });
@@ -23,10 +22,8 @@ export const register = async (
   userData: RegisterRequest
 ): Promise<RegisterResponse> => {
   try {
-    const url_register_success = `https://requestly.tech/api/mockv2/success/register?username=user1719412282323`;
-    //const url_register_failed = `https://requestly.tech/api/mockv2/fails/register?username=user1719412282323`;
-
-    const response = await axios.post(url_register_success, userData);
+    const url_register = `process.env.EXPO_PUBLIC_API_URL/process.env.EXPO_PUBLIC_API_VERSION/auth/login`;
+    const response = await axios.post(url_register, userData);
 
     const registerResponse: RegisterResponse = {
       success: true,
@@ -68,13 +65,13 @@ export const register = async (
 export const login = async (
   loginData: LoginRequest
 ): Promise<LoginResponse> => {
-  //const url = `https://requestly.tech/api/mockv2/login?username=user1719412282323`;
 
-  const url_login_exitoso = `https://requestly.tech/api/mockv2/fails/login?username=user1719412282323`;
-  //const url_login_unauthorized = `https://requestly.tech/api/mockv2/success/login?username=user1719412282323`;
+
+  const url_login = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/auth/login`;
+
 
   try {
-    const response = await axios.post(url_login_exitoso, loginData);
+    const response = await axios.post(url_login, loginData);
     console.log("La respuesta del login es:", response.data);
     const authResponse: LoginResponse = {
       token: response.data.token,

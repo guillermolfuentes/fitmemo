@@ -95,13 +95,13 @@ export function SessionProvider(props: React.PropsWithChildren) {
         password: userData.password,
       };
 
-      //let loginResponse: LoginResponse = await login(loginRequest);
+      let loginResponse: LoginResponse = await login(loginRequest);
 
-      let loginResponse: LoginResponse = {
+      /*let loginResponse: LoginResponse = {
         success: true,
         token: 'registerResponse.token',
         user: { name: 'registerResponse.user', email: 'registerResponse.user', id: '3' }
-      }
+      }*/
 
       setLoading(false);
 

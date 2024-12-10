@@ -1,6 +1,4 @@
 import { Redirect, Stack } from "expo-router";
-
-// Add the missing import statement for 'useSession' from '../../context/AuthContext'.
 import { AuthContext } from "../../context/AuthContext";
 
 import { Text } from "@/components/Themed";
