@@ -16,6 +16,7 @@ type AuthContextType = {
   register: (userData: AuthRegisterRequest) => Promise<AuthResponse>;
   signIn: (userData: AuthRequest) => Promise<AuthResponse>;
   signOut: () => void;
+  getCurrentSession: () => Session;
   currentSession: Session;
 };
 
@@ -25,9 +26,10 @@ export const AuthContext = createContext<AuthContextType>({
   signOut: () => null,
   currentSession: {
     isAuthenticated: false,
-    token: null,
-    user: null,
   },
+  getCurrentSession: () => ({
+    isAuthenticated: false,
+  }),
 });
 
 export function SessionProvider(props: React.PropsWithChildren) {
@@ -36,8 +38,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   const [currentSession, setCurrentSession] = useState<Session>({
     isAuthenticated: false,
-    token: null,
-    user: null,
   });
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
       if (registerResponse.user) {
         const newSession: Session = {
-          token: registerResponse.token || null,
-          user: registerResponse.user || null,
+          token: registerResponse.token,
+          user: registerResponse.user,
           isAuthenticated: true,
         };
         await setSession("userSession", JSON.stringify(newSession));
@@ -100,8 +100,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
       if (loginResponse.token) {
         const newSession: Session = {
-          token: loginResponse.token || null,
-          user: loginResponse.user || null,
+          token: loginResponse.token,
+          user: loginResponse.user,
           isAuthenticated: true,
         };
         await setSession("userSession", JSON.stringify(newSession));
@@ -121,8 +121,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
     deleteSession("userSession");
     setCurrentSession({
       isAuthenticated: false,
-      token: null,
-      user: null,
+      token: undefined,
+      user: undefined,
     });
     router.replace("/login");
 
@@ -140,6 +140,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
         signIn,
         signOut,
         currentSession,
+        getCurrentSession,
       }}
     >
       {props.children}

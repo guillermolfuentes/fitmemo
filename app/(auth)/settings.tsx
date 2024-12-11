@@ -1,4 +1,10 @@
-import React, { useRef, useLayoutEffect, useContext } from "react";
+import React, {
+  useRef,
+  useLayoutEffect,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Button, TextInput, useTheme } from "react-native-paper";
@@ -6,6 +12,8 @@ import { Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "@/context/AuthContext";
+import UserService from "@/services/userService";
+import { useUIContext } from "@/context/UIContext";
 
 /*
 La implementación actual de "Save" en esta pantalla es un
@@ -43,71 +51,71 @@ const SettingsForm = ({
 
   return (
     <View style={styles.container}>
-    <Text style={styles.formDescription}>
-      Esto son los datos que tenemos de ti
-    </Text>
-    <TextInput
-      label="Name"
-      onChangeText={handleChange("name")}
-      onBlur={handleBlur("name")}
-      value={values.name}
-      error={touched.name && !!errors.name}
-      style={styles.input}
-    />
-    {touched.name && errors.name && (
-      <Text style={styles.errorText}>{errors.name}</Text>
-    )}
+      <Text style={styles.formDescription}>
+        Esto son los datos que tenemos de ti
+      </Text>
+      <TextInput
+        label="Name"
+        onChangeText={handleChange("name")}
+        onBlur={handleBlur("name")}
+        value={values.name}
+        error={touched.name && !!errors.name}
+        style={styles.input}
+      />
+      {touched.name && errors.name && (
+        <Text style={styles.errorText}>{errors.name}</Text>
+      )}
 
-    <TextInput
-      label="Email"
-      onChangeText={handleChange("email")}
-      onBlur={handleBlur("email")}
-      value={values.email}
-      error={touched.email && !!errors.email}
-      style={styles.input}
-    />
-    {touched.email && errors.email && (
-      <Text style={styles.errorText}>{errors.email}</Text>
-    )}
+      <TextInput
+        label="Email"
+        onChangeText={handleChange("email")}
+        onBlur={handleBlur("email")}
+        value={values.email}
+        error={touched.email && !!errors.email}
+        style={styles.input}
+      />
+      {touched.email && errors.email && (
+        <Text style={styles.errorText}>{errors.email}</Text>
+      )}
 
-    <TextInput
-      label="Password"
-      onChangeText={handleChange("password")}
-      onBlur={handleBlur("password")}
-      value={values.password}
-      error={touched.password && !!errors.password}
-      style={styles.input}
-      secureTextEntry
-    />
-    {touched.password && errors.password && (
-      <Text style={styles.errorText}>{errors.password}</Text>
-    )}
+      <TextInput
+        label="Password"
+        onChangeText={handleChange("password")}
+        onBlur={handleBlur("password")}
+        value={values.password}
+        error={touched.password && !!errors.password}
+        style={styles.input}
+        secureTextEntry
+      />
+      {touched.password && errors.password && (
+        <Text style={styles.errorText}>{errors.password}</Text>
+      )}
 
-    <TextInput
-      label="Confirm Password"
-      onChangeText={handleChange("confirmPassword")}
-      onBlur={handleBlur("confirmPassword")}
-      value={values.confirmPassword}
-      error={touched.confirmPassword && !!errors.confirmPassword}
-      style={styles.input}
-      secureTextEntry
-    />
-    {touched.confirmPassword && errors.confirmPassword && (
-      <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-    )}
+      <TextInput
+        label="Confirm Password"
+        onChangeText={handleChange("confirmPassword")}
+        onBlur={handleBlur("confirmPassword")}
+        value={values.confirmPassword}
+        error={touched.confirmPassword && !!errors.confirmPassword}
+        style={styles.input}
+        secureTextEntry
+      />
+      {touched.confirmPassword && errors.confirmPassword && (
+        <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+      )}
 
-    <Button
-      style={styles.logoutButton}
-      icon="logout"
-      mode="contained"
-      onPress={() => {
-        console.log("Cerrando sesion");
-        signOut();
-      }}
-    >
-      Logout
-    </Button>
-  </View>
+      <Button
+        style={styles.logoutButton}
+        icon="logout"
+        mode="contained"
+        onPress={() => {
+          console.log("Cerrando sesion");
+          signOut();
+        }}
+      >
+        Logout
+      </Button>
+    </View>
   );
 };
 const SettingsModalScreen = () => {
@@ -115,10 +123,37 @@ const SettingsModalScreen = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const formikRef = useRef<FormikProps<SettingsValues>>(null);
+  const { getCurrentSession } = useContext(AuthContext);
+  const [initialFormValues, setInitialValues] = useState<SettingsValues>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const { setLoading } = useUIContext();
 
   const handleSubmit = (values: SettingsValues) => {
     console.log("Form values:", values);
   };
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const session = await getCurrentSession();
+        const userProfile = await UserService.getUserProfile(session.token!);
+        setInitialValues({
+          name: userProfile.name,
+          email: userProfile.email,
+          password: "",
+          confirmPassword: "",
+        });
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [getCurrentSession]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -135,15 +170,17 @@ const SettingsModalScreen = () => {
     });
   }, [navigation, colors]);
 
+  if (!initialFormValues.name) {
+    setLoading(true);
+    return;
+  }
+
+  setLoading(false);
+
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={{
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      }}
+      initialValues={initialFormValues}
       validationSchema={SettingsSchema}
       onSubmit={handleSubmit}
     >
