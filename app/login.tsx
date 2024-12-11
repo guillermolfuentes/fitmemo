@@ -12,6 +12,10 @@ import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { AuthRequest } from "@/types/auth/contexts/AuthLoginRequest";
 import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
+import axios, { AxiosError } from "axios";
+import { UnauthorizedError } from "@/errors/UnauthorizedError";
+import { NetworkError } from "@/errors/NetworkError";
+import { ForbiddenError } from "@/errors/ForbiddenError";
 
 export default function Login() {
   const { signIn } = useContext(AuthContext);
@@ -58,18 +62,21 @@ export default function Login() {
       };
 
       result = await signIn(userData);
-
-      if (result.success) {
-        console.log("Login success");
-        router.replace("/");
-      } else if (result.errorMessage === "AUTHENTICATION_ERROR") {
-        setErrorLoginMessage(t("screens.login.errors.authentication_error"));
-      } else if (result.errorMessage === "NETWORK_ERROR") {
-        setErrorLoginMessage(t("screens.login.errors.network_error"));
-      } else {
-        setErrorLoginMessage(t("screens.login.errors.unknown_error"));
-      }
+      console.log("Resultado del login:", result);
+      router.replace("/");
     } catch (error) {
+      handleAndShowLoginRequestError(error);
+    }
+  };
+
+  const handleAndShowLoginRequestError = (error: unknown): void => {
+    if (error instanceof UnauthorizedError) {
+      setErrorLoginMessage(t("screens.login.errors.authentication_error"));
+    } else if (error instanceof ForbiddenError) {
+      setErrorLoginMessage(t("screens.login.errors.authentication_error"));
+    } else if (error instanceof NetworkError) {
+      setErrorLoginMessage(t("screens.login.errors.network_error"));
+    } else {
       setErrorLoginMessage(t("screens.login.errors.unknown_error"));
     }
   };

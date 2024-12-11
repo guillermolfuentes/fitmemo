@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useState } from "react";
-import { login, register as registerService } from "../services/authService";
 import { useUIContext } from "./UIContext";
 import { router } from "expo-router";
 import { useSecureStore } from "@/hooks/useSecureStore";
@@ -11,6 +10,7 @@ import { LoginRequest } from "@/types/auth/services/LoginRequest";
 import { RegisterResponse } from "@/types/auth/services/RegisterResponse";
 import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
 import { RegisterRequest } from "@/types/auth/services/RegisterRequest";
+import AuthService from "../services/authService";
 
 type AuthContextType = {
   register: (userData: AuthRegisterRequest) => Promise<AuthResponse>;
@@ -20,11 +20,8 @@ type AuthContextType = {
 };
 
 export const AuthContext = createContext<AuthContextType>({
-  register: async () => ({
-    success: false,
-    error: { message: "UNKNOWN_ERROR" },
-  }),
-  signIn: async () => ({ success: false, error: { message: "UNKNOWN_ERROR" } }),
+  register: async () => ({}),
+  signIn: async () => ({}),
   signOut: () => null,
   currentSession: {
     isAuthenticated: false,
@@ -54,16 +51,14 @@ export function SessionProvider(props: React.PropsWithChildren) {
   ): Promise<AuthResponse> => {
     try {
       setLoading(true);
-
       let registerRequest: RegisterRequest = { ...userData };
-
-      const registerResponse: RegisterResponse = await registerService(
+      const registerResponse: RegisterResponse = await AuthService.register(
         registerRequest
       );
 
       setLoading(false);
 
-      if (registerResponse.success) {
+      if (registerResponse.user) {
         const newSession: Session = {
           token: registerResponse.token || null,
           user: registerResponse.user || null,
@@ -72,16 +67,14 @@ export function SessionProvider(props: React.PropsWithChildren) {
         await setSession("userSession", JSON.stringify(newSession));
         setCurrentSession(newSession);
         return {
-          success: true,
           token: registerResponse.token,
           user: registerResponse.user,
         };
-      } else {
-        return { success: false, errorMessage: "UNKNOWN_ERROR" };
       }
     } finally {
       setLoading(false);
     }
+    return {};
   };
 
   const signIn = async (userData: AuthRequest): Promise<AuthResponse> => {
@@ -95,7 +88,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
         password: userData.password,
       };
 
-      let loginResponse: LoginResponse = await login(loginRequest);
+      let loginResponse: LoginResponse = await AuthService.login(loginRequest);
 
       /*let loginResponse: LoginResponse = {
         success: true,
@@ -105,7 +98,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
       setLoading(false);
 
-      if (loginResponse.success) {
+      if (loginResponse.token) {
         const newSession: Session = {
           token: loginResponse.token || null,
           user: loginResponse.user || null,
@@ -114,25 +107,14 @@ export function SessionProvider(props: React.PropsWithChildren) {
         await setSession("userSession", JSON.stringify(newSession));
         setCurrentSession(newSession);
         return {
-          success: true,
           token: loginResponse.token,
           user: loginResponse.user,
         };
-      } else {
-        let authResponse: AuthResponse;
-        if (loginResponse.error?.code === 401) {
-          authResponse = {
-            success: false,
-            errorMessage: "AUTHENTICATION_ERROR",
-          };
-        } else {
-          authResponse = { success: false, errorMessage: "UNKNOWN_ERROR" };
-        }
-        return authResponse;
       }
     } finally {
       setLoading(false);
     }
+    return {};
   };
 
   const signOut = () => {

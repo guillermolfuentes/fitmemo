@@ -13,6 +13,7 @@ import { Formik, FormikHelpers, FormikProps } from "formik";
 import { AuthContext } from "@/context/AuthContext";
 import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
 import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
+import axios, { AxiosError } from "axios";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -618,41 +619,67 @@ export default function Register() {
       };
 
       result = await register(userRegisterData);
+      router.replace("/");
+    } catch (errors) {
+      handleRegisterError(errors, actions);
+    }
+  };
 
-      if (result.success) {
-        console.log("Registro exitoso");
-        router.replace("/");
-      } else if (result.errorMessage === "AUTHENTICATION_ERROR") {
+  const handleRegisterError = (
+    error: unknown,
+    actions: FormikHelpers<FormValues>
+  ): void => {
+    if (isValidationError(error)) {
+      handleValidationError(error, actions);
+    } else if (isAxiosError(error)) {
+      handleAxiosError(error);
+    } else {
+      setErrorRegisterMessage(
+        t("screens.register.step4.errors.unknown_error")
+      );
+    }
+  };
+
+  const isValidationError = (error: unknown): error is Yup.ValidationError => {
+    return error instanceof Yup.ValidationError;
+  };
+
+  const isAxiosError = (error: unknown): error is AxiosError => {
+    return axios.isAxiosError(error);
+  };
+
+  const handleValidationError = (
+    errors: Yup.ValidationError,
+    actions: FormikHelpers<FormValues>
+  ): void => {
+    const formattedErrors = (errors as Yup.ValidationError).inner.reduce(
+      (acc: any, error: any) => {
+        acc[error.path] = error.message;
+        return acc;
+      },
+      {}
+    );
+    actions.setErrors(formattedErrors);
+  };
+
+  const handleAxiosError = (error: AxiosError): void => {
+    const status = error.response?.status;
+
+    switch (status) {
+      case 401:
         setErrorRegisterMessage(
           t("screens.register.step4.errors.authentication_error")
         );
-      } else if (result.errorMessage === "NETWORK_ERROR") {
+        break;
+      case 403:
+        setErrorRegisterMessage(
+          t("screens.register.step4.errors.authentication_error")
+        );
+        break;
+      default:
         setErrorRegisterMessage(
           t("screens.register.step4.errors.network_error")
         );
-      } else {
-        setErrorRegisterMessage(
-          t("screens.register.step4.errors.unknown_error")
-        );
-      }
-    } catch (errors) {
-      const formattedErrors = (errors as Yup.ValidationError).inner.reduce(
-        (acc: any, error: any) => {
-          acc[error.path] = error.message;
-          return acc;
-        },
-        {}
-      );
-      actions.setErrors(formattedErrors);
-
-      const touchedFields = (errors as Yup.ValidationError).inner.reduce(
-        (acc: any, error: any) => {
-          acc[error.path] = true;
-          return acc;
-        },
-        {}
-      );
-      actions.setTouched(touchedFields);
     }
   };
 

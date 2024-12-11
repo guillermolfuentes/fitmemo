@@ -1,34 +1,38 @@
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
+import { useEffect, useState } from "react";
+import TrainingSessionCard from "@/components/TrainingSessionCard";
 
 export default function TrainingScreen() {
+  const [sessions, setSessions] = useState([]);
+
+  useEffect(() => {
+    /*const fetchSessions = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/sessions`
+        );
+        setSessions(response.data);
+      } catch (error) {
+        console.error("Error fetching sessions:", error);
+      }
+    };
+
+    fetchSessions();*/
+
+    //todo traer sesiones de backend
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <Text>PANTALLA ENTRENAMIENTO</Text>
-    </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text>pantalla entrenamiento</Text>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+    padding: 10,
   },
 });
