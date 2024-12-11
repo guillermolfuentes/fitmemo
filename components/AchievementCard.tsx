@@ -1,9 +1,9 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ImageSourcePropType } from "react-native";
 import { Card, Title, Paragraph } from "react-native-paper";
 
 interface AchievementCardProps {
-  image: string;
+  image: string | ImageSourcePropType;
   title: string;
   achievement: string;
 }
@@ -12,27 +12,34 @@ const AchievementCard = ({
   image,
   title,
   achievement,
-}: AchievementCardProps) => (
-  <Card style={styles.card}>
-    <Card.Cover
-      source={{ uri: image }}
-      style={styles.cardCover}
-      resizeMode="cover"
-    />
-    <Card.Content style={styles.cardContent}>
-      <Title style={styles.title} adjustsFontSizeToFit numberOfLines={2}>
-        {title}
-      </Title>
-      <Paragraph
-        style={styles.paragraph}
-        adjustsFontSizeToFit
-        numberOfLines={2}
-      >
-        {achievement}
-      </Paragraph>
-    </Card.Content>
-  </Card>
-);
+}: AchievementCardProps) => {
+  
+  const isRemoteImage =
+    typeof image === "string" && (image.startsWith("http") || image.startsWith("https"));
+
+
+  return (
+    <Card style={styles.card}>
+      <Card.Cover
+        source={isRemoteImage ? { uri: image as string } : (image as ImageSourcePropType)}
+        style={styles.cardCover}
+        resizeMode="cover"
+      />
+      <Card.Content style={styles.cardContent}>
+        <Title style={styles.title} adjustsFontSizeToFit numberOfLines={2}>
+          {title}
+        </Title>
+        <Paragraph
+          style={styles.paragraph}
+          adjustsFontSizeToFit
+          numberOfLines={2}
+        >
+          {achievement}
+        </Paragraph>
+      </Card.Content>
+    </Card>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -45,9 +52,10 @@ const styles = StyleSheet.create({
   },
   cardCover: {
     height: "50%",
-    width: "100%",
+    width: "50%",
     overflow: "hidden",
     marginBottom: 5,
+    margin: "auto",
   },
   cardContent: {
     height: "50%",

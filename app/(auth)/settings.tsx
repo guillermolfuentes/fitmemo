@@ -1,11 +1,11 @@
-import React, { useRef, useLayoutEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { TextInput, useTheme } from 'react-native-paper';
-import { Formik, FormikProps } from 'formik';
-import * as Yup from 'yup';
-import { useTranslation } from 'react-i18next';
-
+import React, { useRef, useLayoutEffect, useContext } from "react";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Button, TextInput, useTheme } from "react-native-paper";
+import { Formik, FormikProps } from "formik";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { AuthContext } from "@/context/AuthContext";
 
 /*
 La implementación actual de "Save" en esta pantalla es un
@@ -15,9 +15,7 @@ https://github.com/expo/expo/issues/29489
 
 const SettingsSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  email: Yup.string()
-    .email("Invalid email")
-    .required("Email is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password is too short"),
@@ -40,9 +38,14 @@ const SettingsForm = ({
   errors,
   touched,
   handleSubmit,
-}: FormikProps<SettingsValues>) => (
-  <View style={styles.container}>
-    <Text style={styles.formDescription}>Esto son los datos que tenemos de ti</Text>
+}: FormikProps<SettingsValues>) => {
+  const { signOut } = useContext(AuthContext);
+
+  return (
+    <View style={styles.container}>
+    <Text style={styles.formDescription}>
+      Esto son los datos que tenemos de ti
+    </Text>
     <TextInput
       label="Name"
       onChangeText={handleChange("name")}
@@ -92,9 +95,21 @@ const SettingsForm = ({
     {touched.confirmPassword && errors.confirmPassword && (
       <Text style={styles.errorText}>{errors.confirmPassword}</Text>
     )}
-  </View>
-);
 
+    <Button
+      style={styles.logoutButton}
+      icon="logout"
+      mode="contained"
+      onPress={() => {
+        console.log("Cerrando sesion");
+        signOut();
+      }}
+    >
+      Logout
+    </Button>
+  </View>
+  );
+};
 const SettingsModalScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -105,20 +120,20 @@ const SettingsModalScreen = () => {
     console.log("Form values:", values);
   };
 
- useLayoutEffect(() => {
-   navigation.setOptions({
-     title: "Settings",
-     headerBackTitle: "Back to Home",
-     headerRight: () => (
-       <TouchableOpacity
-         onPressIn={() => formikRef.current?.handleSubmit()}
-         style={[styles.button, { backgroundColor: colors.primary }]}
-       >
-         <Text style={styles.buttonText}>Save</Text>
-       </TouchableOpacity>
-     ),
-   });
- }, [navigation, colors]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Settings",
+      headerBackTitle: "Back to Home",
+      headerRight: () => (
+        <TouchableOpacity
+          onPressIn={() => formikRef.current?.handleSubmit()}
+          style={[styles.button, { backgroundColor: colors.primary }]}
+        >
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, colors]);
 
   return (
     <Formik
@@ -135,7 +150,7 @@ const SettingsModalScreen = () => {
       {(formikProps) => <SettingsForm {...formikProps} />}
     </Formik>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -148,7 +163,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     fontSize: 15,
     fontWeight: "bold",
-
   },
   button: {
     paddingTop: 8,
@@ -157,19 +171,23 @@ const styles = StyleSheet.create({
     paddingStart: 12,
     borderRadius: 40,
     height: "95%",
-    
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     marginBottom: 20,
   },
   errorText: {
     color: "red",
-  marginBottom: 15,},
+    marginBottom: 15,
+  },
+  logoutButton: {
+    margin: 60,
+    backgroundColor: "#8B0000",
+  },
 });
 
 export default SettingsModalScreen;

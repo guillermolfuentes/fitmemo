@@ -1,28 +1,27 @@
-import React, { useContext } from "react";
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { AuthContext } from "../../../context/AuthContext";
+import React from "react";
+import { View, StyleSheet, ScrollView } from "react-native";
 import AchievementCard from "@/components/AchievementCard";
 import AdviceCard from "@/components/AdviceCard";
 
+
 export default function TabOneScreen() {
-  const { signOut } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
       <View style={styles.achievementsContainer}>
-        <ScrollView horizontal>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <AchievementCard
-            image="https://static.chollometro.com/threads/raw/JAfE8/1416303_1/re/1024x1024/qt/60/1416303_1.jpg"
+            image={require("../../../assets/images/total-sessions.png")}
             title="Sesiones totales"
             achievement="100 sesiones"
           />
           <AchievementCard
-            image="https://static.chollometro.com/threads/raw/JAfE8/1416303_1/re/1024x1024/qt/60/1416303_1.jpg"
+            image={require("../../../assets/images/total-weight.png")}
             title="Kilos levantados"
             achievement="15.084 kgs."
           />
           <AchievementCard
-            image="https://static.chollometro.com/threads/raw/JAfE8/1416303_1/re/1024x1024/qt/60/1416303_1.jpg"
+            image={require("../../../assets/images/weekly-average.png")}
             title="Media semanal"
             achievement="4 sesiones"
           />
@@ -30,9 +29,9 @@ export default function TabOneScreen() {
       </View>
       <View style={styles.adviceContainer}>
         <AdviceCard
-          title="Consejo del Día"
-          advice="Bebe al menos 2 litros de agua."
-          scientificExplanation="El agua es esencial para mantener la hidratación y el buen funcionamiento del cuerpo."
+          adviceTitle="Incrementa gradualmente la carga"
+          advice="Aumento el peso o las repeticiones de tus ejercicios cada 1-2 semanas. Este principio, conocido como sobrecarga progresiva, es esencial para estimular el crecimiento muscular."
+          scientificExplanation="Estudios muestran que la sobrecarga progresiva aumenta la síntesis de proteínas musculares, lo cual es clave para la hipertrofia. Mantenerse con la misma carga y repeticiones por mucho tiempo puede estancar los resultados."
         />
       </View>
     </View>
