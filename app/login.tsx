@@ -63,7 +63,7 @@ export default function Login() {
 
       result = await signIn(userData);
       console.log("Resultado del login:", result);
-      router.replace("/");
+      router.replace("/home");
     } catch (error) {
       handleAndShowLoginRequestError(error);
     }

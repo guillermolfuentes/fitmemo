@@ -130,7 +130,7 @@ const SettingsModalScreen = () => {
     password: "",
     confirmPassword: "",
   });
-  const { setLoading } = useUIContext();
+  const { isLoading, setLoading } = useUIContext();
 
   const handleSubmit = (values: SettingsValues) => {
     console.log("Form values:", values);
@@ -139,6 +139,7 @@ const SettingsModalScreen = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
+        setLoading(true);
         const session = await getCurrentSession();
         const userProfile = await UserService.getUserProfile(session.token!);
         setInitialValues({
@@ -147,13 +148,16 @@ const SettingsModalScreen = () => {
           password: "",
           confirmPassword: "",
         });
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserProfile();
-  }, [getCurrentSession]);
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -170,12 +174,9 @@ const SettingsModalScreen = () => {
     });
   }, [navigation, colors]);
 
-  if (!initialFormValues.name) {
-    setLoading(true);
+  if (isLoading) {
     return;
   }
-
-  setLoading(false);
 
   return (
     <Formik

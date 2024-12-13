@@ -5,25 +5,21 @@ import AdviceCard from "@/components/AdviceCard";
 
 export default function TabOneScreen() {
   return (
-    
     <ScrollView contentContainerStyle={styles.scrollviewContainer}>
       <View style={styles.achievementsContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <AchievementCard
-            image={require("../../../assets/images/total-sessions.png")}
+            image={require("../../../../assets/images/total-sessions.png")}
             title="Sesiones totales"
             achievement="100 sesiones"
           />
           <AchievementCard
-            image={require("../../../assets/images/total-weight.png")}
+            image={require("../../../../assets/images/total-weight.png")}
             title="Kilos levantados"
             achievement="15.084 kgs."
           />
           <AchievementCard
-            image={require("../../../assets/images/weekly-average.png")}
+            image={require("../../../../assets/images/weekly-average.png")}
             title="Media semanal"
             achievement="4 sesiones"
           />

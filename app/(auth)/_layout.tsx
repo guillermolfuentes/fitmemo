@@ -7,6 +7,8 @@ import { useContext } from "react";
 export default function AppLayout() {
   const { currentSession } = useContext(AuthContext);
 
+  console.log("Renderizando AppLayout");
+
   if (!currentSession.isAuthenticated) {
     console.log("Redirecting to login");
     return <Redirect href="/login" />;

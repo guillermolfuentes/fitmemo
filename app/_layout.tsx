@@ -4,13 +4,13 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SessionProvider } from "../context/AuthContext";
 import { Provider as PaperProvider } from "react-native-paper";
-import { Slot } from "expo-router";
+import { Slot, usePathname, useRouter } from "expo-router";
 import i18n from "../i18n/i18n";
 import { I18nextProvider } from "react-i18next";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { UIProvider } from "@/context/UIContext";
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -26,6 +26,9 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
+  const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -36,6 +39,12 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    if (loaded && pathname === "/") {
+      router.replace("/home");
+    }
+  }, [router, loaded]);
+
   if (!loaded) {
     return null;
   }
@@ -44,8 +53,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-
-  console.log("Renderizando layout incio");
+  console.log("Renderizando RootLayout");
 
   return (
     <I18nextProvider i18n={i18n}>

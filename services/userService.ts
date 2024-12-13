@@ -1,16 +1,9 @@
 import axios, { AxiosError } from "axios";
-import * as SecureStore from "expo-secure-store";
-import { LoginRequest } from "@/types/auth/services/LoginRequest";
-import { LoginResponse } from "@/types/auth/services/LoginResponse";
-import { RegisterRequest } from "@/types/auth/services/RegisterRequest";
-import { RegisterResponse } from "@/types/auth/services/RegisterResponse";
 import { NetworkError } from "@/errors/NetworkError";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { UnknownError } from "@/errors/UnknownError";
 import { User } from "@/types/auth/models/User";
-import { useContext } from "react";
-import { AuthContext } from "@/context/AuthContext";
 
 class UserService {
   constructor() {

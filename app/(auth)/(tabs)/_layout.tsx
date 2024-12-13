@@ -19,35 +19,25 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  console.log("Renderizando TabLayout");
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: false,
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Bienvenido, Guillermo",
           tabBarLabel: "Inicio",
-          tabBarIcon: ({ color }) => <FontAwesome5 name="home" color={color} size={24} />,
-          headerRight: () => (
-            <Link href="/settings" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="cog"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="home" color={color} size={24} />
+          )
         }}
       />
       <Tabs.Screen
@@ -63,7 +53,9 @@ export default function TabLayout() {
         name="progress"
         options={{
           title: "Progreso",
-          tabBarIcon: ({ color }) => <FontAwesome5 name="chart-bar" color={color} size={24} />,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="chart-bar" color={color} size={24} />
+          ),
         }}
       />
     </Tabs>
