@@ -11,6 +11,7 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import { UIProvider } from "@/context/UIContext";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
+import { NavigationProvider } from "@/context/NavigationContext";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -59,11 +60,13 @@ function RootLayoutNav() {
     <I18nextProvider i18n={i18n}>
       <UIProvider>
         <SessionProvider>
-          <PaperProvider>
-            <StatusBar style="auto" />
-            <Slot />
-            <LoadingOverlay />
-          </PaperProvider>
+          <NavigationProvider>
+            <PaperProvider>
+              <StatusBar style="auto" />
+              <Slot />
+              <LoadingOverlay />
+            </PaperProvider>
+          </NavigationProvider>
         </SessionProvider>
       </UIProvider>
     </I18nextProvider>

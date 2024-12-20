@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
-import AchievementCard from "@/components/AchievementCard";
-import AdviceCard from "@/components/AdviceCard";
+import AchievementCard from "@/components/home/AchievementCard";
+import AdviceCard from "@/components/home/AdviceCard";
 
 export default function TabOneScreen() {
   return (

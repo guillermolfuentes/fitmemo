@@ -2,13 +2,13 @@ import { ScrollView, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
 import { useContext, useEffect, useState } from "react";
-import TrainingSessionCard from "@/components/training/RoutineSessionCard";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import TrainingDiaryService from "@/services/trainingDiaryService";
 import { UserRoutineResponse } from "@/types/training/services/UserRoutineResponse";
 import { Button } from "react-native-paper";
-import { Href, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import TrainingSessionCard from "@/components/training/RoutineSessionCard";
 
 export default function TrainingScreen() {
   const [userRoutine, setUserRoutine] = useState<UserRoutineResponse>({
@@ -43,15 +43,14 @@ export default function TrainingScreen() {
   }, []);
 
   const handleStartSession = (sessionId: number) => {
-    router.push(`/training/session/start/${sessionId}`);
+    router.push("", { sessionId });
   };
 
-  const handleEditSession = (sessionId: number) => {
-    router.push(`/training/session/edit/${sessionId}`);
-  };
+  const handleEditSession = (sessionId: number) => {};
 
   const handleNewSession = () => {
-    router.push(`/training/session/create`);
+    //navigation.navigate('EditSession', { sessionId: id });
+    console.log("Creando nueva sesión...");
   };
 
   return (

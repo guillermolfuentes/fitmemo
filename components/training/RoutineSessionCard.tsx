@@ -3,19 +3,19 @@ import { StyleSheet, View } from "react-native";
 import { Card, Title, Paragraph, Button, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
-interface TrainingSessionCardProps {
+interface RoutineSessionCardProps {
   id: number;
   name: string;
   onStartSession: (id: number) => void;
   onEditSession: (id: number) => void;
 }
 
-const TrainingSessionCard = ({
+const RoutineSessionCard = ({
   id,
   name,
   onStartSession,
   onEditSession,
-}: TrainingSessionCardProps) => {
+}: RoutineSessionCardProps) => {
   const navigation = useNavigation();
   const [routineSessionId, setRoutineSessionId] = useState<number | null>(null);
 
@@ -52,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrainingSessionCard;
+export default RoutineSessionCard;

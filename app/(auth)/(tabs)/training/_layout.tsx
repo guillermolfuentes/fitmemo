@@ -12,6 +12,7 @@ export default function TrainingLayout() {
       <Stack.Screen name="session/start/[sessionId]" />
       <Stack.Screen name="session/edit/[sessionId]" />
       <Stack.Screen name="session/create" />
+      <Stack.Screen name="session/add-exercise" />
     </Stack>
   );
 }

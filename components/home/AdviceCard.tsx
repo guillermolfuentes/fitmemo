@@ -17,7 +17,7 @@ const AdviceCard = ({
     <Card.Content>
       <View style={styles.adviceTitleContainer}>
         <Image
-          source={require("../assets/images/magic-advice.png")}
+          source={require("../../assets/images/magic-advice.png")}
           style={styles.icon}
         />
         <Text style={styles.dailyTip}>Consejo del día</Text>
@@ -28,7 +28,7 @@ const AdviceCard = ({
 
       <View style={styles.adviceTitleContainer}>
         <Image
-          source={require("../assets/images/lab-icon.png")}
+          source={require("../../assets/images/lab-icon.png")}
           style={styles.icon}
         />
         <Text style={styles.dailyTip}>Ciencia detrás</Text>
