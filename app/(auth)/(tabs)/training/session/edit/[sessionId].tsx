@@ -13,6 +13,7 @@ import Colors from "@/constants/Colors";
 import RoutineSessionExerciseCard from "@/components/training/RoutineSessionExerciseCard";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { NavigationContext } from "@/context/NavigationContext";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 
 export default function EditTrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
@@ -23,12 +24,28 @@ export default function EditTrainingSessionScreen() {
   const sessionId = searchParams.get("sessionId");
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [exercises, setExercises] = useState<{ id: number; name: string }[]>(
+    []
+  );
+  const [
+    deleteExerciseConfirmationModalVisible,
+    setDeleteExerciseConfirmationModalVisible,
+  ] = useState(false);
+
+  const [exerciseToDelete, setExerciseToDelete] = useState<number | null>(null);
+
+  const mockData = [
+    { id: 1, name: "Ejercicio 1" },
+    { id: 2, name: "Ejercicio 2" },
+    { id: 3, name: "Ejercicio 3" },
+  ];
 
   useEffect(() => {
     const fetchUserRoutine = async () => {
       setLoading(true);
 
       try {
+        setExercises(mockData);
       } catch (error) {
         console.error("Error fetching training session", error);
       } finally {
@@ -80,27 +97,46 @@ export default function EditTrainingSessionScreen() {
     });
   };
 
+  const deleteExercise = (id: number) => {
+    const updatedExercises = exercises.filter((exercise) => exercise.id !== id);
+    setExercises(updatedExercises);
+  };
+
+  const handleDeleteExerciseConfirm = () => {
+    console.log("Borrando ejercicio con ID:", exerciseToDelete);
+    deleteExercise(exerciseToDelete as number);
+    setDeleteExerciseConfirmationModalVisible(false);
+    setExerciseToDelete(null);
+  };
+
+  const handleOnDeleteExercise = (exerciseId: number) => {
+    setDeleteExerciseConfirmationModalVisible(true);
+    setExerciseToDelete(exerciseId);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.container}>
-        <RoutineSessionExerciseCard
-          id={1}
-          name="Ejercicio 1"
-          onStartSession={() => {}}
-          onEditSession={() => {}}
+        <ConfirmationModal
+          visible={deleteExerciseConfirmationModalVisible}
+          onConfirm={handleDeleteExerciseConfirm}
+          onCancel={() => {
+            setDeleteExerciseConfirmationModalVisible(false);
+          }}
+          title="¿Estás seguro?"
+          message="¿Estás seguro de que quieres borrar el ejercicio?" 
         />
-        <RoutineSessionExerciseCard
-          id={2}
-          name="Ejercicio 2"
-          onStartSession={() => {}}
-          onEditSession={() => {}}
-        />
-        <RoutineSessionExerciseCard
-          id={3}
-          name="Ejercicio 3"
-          onStartSession={() => {}}
-          onEditSession={() => {}}
-        />
+        {exercises.map((exercise) => (
+          <RoutineSessionExerciseCard
+            key={exercise.id}
+            id={exercise.id}
+            name={exercise.name}
+            onStartSession={() => {}}
+            onEditSession={() => {}}
+            onDeletePress={() => handleOnDeleteExercise(exercise.id)}
+            canDeleteRows={true}
+          />
+        ))}
       </View>
       <Button
         style={styles.addSessionButton}

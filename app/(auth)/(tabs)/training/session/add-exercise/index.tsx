@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useLayoutEffect } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
@@ -33,6 +33,12 @@ const AddExerciseScreen = () => {
   >([]);
   const router = useRouter();
   const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Añadir ejercicio",
+    });
+  }, [navigation]);
 
   const handleBackConfirm = () => {
     isBackToSessionConfirmedRef.current = true;
@@ -124,7 +130,7 @@ const AddExerciseScreen = () => {
           onConfirm={handleBackConfirm}
           onCancel={handleBackCancel}
           title="¿Estás seguro?"
-          message="¿Estás seguro de que quieres salir sin guardar los cambios?" // Mensaje personalizado
+          message="¿Estás seguro de que quieres salir sin guardar los cambios?"
         />
         <ConfirmationModal
           visible={addExerciseConfirmationModalVisible}

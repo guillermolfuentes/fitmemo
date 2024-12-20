@@ -19,7 +19,7 @@ const ConfirmationModal = ({
 }: ConfirmationModalProps) => {
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onCancel}>
+      <Dialog visible={visible} onDismiss={onCancel} dismissable={false}>
         <Dialog.Title>{title}</Dialog.Title>
         <Dialog.Content>
           <Text>{message}</Text>

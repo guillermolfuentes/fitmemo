@@ -61,7 +61,7 @@ const RoutineSessionExerciseSetRow = ({
             ) : null}
             {onDeletePress && (
               <TouchableOpacity onPress={onDeletePress}>
-                <FontAwesome name="trash" size={24} color="black" />
+                <FontAwesome name="trash-o" size={24} color="black" />
               </TouchableOpacity>
             )}
           </View>
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginHorizontal: 5,
+    marginRight: 10
   },
   errorText: {
     color: 'red',

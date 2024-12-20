@@ -1,14 +1,14 @@
 import { ScrollView, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import TrainingSessionCard from "@/components/training/RoutineSessionCard";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import TrainingDiaryService from "@/services/trainingDiaryService";
 import { UserRoutineResponse } from "@/types/training/services/UserRoutineResponse";
 import { Button } from "react-native-paper";
-import { Href, useRouter } from "expo-router";
+import { Href, useNavigation, useRouter } from "expo-router";
 
 export default function TrainingScreen() {
   const [userRoutine, setUserRoutine] = useState<UserRoutineResponse>({
@@ -21,7 +21,14 @@ export default function TrainingScreen() {
 
   const { getCurrentSession } = useContext(AuthContext);
   const { isLoading, setLoading } = useUIContext();
+  const navigation = useNavigation();
   const router = useRouter();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Entrenamiento",
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const fetchUserRoutine = async () => {
@@ -72,7 +79,7 @@ export default function TrainingScreen() {
       )}
       <Button
         style={styles.addSessionButton}
-        mode="contained"
+        mode="outlined"
         icon="plus"
         onPress={handleNewSession}
       >
@@ -91,5 +98,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  addSessionButton: {},
+  addSessionButton: {
+    marginTop: 15,
+    marginBottom: 15,
+  },
 });
