@@ -9,10 +9,19 @@ export default function TrainingLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" />
-      <Stack.Screen name="session/start/[sessionId]" />
-      <Stack.Screen name="session/edit/[sessionId]" />
-      <Stack.Screen name="session/create" />
-      <Stack.Screen name="session/add-exercise" />
+      <Stack.Screen
+        name="session/start/[sessionId]"
+        options={{ title: "Registro de sesión" }}
+      />
+      <Stack.Screen
+        name="session/edit/[sessionId]"
+        options={{ title: "Editar sesión" }}
+      />
+      <Stack.Screen name="session/create" options={{ title: "Nueva sesión" }} />
+      <Stack.Screen
+        name="session/add-exercise"
+        options={{ title: "Añadir ejercicio" }}
+      />
     </Stack>
   );
 }

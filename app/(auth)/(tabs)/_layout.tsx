@@ -27,7 +27,9 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
+
         headerShown: false,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen
@@ -37,7 +39,7 @@ export default function TabLayout() {
           tabBarLabel: "Inicio",
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="home" color={color} size={24} />
-          )
+          ),
         }}
       />
       <Tabs.Screen

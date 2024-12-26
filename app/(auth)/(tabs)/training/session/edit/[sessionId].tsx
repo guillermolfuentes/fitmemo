@@ -66,7 +66,6 @@ export default function EditTrainingSessionScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Editar sesión",
-      headerBackTitle: "Back to Home",
       headerRight: () => (
         <Pressable
           onPressIn={() => {

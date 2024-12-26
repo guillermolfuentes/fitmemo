@@ -23,7 +23,6 @@ const AchievementCard = ({
       <Card.Cover
         source={isRemoteImage ? { uri: image as string } : (image as ImageSourcePropType)}
         style={styles.cardCover}
-        resizeMode="cover"
       />
       <Card.Content style={styles.cardContent}>
         <Title style={styles.title} adjustsFontSizeToFit numberOfLines={2}>
@@ -51,8 +50,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   cardCover: {
-    height: "50%",
-    width: "50%",
+    height: "55%",
+    width: "55%",
     overflow: "hidden",
     marginBottom: 5,
     margin: "auto",

@@ -38,7 +38,6 @@ export default function TrainingSessionScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Registro de sesión",
-      headerBackTitle: "Back to Home",
       headerRight: () => (
         <Pressable
           onPressIn={() => {

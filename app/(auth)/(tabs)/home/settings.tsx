@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Platform, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import { Formik, FormikProps } from "formik";
@@ -14,6 +14,8 @@ import { useTranslation } from "react-i18next";
 import { AuthContext } from "@/context/AuthContext";
 import UserService from "@/services/userService";
 import { useUIContext } from "@/context/UIContext";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { FontAwesome } from "@expo/vector-icons";
 
 /*
 La implementación actual de "Save" en esta pantalla es un
@@ -50,7 +52,7 @@ const SettingsForm = ({
   const { signOut } = useContext(AuthContext);
 
   return (
-    <View style={styles.container}>
+    <View >
       <Text style={styles.formDescription}>
         Esto son los datos que tenemos de ti
       </Text>
@@ -118,6 +120,7 @@ const SettingsForm = ({
     </View>
   );
 };
+
 const SettingsModalScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -162,14 +165,16 @@ const SettingsModalScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Settings",
-      headerBackTitle: "Back to Home",
       headerRight: () => (
-        <TouchableOpacity
+        <Pressable
           onPressIn={() => formikRef.current?.handleSubmit()}
-          style={[styles.button, { backgroundColor: colors.primary }]}
+          style={({ pressed }) => ({
+            marginRight: 15,
+            opacity: pressed ? 0.5 : 1,
+          })}
         >
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
+          <FontAwesome name="check" size={25} />
+        </Pressable>
       ),
     });
   }, [navigation, colors]);
@@ -179,22 +184,29 @@ const SettingsModalScreen = () => {
   }
 
   return (
-    <Formik
-      innerRef={formikRef}
-      initialValues={initialFormValues}
-      validationSchema={SettingsSchema}
-      onSubmit={handleSubmit}
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
     >
-      {(formikProps) => <SettingsForm {...formikProps} />}
-    </Formik>
+      <Formik
+        innerRef={formikRef}
+        initialValues={initialFormValues}
+        validationSchema={SettingsSchema}
+        onSubmit={handleSubmit}
+      >
+        {(formikProps) => <SettingsForm {...formikProps} />}
+      </Formik>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 30,
+    flexGrow: 1,
+    paddingTop: 30,
+    paddingLeft: 20,
+    paddingRight: 20,
     justifyContent: "center",
+
   },
   formDescription: {
     textAlign: "center",
