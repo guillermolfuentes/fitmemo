@@ -16,34 +16,40 @@ type AuthContextType = {
   register: (userData: AuthRegisterRequest) => Promise<AuthResponse>;
   signIn: (userData: AuthRequest) => Promise<AuthResponse>;
   signOut: () => void;
-  getCurrentSession: () => Session;
-  currentSession: Session;
+  getCurrentSession: () => Promise<Session>;
+  
 };
 
 export const AuthContext = createContext<AuthContextType>({
   register: async () => ({}),
   signIn: async () => ({}),
   signOut: () => null,
-  currentSession: {
-    isAuthenticated: false,
-  },
-  getCurrentSession: () => ({
+  getCurrentSession: async () => ({
     isAuthenticated: false,
   }),
 });
 
 export function SessionProvider(props: React.PropsWithChildren) {
-  const { setItem: setSession, deleteItem: deleteSession } =
-    useSecureStore("userSession");
+  const {
+    setItem: setSession,
+    deleteItem: deleteSession,
+    getItem: getSession,
+  } = useSecureStore("userSession");
 
   const [currentSession, setCurrentSession] = useState<Session>({
     isAuthenticated: false,
   });
 
   useEffect(() => {
-    console.log("AuthContext: la sesión actual ha cambiado:", currentSession);
-  }, [currentSession]);
-
+    const loadSession = async () => {
+      const sessionData = await getSession("userSession");
+      if (sessionData) {
+        console.log("Nueva sesión cargada:", JSON.parse(sessionData));
+        setCurrentSession(JSON.parse(sessionData));
+      }
+    };
+    loadSession();
+  }, []);
   const { setLoading } = useUIContext();
 
   const register = async (
@@ -129,7 +135,11 @@ export function SessionProvider(props: React.PropsWithChildren) {
     console.log("Sesión cerrada");
   };
 
-  const getCurrentSession = () => {
+  const getCurrentSession = async () => {
+    const sessionData = await getSession("userSession");
+    if (sessionData) {
+      return JSON.parse(sessionData);
+    }
     return currentSession;
   };
 
@@ -139,7 +149,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
         register,
         signIn,
         signOut,
-        currentSession,
         getCurrentSession,
       }}
     >

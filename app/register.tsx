@@ -619,7 +619,7 @@ export default function Register() {
       };
 
       result = await register(userRegisterData);
-      router.replace("/");
+      router.replace("/home");
     } catch (errors) {
       handleRegisterError(errors, actions);
     }
