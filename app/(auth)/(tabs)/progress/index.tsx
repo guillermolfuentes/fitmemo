@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { ScrollView, StyleSheet, useColorScheme, View } from "react-native";
 import { Text } from "@/components/Themed";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -12,27 +12,7 @@ import ExerciseService from "@/services/exerciseService";
 import { AuthContext } from "@/context/AuthContext";
 import { useUIContext } from "@/context/UIContext";
 import StatisticsService from "@/services/statisticsService";
-
 const inter = require("../../../../assets/fonts/SpaceMono-Regular.ttf");
-
-const EXERCISE_OPTIONS = [
-  {
-    label: "Curl de bíceps",
-    value: "1",
-  },
-  {
-    label: "Press de banca",
-    value: "2",
-  },
-  {
-    label: "Sentadillas",
-    value: "3",
-  },
-  {
-    label: "Peso muerto",
-    value: "4",
-  },
-];
 
 const MUSCLE_OPTIONS = [
   {
@@ -61,45 +41,6 @@ const MUSCLE_OPTIONS = [
   },
 ];
 
-const data1 = [
-  { month: 1, listenCount: 2 },
-  { month: 2, listenCount: 8 },
-  { month: 3, listenCount: 60 },
-  { month: 4, listenCount: 95 },
-  { month: 5, listenCount: 70 },
-  { month: 6, listenCount: 88 },
-  { month: 7, listenCount: 10 },
-  { month: 8, listenCount: 91 },
-  { month: 9, listenCount: 6 },
-  { month: 10, listenCount: 30 },
-];
-
-const data3 = [
-  { date: "2024-01-26", bodyWeight: 21 },
-  { date: "2024-02-27", bodyWeight: 80 },
-  { date: "2024-07-28", bodyWeight: 60 },
-  { date: "2024-12-29", bodyWeight: 95 },
-  { date: "2024-12-30", bodyWeight: 40 },
-  { date: "2024-12-31", bodyWeight: 88 },
-  { date: "2025-01-01", bodyWeight: 10 },
-  { date: "2025-01-02", bodyWeight: 91 },
-  { date: "2025-01-03", bodyWeight: 6 },
-  { date: "2025-01-04", bodyWeight: 30 },
-];
-
-const data2 = [
-  { month: 1, listenCount: 80 },
-  { month: 2, listenCount: 78 },
-  { month: 3, listenCount: 76 },
-  { month: 4, listenCount: 77 },
-  { month: 5, listenCount: 75 },
-  { month: 6, listenCount: 75 },
-  { month: 7, listenCount: 74 },
-  { month: 8, listenCount: 72 },
-  { month: 9, listenCount: 68 },
-  { month: 10, listenCount: 67 },
-];
-
 export default function ProgressScreen() {
   const font = useFont(inter, 12);
   const colorScheme = useColorScheme();
@@ -118,8 +59,17 @@ export default function ProgressScreen() {
     { label: string; value: string }[]
   >([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+
   const [bodyProgress, setBodyProgress] = useState<
     { date: string; bodyWeight: number }[]
+  >([]);
+
+  const [exerciseLoadProgress, setExerciseLoadProgress] = useState<
+    { date: string; maxLoad: number }[]
+  >([]);
+
+  const [muscleGroupVolumeProgress, setMuscleGroupVolumeProgress] = useState<
+    { date: string; totalVolume: number }[]
   >([]);
 
   useFocusEffect(
@@ -159,9 +109,7 @@ export default function ProgressScreen() {
             date: new Date(entry.date).toISOString().split("T")[0],
             bodyWeight: Number(entry.bodyWeight),
           }));
-          if (response.bodyProgress.length >= 4) {
-            setBodyProgress(progress);
-          }
+          setBodyProgress(progress);
           setDataLoaded(true);
         } catch (error) {
           console.error("Error fetching body progress", error);
@@ -171,7 +119,59 @@ export default function ProgressScreen() {
         }
       };
 
+      const fetchExerciseLoadProgress = async () => {
+        try {
+          setLoading(true);
+          const session = await getCurrentSession();
+
+          const exerciseLoadProgress = [
+            { date: "2024-12-12", maxLoad: 80 },
+            { date: "2024-12-12", maxLoad: 81 },
+            { date: "2024-12-12", maxLoad: 83 },
+            { date: "2024-12-12", maxLoad: 83 },
+          ];
+
+          setExerciseLoadProgress(exerciseLoadProgress);
+
+          setDataLoaded(true);
+        } catch (error) {
+          console.error("Error fetching exercise load progress", error);
+          showErrorSnackbar(
+            "Error fetching exercise load progress. Retry later."
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const fetchMuscleGroupVolumeProgress = async () => {
+        try {
+          setLoading(true);
+          const session = await getCurrentSession();
+
+          const muscleGroupVolumeProgress = [
+            { date: "2024-12-12", totalVolume: 800 },
+            { date: "2024-12-12", totalVolume: 498 },
+            { date: "2024-12-12", totalVolume: 83 },
+            { date: "2024-12-12", totalVolume: 83 },
+          ];
+
+          setMuscleGroupVolumeProgress(muscleGroupVolumeProgress);
+
+          setDataLoaded(true);
+        } catch (error) {
+          console.error("Error fetching muscle group volume progress", error);
+          showErrorSnackbar(
+            "Error fetching muscle groyp volume progress. Retry later."
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
+
       fetchExercises();
+      fetchExerciseLoadProgress();
+      fetchMuscleGroupVolumeProgress();
       fetchBodyProgress();
     }, [dataLoaded])
   );
@@ -179,6 +179,24 @@ export default function ProgressScreen() {
   const handleNewMeasurement = () => {
     console.log("Añadir medición");
     router.push("/progress/measurements");
+  };
+
+  const getExerciseLoadProgressYDomain = (data: any) => {
+    if (data.length === 0) return [0, 500] as [number, number];
+    const maxLoads = data.map((d: any) => d.maxLoad);
+    const minY = Math.min(...maxLoads);
+    const maxY = Math.max(...maxLoads);
+    const margin = 10;
+    return [minY - margin, maxY + margin] as [number, number];
+  };
+
+  const getMuscleGroupVolumeProgressYDomain = (data: any) => {
+    if (data.length === 0) return [0, 1000] as [number, number];
+    const volumes = data.map((d: any) => d.totalVolume);
+    const minY = Math.min(...volumes);
+    const maxY = Math.max(...volumes);
+    const margin = 10;
+    return [minY - margin, maxY + margin] as [number, number];
   };
 
   const getBodyProgressYDomain = (data: any) => {
@@ -200,23 +218,59 @@ export default function ProgressScreen() {
             Progresión de cargas por ejercicio
           </Text>
           <View style={styles.chart}>
+            {exerciseLoadProgress.length < 4 && (
+              <Chip
+                mode="outlined"
+                style={{
+                  borderColor: "red",
+                  backgroundColor: "white",
+                }}
+                textStyle={{ color: "red", flexWrap: "wrap" }}
+              >
+                Próximamente se mostrará la gráfica
+              </Chip>
+            )}
             <CartesianChart
-              data={data1}
-              xKey="month"
-              yKeys={["listenCount"]}
+              data={
+                exerciseLoadProgress.length > 3
+                  ? exerciseLoadProgress
+                  : [
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        maxLoad: 0,
+                      },
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        maxLoad: 0,
+                      },
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        maxLoad: 0,
+                      },
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        maxLoad: 0,
+                      },
+                    ]
+              }
+              xKey="date"
+              yKeys={["maxLoad"]}
+              domain={{
+                y: getExerciseLoadProgressYDomain(exerciseLoadProgress),
+              }}
               domainPadding={{ left: 50, right: 50, top: 30 }}
               axisOptions={{
                 font,
                 tickCount: 5,
                 formatXLabel: (value) => {
-                  const date = new Date(2023, value - 1);
+                  const date = new Date(value);
                   return date.toLocaleString("default", { month: "short" });
                 },
               }}
             >
               {({ points, chartBounds }) => (
                 <Bar
-                  points={points.listenCount}
+                  points={points.maxLoad}
                   chartBounds={chartBounds}
                   animate={{ type: "timing", duration: 1000 }}
                   roundedCorners={{
@@ -249,23 +303,61 @@ export default function ProgressScreen() {
             Progresión del volumen por grupo muscular
           </Text>
           <View style={styles.chart}>
+            {muscleGroupVolumeProgress.length < 4 && (
+              <Chip
+                mode="outlined"
+                style={{
+                  borderColor: "red",
+                  backgroundColor: "white",
+                }}
+                textStyle={{ color: "red", flexWrap: "wrap" }}
+              >
+                Próximamente se mostrará la gráfica
+              </Chip>
+            )}
             <CartesianChart
-              data={data2}
-              xKey="month"
-              yKeys={["listenCount"]}
+              data={
+                muscleGroupVolumeProgress.length > 3
+                  ? muscleGroupVolumeProgress
+                  : [
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        totalVolume: 0,
+                      },
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        totalVolume: 0,
+                      },
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        totalVolume: 0,
+                      },
+                      {
+                        date: new Date().toISOString().split("T")[0],
+                        totalVolume: 0,
+                      },
+                    ]
+              }
+              xKey="date"
+              yKeys={["totalVolume"]}
+              domain={{
+                y: getMuscleGroupVolumeProgressYDomain(
+                  muscleGroupVolumeProgress
+                ),
+              }}
               domainPadding={{ left: 50, right: 50, top: 30 }}
               axisOptions={{
                 font,
                 tickCount: 5,
                 formatXLabel: (value) => {
-                  const date = new Date(2023, value - 1);
+                  const date = new Date(value);
                   return date.toLocaleString("default", { month: "short" });
                 },
               }}
             >
               {({ points, chartBounds }) => (
                 <Bar
-                  points={points.listenCount}
+                  points={points.totalVolume}
                   chartBounds={chartBounds}
                   animate={{ type: "timing", duration: 1000 }}
                   roundedCorners={{
