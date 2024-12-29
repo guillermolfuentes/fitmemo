@@ -1,0 +1,1 @@
+export type Equipment = "gym" | "dumbbells" | "barbell" | "no_equipment";
