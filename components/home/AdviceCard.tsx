@@ -20,7 +20,7 @@ const AdviceCard = ({
           source={require("../../assets/images/magic-advice.png")}
           style={styles.icon}
         />
-        <Text style={styles.dailyTip}>Consejo del día</Text>
+        <Text style={styles.dailyTip}>Consejo fitness</Text>
       </View>
 
       <Title style={styles.adviceTitle}>{adviceTitle}</Title>

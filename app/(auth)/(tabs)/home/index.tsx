@@ -1,9 +1,63 @@
-import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import React, { useContext, useState, useCallback } from "react";
+import { View, StyleSheet, ScrollView, PixelRatio } from "react-native";
 import AchievementCard from "@/components/home/AchievementCard";
 import AdviceCard from "@/components/home/AdviceCard";
+import StatisticsService from "@/services/statisticsService";
+import TrainingTipsService from "@/services/trainingTipsService";
+import { UserAchievementsResponse } from "@/types/home/services/UserAchievementsResponse";
+import { TrainingTip } from "@/types/home/models/TrainingTip";
+import { useUIContext } from "@/context/UIContext";
+import { AuthContext } from "@/context/AuthContext";
+import { useFocusEffect } from "@react-navigation/native";
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
+  const [achievements, setAchievements] =
+    useState<UserAchievementsResponse | null>(null);
+  const [trainingTip, setTrainingTip] = useState<TrainingTip | null>(null);
+  const { getCurrentSession } = useContext(AuthContext);
+  const { setLoading, showErrorSnackbar } = useUIContext();
+  const fetchAchievements = async () => {
+    try {
+      setLoading(true);
+      const session = await getCurrentSession();
+
+      const response = await StatisticsService.getUserAchievements(
+        session.token!
+      );
+      setAchievements(response);
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      showErrorSnackbar("Error fetching achievements. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTrainingTip = async () => {
+    try {
+      setLoading(true);
+      const session = await getCurrentSession();
+      const response = await TrainingTipsService.getDailyTrainingTip(
+        session.token!
+      );
+      setTrainingTip(response);
+    } catch (error) {
+      console.error("Error fetching daily training tip:", error);
+      showErrorSnackbar(
+        "Error fetching daily training tip. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAchievements();
+      fetchTrainingTip();
+    }, [])
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.scrollviewContainer}>
       <View style={styles.achievementsContainer}>
@@ -11,40 +65,52 @@ export default function TabOneScreen() {
           <AchievementCard
             image={require("../../../../assets/images/total-sessions.png")}
             title="Sesiones totales"
-            achievement="100 sesiones"
+            achievement={
+              achievements
+                ? `${achievements.totalTrainings} sesiones`
+                : "Cargando..."
+            }
           />
           <AchievementCard
             image={require("../../../../assets/images/total-weight.png")}
             title="Kilos levantados"
-            achievement="15.084 kgs."
+            achievement={
+              achievements
+                ? `${achievements.totalWeightLifted} kgs.`
+                : "Cargando..."
+            }
           />
           <AchievementCard
             image={require("../../../../assets/images/weekly-average.png")}
             title="Media semanal"
-            achievement="4 sesiones"
+            achievement={
+              achievements
+                ? `${achievements.averageTrainingsPerWeek} sesiones`
+                : "Cargando..."
+            }
           />
         </ScrollView>
       </View>
       <View style={styles.adviceContainer}>
-        <AdviceCard
-          adviceTitle="Incrementa gradualmente la carga"
-          advice="Aumento el peso o las repeticiones de tus ejercicios cada 1-2 semanas. Este principio, conocido como sobrecarga progresiva, es esencial para estimular el crecimiento muscular."
-          scientificExplanation="Estudios muestran que la sobrecarga progresiva aumenta la síntesis de proteínas musculares, lo cual es clave para la hipertrofia. Mantenerse con la misma carga y repeticiones por mucho tiempo puede estancar los resultados vvfvffvfvfvfvfvfvfvfvf vfvv f   f fg   fg gf gf  f f fg f  fg f fg gf fg fg f f f fg f f f fg f f f."
-        />
+        {trainingTip && (
+          <AdviceCard
+            adviceTitle={trainingTip.title}
+            advice={trainingTip.content}
+            scientificExplanation={trainingTip.scienceExplanation}
+          />
+        )}
       </View>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({  
+const styles = StyleSheet.create({
   scrollviewContainer: {
     flexGrow: 1,
   },
   achievementsContainer: {
-    marginBottom: 10,    
-    flex: 2
+    marginBottom: 10,
+    height: 60 * PixelRatio.get(),
   },
-  adviceContainer: {    
-    flex: 8
-  },
+  adviceContainer: {},
 });

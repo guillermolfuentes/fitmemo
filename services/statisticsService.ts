@@ -3,10 +3,10 @@ import { NetworkError } from "@/errors/NetworkError";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { UnknownError } from "@/errors/UnknownError";
-import { User } from "@/types/auth/models/User";
 import { MuscularGroupVolumeProgressResponse } from "@/types/progress/services/MuscularGroupVolumeProgressResponse";
 import { BodyProgressResponse } from "@/types/progress/services/BodyProgressResponse";
 import { ExerciseLoadProgressResponse } from "@/types/progress/services/ExerciseLoadProgressResponse";
+import { UserAchievementsResponse } from "@/types/home/services/UserAchievementsResponse";
 
 class StatisticsService {
   constructor() {
@@ -18,6 +18,26 @@ class StatisticsService {
       (response) => response,
       (error) => Promise.reject(error)
     );
+  }
+
+  public static async getUserAchievements(
+    token: string
+  ): Promise<UserAchievementsResponse> {
+    try {
+      const url_get_user_achievements = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/statistics/achievements`;
+      const response = await axios.get(url_get_user_achievements, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("respuesta:    --------------->"+response.data); 
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        StatisticsService.handleAxiosError(error);
+      }
+      throw new UnknownError("Unknown error");
+    }
   }
 
   public static async getBodyProgress(
