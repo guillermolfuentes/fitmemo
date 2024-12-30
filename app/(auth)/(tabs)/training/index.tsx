@@ -1,14 +1,21 @@
 import { ScrollView, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import TrainingSessionCard from "@/components/training/RoutineSessionCard";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import TrainingDiaryService from "@/services/trainingDiaryService";
 import { UserRoutineResponse } from "@/types/training/services/UserRoutineResponse";
 import { Button } from "react-native-paper";
-import { Href, useNavigation, useRouter } from "expo-router";
+import { Href, useFocusEffect, useNavigation, useRouter } from "expo-router";
+import RoutineService from "@/services/routineService";
 
 export default function TrainingScreen() {
   const [userRoutine, setUserRoutine] = useState<UserRoutineResponse>({
@@ -30,26 +37,30 @@ export default function TrainingScreen() {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const fetchUserRoutine = async () => {
-      setLoading(true);
+  const fetchUserRoutine = async () => {
+    setLoading(true);
 
-      try {
-        const session = await getCurrentSession();
-        const userRoutine: UserRoutineResponse =
-          await TrainingDiaryService.getUserRoutine(session.token!);
-        setUserRoutine(userRoutine);
-        setLoading(true);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserRoutine();
-  }, []);
+    try {
+      const session = await getCurrentSession();
+      const userRoutine: UserRoutineResponse =
+        await RoutineService.getUserRoutine(session.token!);
+      setUserRoutine(userRoutine);
+      setLoading(true);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserRoutine();
+    }, [])
+  );
 
   const handleStartSession = (sessionId: number) => {
+    console.log("Starting session with id:", sessionId);
     router.push(`/training/session/start/${sessionId}`);
   };
 

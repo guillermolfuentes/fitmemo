@@ -4,30 +4,52 @@ import { Text } from "@/components/Themed";
 import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
-import { Button } from "react-native-paper";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import RoutineSessionExerciseCard from "@/components/training/RoutineSessionExerciseCard";
+import RoutineSessionService from "@/services/routineSessionService";
+import {
+  RoutineSessionExercise,
+  RoutineSessionResponse,
+} from "@/types/training/services/RoutineSessionResponse";
+import { TrainingDiaryEntryRequest } from "@/types/training/services/TrainingDiaryEntryRequest";
 
 export default function TrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
-  const { isLoading, setLoading } = useUIContext();
-  const router = useRouter();
+  const { setLoading, showErrorSnackbar } = useUIContext();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [routineSession, setRoutineSession] =
+    useState<RoutineSessionResponse | null>(null);
+  const [trainingDiaryEntry, setTrainingDiaryEntry] =
+    useState<TrainingDiaryEntryRequest | null>(null);
 
   useEffect(() => {
     const fetchUserRoutine = async () => {
       setLoading(true);
 
       try {
+        setLoading(true);
+        const session = await getCurrentSession();
+        const response = await RoutineSessionService.getRoutineSession(
+          Number(sessionId),
+          session.token!
+        );
+        setRoutineSession(response);
       } catch (error) {
-        console.error("Error fetching training session", error);
+        if (error instanceof Error) {
+          console.error("Error fetching routine session:", error.message);
+        } else {
+          console.error("Error fetching routine session:", error);
+        }
+        showErrorSnackbar(
+          "Error fetching routine session. Please try again later."
+        );
       } finally {
         setLoading(false);
       }
@@ -58,27 +80,24 @@ export default function TrainingSessionScreen() {
     });
   }, [navigation]);
 
+  if (!routineSession) {
+    return <Text>Cargando...</Text>;
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.container}>
-        <RoutineSessionExerciseCard
-          id={1}
-          name="Ejercicio 1"
-          onStartSession={() => {}}
-          onEditSession={() => {}}
-        />
-        <RoutineSessionExerciseCard
-          id={2}
-          name="Ejercicio 2"
-          onStartSession={() => {}}
-          onEditSession={() => {}}
-        />
-        <RoutineSessionExerciseCard
-          id={3}
-          name="Ejercicio 3"
-          onStartSession={() => {}}
-          onEditSession={() => {}}
-        />
+        {routineSession &&
+          routineSession.sessionExercises.map(
+            (exercise: RoutineSessionExercise) => (
+              <RoutineSessionExerciseCard
+                key={exercise.id}
+                id={exercise.id}
+                name={`${exercise.exerciseName}`}
+                canDeleteRows={false}
+              />
+            )
+          )}
       </View>
     </ScrollView>
   );

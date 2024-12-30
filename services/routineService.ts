@@ -3,9 +3,9 @@ import { NetworkError } from "@/errors/NetworkError";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { UnknownError } from "@/errors/UnknownError";
-import { TrainingDiaryEntryRequest } from "../types/training/services/TrainingDiaryEntryRequest";
+import { UserRoutineResponse } from "@/types/training/services/UserRoutineResponse";
 
-class TrainingDiaryService {
+class RoutineService {
   constructor() {
     axios.interceptors.request.use((request) => {
       return request;
@@ -17,25 +17,20 @@ class TrainingDiaryService {
     );
   }
 
-  public static async createTrainingDiaryEntry(
-    diaryEntry: TrainingDiaryEntryRequest,
+  public static async getUserRoutine(
     token: string
-  ): Promise<void> {
+  ): Promise<UserRoutineResponse> {
     try {
-      const url_post_training_diary_entry = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/training-diary`;
-      const response = await axios.post(
-        url_post_training_diary_entry,
-        diaryEntry,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const url_get_user_routine = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/routines`;
+      const response = await axios.get(url_get_user_routine, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        TrainingDiaryService.handleAxiosError(error);
+        RoutineService.handleAxiosError(error);
       }
       throw new UnknownError("Unknown error");
     }
@@ -68,4 +63,4 @@ class TrainingDiaryService {
   }
 }
 
-export default TrainingDiaryService;
+export default RoutineService;

@@ -7,8 +7,6 @@ import { FontAwesome } from '@expo/vector-icons';
 interface RoutineSessionExerciseCardProps {
   id: number;
   name: string;
-  onStartSession: () => void;
-  onEditSession: () => void;
   onDeletePress?: () => void;
   canDeleteRows: boolean;
 }
@@ -16,8 +14,6 @@ interface RoutineSessionExerciseCardProps {
 const RoutineSessionExerciseCard = ({
   id,
   name,
-  onStartSession,
-  onEditSession,
   canDeleteRows,
   onDeletePress,
 }: RoutineSessionExerciseCardProps) => {
