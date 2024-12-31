@@ -1,7 +1,12 @@
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-
 import { Text } from "@/components/Themed";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useNavigation } from "expo-router";
@@ -16,6 +21,7 @@ import {
   RoutineSessionResponse,
 } from "@/types/training/services/RoutineSessionResponse";
 import { TrainingDiaryEntryRequest } from "@/types/training/services/TrainingDiaryEntryRequest";
+import { FormikProps } from "formik";
 
 export default function TrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
@@ -28,6 +34,43 @@ export default function TrainingSessionScreen() {
     useState<RoutineSessionResponse | null>(null);
   const [trainingDiaryEntry, setTrainingDiaryEntry] =
     useState<TrainingDiaryEntryRequest | null>(null);
+  const formRefs = useRef<FormikProps<any>[]>([]);
+
+  const handleSaveSession = async () => {
+    let allValid = true;
+    for (const form of formRefs.current) {
+      if (form) {
+        form.setTouched(
+          {
+            sets: form.values.sets.map(() => ({
+              repetitions: true,
+              weight: true,
+            })),
+          },
+          true
+        );
+
+        const errors = await form.validateForm();
+
+        if (Object.keys(errors).length > 0) {
+          allValid = false;
+        }
+      }
+    }
+
+    if (allValid) {
+      console.log("All forms are valid. Values:");
+      formRefs.current.forEach((form, index) => {
+        if (form) {
+          console.log(`Form ${index + 1} values:`, form.values);
+        } else {
+          console.log(`Form ${index + 1} is not initialized.`);
+        }
+      });
+    } else {
+      console.log("Some forms are invalid.");
+    }
+  };
 
   useEffect(() => {
     const fetchUserRoutine = async () => {
@@ -62,9 +105,7 @@ export default function TrainingSessionScreen() {
       title: "Registro de sesión",
       headerRight: () => (
         <Pressable
-          onPressIn={() => {
-            console.log("Guardando sesion...!");
-          }}
+          onPressIn={handleSaveSession}
           style={({ pressed }) => ({
             marginRight: 15,
             opacity: pressed ? 0.5 : 1,
@@ -89,12 +130,17 @@ export default function TrainingSessionScreen() {
       <View style={styles.container}>
         {routineSession &&
           routineSession.sessionExercises.map(
-            (exercise: RoutineSessionExercise) => (
+            (exercise: RoutineSessionExercise, index: number) => (
               <RoutineSessionExerciseCard
                 key={exercise.id}
                 id={exercise.id}
                 name={`${exercise.exerciseName}`}
                 canDeleteRows={false}
+                formRef={(el) => {
+                  if (el) {
+                    formRefs.current[index] = el;
+                  }
+                }}
               />
             )
           )}
