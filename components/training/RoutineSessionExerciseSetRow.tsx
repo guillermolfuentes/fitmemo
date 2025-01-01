@@ -9,6 +9,8 @@ interface RoutineSessionExerciseSetRowProps {
   weight: string;
   onRepetitionsChange: (text: string) => void;
   onWeightChange: (text: string) => void;
+  onRepetitionsBlur: (e: any) => void;
+  onWeightBlur: (e: any) => void;
   onDeletePress?: () => void;
   errorRepetitions?: boolean;
   errorWeight?: boolean;
@@ -20,6 +22,8 @@ const RoutineSessionExerciseSetRow = ({
   weight,
   onRepetitionsChange,
   onWeightChange,
+  onRepetitionsBlur,
+  onWeightBlur,
   onDeletePress,
   errorRepetitions,
   errorWeight,
@@ -30,6 +34,7 @@ const RoutineSessionExerciseSetRow = ({
       <TextInput
         label="Reps"
         onChangeText={onRepetitionsChange}
+        onBlur={onRepetitionsBlur}
         value={repetitions}
         style={styles.input}
         error={errorRepetitions}
@@ -38,6 +43,7 @@ const RoutineSessionExerciseSetRow = ({
       <TextInput
         label="Kgs"
         onChangeText={onWeightChange}
+        onBlur={onWeightBlur}
         value={weight}
         style={styles.input}
         error={errorWeight}

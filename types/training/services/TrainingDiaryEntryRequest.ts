@@ -1,7 +1,5 @@
 export interface TrainingDiaryEntryRequest {
-  body: {
-    exercises: TrainingDiaryEntryExercise[];
-  };
+  exercises: TrainingDiaryEntryExercise[];
 }
 
 export interface TrainingDiaryEntryExercise {

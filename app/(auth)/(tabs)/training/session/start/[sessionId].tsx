@@ -9,13 +9,14 @@ import {
 } from "react";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import RoutineSessionExerciseCard from "@/components/training/RoutineSessionExerciseCard";
 import RoutineSessionService from "@/services/routineSessionService";
+import TrainingDiaryService from "@/services/trainingDiaryService";
 import {
   RoutineSessionExercise,
   RoutineSessionResponse,
@@ -25,16 +26,15 @@ import { FormikProps } from "formik";
 
 export default function TrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
-  const { setLoading, showErrorSnackbar } = useUIContext();
+  const { setLoading, showErrorSnackbar, showSuccessSnackbar } = useUIContext();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [routineSession, setRoutineSession] =
     useState<RoutineSessionResponse | null>(null);
-  const [trainingDiaryEntry, setTrainingDiaryEntry] =
-    useState<TrainingDiaryEntryRequest | null>(null);
   const formRefs = useRef<FormikProps<any>[]>([]);
+  const router = useRouter();
 
   const handleSaveSession = async () => {
     let allValid = true;
@@ -60,13 +60,41 @@ export default function TrainingSessionScreen() {
 
     if (allValid) {
       console.log("All forms are valid. Values:");
+      let entry: TrainingDiaryEntryRequest = {
+        exercises: [],
+      };
       formRefs.current.forEach((form, index) => {
         if (form) {
-          console.log(`Form ${index + 1} values:`, form.values);
-        } else {
-          console.log(`Form ${index + 1} is not initialized.`);
+          entry.exercises.push({
+            exerciseId: routineSession!.sessionExercises[index].exerciseId,
+            sets: form.values.sets.map((set: any) => ({
+              setNumber: Number(set.setNumber),
+              repetitionsCompleted: Number(set.repetitions),
+              weightUsed: Number(set.weight),
+            })),
+          });
         }
       });
+
+      console.log(`Datos para enviar:\n${JSON.stringify(entry, null, 2)}`);
+
+      try {
+        const session = await getCurrentSession();
+        await TrainingDiaryService.createTrainingDiaryEntry(
+          entry,
+          session.token!
+        );
+        showSuccessSnackbar("Training session saved successfully.");
+
+        router.back();
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error saving training session:", error.message);
+        } else {
+          console.error("Error saving training session:", error);
+        }
+        showErrorSnackbar("Error saving session. Please try again later.");
+      }
     } else {
       console.log("Some forms are invalid.");
     }
@@ -119,7 +147,7 @@ export default function TrainingSessionScreen() {
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, routineSession]);
 
   if (!routineSession) {
     return <Text>Cargando...</Text>;

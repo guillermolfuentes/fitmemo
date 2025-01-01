@@ -27,14 +27,18 @@ const RoutineSessionExerciseCard = ({
     { setNumber: 3, repetitions: "", weight: "" },
   ]);
 
-  const validationSchema = Yup.object().shape({
-    sets: Yup.array().of(
-      Yup.object().shape({
-        repetitions: Yup.string().required(),
-        weight: Yup.string().required(),
-      })
-    ),
-  });
+const validationSchema = Yup.object().shape({
+  sets: Yup.array().of(
+    Yup.object().shape({
+      repetitions: Yup.string()
+        .matches(/^[1-9]\d*$/)
+        .required(),
+      weight: Yup.string()
+        .matches(/^[1-9]\d*$/)
+        .required(),
+    })
+  ),
+});
 
   const addSet = (
     values: any,
@@ -108,6 +112,8 @@ const RoutineSessionExerciseCard = ({
                     `sets[${index}].repetitions`
                   )}
                   onWeightChange={handleChange(`sets[${index}].weight`)}
+                  onRepetitionsBlur={handleBlur(`sets[${index}].repetitions`)}
+                  onWeightBlur={handleBlur(`sets[${index}].weight`)}
                   onDeletePress={
                     canDeleteRows
                       ? () => handleDeletePress(index, values, setFieldValue)
