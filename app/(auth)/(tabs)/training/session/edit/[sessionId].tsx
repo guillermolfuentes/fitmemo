@@ -1,53 +1,174 @@
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View, Text } from "react-native";
 
-import { Text } from "@/components/Themed";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+} from "react";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
-import { Button } from "react-native-paper";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Button, TextInput } from "react-native-paper";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import RoutineSessionExerciseCard from "@/components/training/RoutineSessionExerciseCard";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { NavigationContext } from "@/context/NavigationContext";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import {
+  RoutineSessionExercise,
+  RoutineSessionResponse,
+} from "@/types/training/services/RoutineSessionResponse";
+import RoutineSessionService from "@/services/routineSessionService";
+import { Formik, FormikProps } from "formik";
+import { RoutineSessionUpdateRequest } from "@/types/training/services/RoutineSessionUpdateRequest";
+import * as Yup from "yup";
+
+const SessionNameSchema = Yup.object().shape({
+  sessionName: Yup.string().required("El nombre de la sesión es obligatorio"),
+});
 
 export default function EditTrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
   const { getData, clearData } = useContext(NavigationContext);
-  const { isLoading, setLoading } = useUIContext();
-  const router = useRouter();
+  const { setLoading, showErrorSnackbar, showSuccessSnackbar } = useUIContext();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const [exercises, setExercises] = useState<{ id: number; name: string }[]>(
-    []
-  );
+  const [routineSession, setRoutineSession] =
+    useState<RoutineSessionResponse | null>(null);
+  const sessionNameFormRef = useRef<FormikProps<{ sessionName: string }>>(null);
+  const routineSessionExerciseFormRefs = useRef<FormikProps<any>[]>([]);
+  const router = useRouter();
   const [
     deleteExerciseConfirmationModalVisible,
     setDeleteExerciseConfirmationModalVisible,
   ] = useState(false);
+  const [exerciseIdToDelete, setExerciseIdToDelete] = useState<number | null>(
+    null
+  );
 
-  const [exerciseToDelete, setExerciseToDelete] = useState<number | null>(null);
+  const handleSaveEditedSession = async () => {
+    let allValid = true;
 
-  const mockData = [
-    { id: 1, name: "Ejercicio 1" },
-    { id: 2, name: "Ejercicio 2" },
-    { id: 3, name: "Ejercicio 3" },
-  ];
+    if (sessionNameFormRef.current) {
+      sessionNameFormRef.current.setTouched(
+        {
+          sessionName: true,
+        },
+        true
+      );
+
+      const errors = await sessionNameFormRef.current.validateForm();
+
+      if (Object.keys(errors).length > 0) {
+        allValid = false;
+      }
+    }
+
+    for (const form of routineSessionExerciseFormRefs.current) {
+      if (form) {
+        form.setTouched(
+          {
+            sets: form.values.sets.map(() => ({
+              repetitions: true,
+              weight: true,
+            })),
+          },
+          true
+        );
+
+        const errors = await form.validateForm();
+
+        if (Object.keys(errors).length > 0) {
+          allValid = false;
+        }
+      }
+    }
+
+    allValid = true;
+    if (allValid) {
+      if (!routineSession) {
+        console.error("Routine session to edit is null or undefined");
+        return;
+      }
+      console.log("All forms are valid. Values:");
+      let editedSession: RoutineSessionUpdateRequest = {
+        name: routineSession.name,
+        sessionExercises: [],
+      };
+
+      routineSessionExerciseFormRefs.current.forEach((form, index) => {
+        console.log("Form index:", index);
+        if (form) {
+          editedSession.sessionExercises.push({
+            id: routineSession!.sessionExercises[index].id,
+            exerciseId: routineSession!.sessionExercises[index].exerciseId,
+            recommendedOrder:
+              routineSession!.sessionExercises[index].recommendedOrder,
+            sets: form.values.sets.map((set: any) => ({
+              setNumber: Number(set.setNumber),
+              repetitionsCompleted: Number(set.repetitions),
+              weightUsed: Number(set.weight),
+            })),
+          });
+        }
+      });
+
+      console.log(
+        `Datos para enviar:\n${JSON.stringify(editedSession, null, 2)}`
+      );
+
+      /*try {
+        const session = await getCurrentSession();
+        await RoutineSessionService.updateRoutineSession(
+          editedSession,
+          Number(sessionId),
+          session.token!
+        );
+        showSuccessSnackbar("Edited Training session saved successfully.");
+
+        router.back();
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error saving edited training session:", error.message);
+        } else {
+          console.error("Error saving edited training session:", error);
+        }
+        showErrorSnackbar(
+          "Error saving edited session. Please try again later."
+        );
+      }*/
+    } else {
+      console.log("Some forms are invalid.");
+    }
+  };
 
   useEffect(() => {
     const fetchUserRoutine = async () => {
       setLoading(true);
 
       try {
-        setExercises(mockData);
+        setLoading(true);
+        const session = await getCurrentSession();
+        const response = await RoutineSessionService.getRoutineSession(
+          Number(sessionId),
+          session.token!
+        );
+        setRoutineSession(response);
       } catch (error) {
-        console.error("Error fetching training session", error);
+        if (error instanceof Error) {
+          console.error("Error fetching routine session:", error.message);
+        } else {
+          console.error("Error fetching routine session:", error);
+        }
+        showErrorSnackbar(
+          "Error fetching routine session. Please try again later."
+        );
       } finally {
         setLoading(false);
       }
@@ -68,9 +189,7 @@ export default function EditTrainingSessionScreen() {
       title: "Editar sesión",
       headerRight: () => (
         <Pressable
-          onPressIn={() => {
-            console.log("Guardando sesion...!");
-          }}
+          onPressIn={handleSaveEditedSession}
           style={({ pressed }) => ({
             marginRight: 15,
             opacity: pressed ? 0.5 : 1,
@@ -84,7 +203,7 @@ export default function EditTrainingSessionScreen() {
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, routineSession]);
 
   const handleNewExercise = () => {
     console.log("Añadiendo nuevo ejercicio...");
@@ -96,56 +215,111 @@ export default function EditTrainingSessionScreen() {
     });
   };
 
-  const deleteExercise = (id: number) => {
+  /*const deleteExercise = (id: number) => {
     const updatedExercises = exercises.filter((exercise) => exercise.id !== id);
     setExercises(updatedExercises);
   };
 
+  */
+
   const handleDeleteExerciseConfirm = () => {
-    console.log("Borrando ejercicio con ID:", exerciseToDelete);
-    deleteExercise(exerciseToDelete as number);
+    setRoutineSession((prevState) => {
+      if (!prevState) return prevState;
+      return {
+        ...prevState,
+        sessionExercises: prevState.sessionExercises.filter(
+          (exercise) => exercise.id !== exerciseIdToDelete
+        ),
+      };
+    });
+
+    const formIndexToDelete =
+      routineSession?.sessionExercises.findIndex(
+        (exercise) => exercise.id === exerciseIdToDelete
+      ) ?? -1;
+
+    if (formIndexToDelete !== -1) {
+      routineSessionExerciseFormRefs.current.splice(formIndexToDelete, 1);
+    }
+
     setDeleteExerciseConfirmationModalVisible(false);
-    setExerciseToDelete(null);
   };
 
   const handleOnDeleteExercise = (exerciseId: number) => {
+    setExerciseIdToDelete(exerciseId);
     setDeleteExerciseConfirmationModalVisible(true);
-    setExerciseToDelete(exerciseId);
   };
 
+  if (!routineSession) {
+    return <Text>Cargando...</Text>;
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.container}>
-        <ConfirmationModal
-          visible={deleteExerciseConfirmationModalVisible}
-          onConfirm={handleDeleteExerciseConfirm}
-          onCancel={() => {
-            setDeleteExerciseConfirmationModalVisible(false);
-          }}
-          title="¿Estás seguro?"
-          message="¿Estás seguro de que quieres borrar el ejercicio?" 
-        />
-        {exercises.map((exercise) => (
-          <RoutineSessionExerciseCard
-            key={exercise.id}
-            id={exercise.id}
-            name={exercise.name}
-            onStartSession={() => {}}
-            onEditSession={() => {}}
-            onDeletePress={() => handleOnDeleteExercise(exercise.id)}
-            canDeleteRows={true}
-          />
-        ))}
-      </View>
-      <Button
-        style={styles.addSessionButton}
-        mode="outlined"
-        icon="plus"
-        onPress={handleNewExercise}
-      >
-        Añadir ejercicio
-      </Button>
-    </ScrollView>
+    <Formik
+      initialValues={{ sessionName: "" }}
+      validationSchema={SessionNameSchema}
+      onSubmit={() => {}}
+      innerRef={sessionNameFormRef}
+    >
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+      }) => (
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.container}>
+            <Text style={styles.sessionTitle}>Nombre de sesión</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={handleChange("sessionName")}
+              onBlur={handleBlur("sessionName")}
+              value={values.sessionName}
+              placeholder="Introduce el nombre de la sesión"
+            />
+            {touched.sessionName && errors.sessionName ? (
+              <Text style={styles.errorText}>{errors.sessionName}</Text>
+            ) : null}
+            <ConfirmationModal
+              visible={deleteExerciseConfirmationModalVisible}
+              onConfirm={handleDeleteExerciseConfirm}
+              onCancel={() => {
+                setDeleteExerciseConfirmationModalVisible(false);
+              }}
+              title="¿Estás seguro?"
+              message="¿Estás seguro de que quieres borrar el ejercicio?"
+            />
+            {routineSession &&
+              routineSession.sessionExercises.map(
+                (exercise: RoutineSessionExercise, index: number) => (
+                  <RoutineSessionExerciseCard
+                    key={exercise.id}
+                    id={exercise.id}
+                    name={`${exercise.exerciseName}`}
+                    canDeleteRows={true}
+                    onDeletePress={() => handleOnDeleteExercise(exercise.id)}
+                    formRef={(el) => {
+                      if (el) {
+                        routineSessionExerciseFormRefs.current[index] = el;
+                      }
+                    }}
+                  />
+                )
+              )}
+          </View>
+          <Button
+            style={styles.addSessionButton}
+            mode="outlined"
+            icon="plus"
+            onPress={handleNewExercise}
+          >
+            Añadir ejercicio
+          </Button>
+        </ScrollView>
+      )}
+    </Formik>
   );
 }
 
@@ -157,6 +331,22 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 18,
     fontWeight: "bold",
+  },
+  sessionTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    marginLeft: 10,
+  },
+  input: {
+    marginBottom: 15,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginBottom: 10,
   },
   addSessionButton: {},
 });

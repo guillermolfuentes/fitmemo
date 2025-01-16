@@ -1,9 +1,6 @@
 export interface RoutineSessionUpdateRequest {
-  body: {
-    name: string;
-    recommendedOrder: number;
-    sessionExercises: RoutineSessionExercise[];
-  };
+  name?: string;
+  sessionExercises: RoutineSessionExercise[];
 }
 
 export interface RoutineSessionExercise {
