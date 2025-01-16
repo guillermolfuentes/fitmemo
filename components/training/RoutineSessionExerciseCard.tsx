@@ -1,17 +1,19 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useEffect } from "react";
 import { Card, Button } from "react-native-paper";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import RoutineSessionExerciseSetRow from "./RoutineSessionExerciseSetRow";
 import { FontAwesome } from "@expo/vector-icons";
 import { Formik, FormikProps } from "formik";
 import * as Yup from "yup";
+import { RoutineSessionExerciseFormFields } from "@/app/(auth)/(tabs)/training/session/edit/[sessionId]";
 
 interface RoutineSessionExerciseCardProps {
   id: number;
   name: string;
   onDeletePress?: () => void;
   canDeleteRows: boolean;
-  formRef?: React.Ref<FormikProps<any>>;
+  showWeightFields?: boolean;
+  formRef: React.Ref<FormikProps<RoutineSessionExerciseFormFields>>;
 }
 
 const RoutineSessionExerciseCard = ({
@@ -20,25 +22,28 @@ const RoutineSessionExerciseCard = ({
   canDeleteRows,
   onDeletePress,
   formRef,
+  showWeightFields = true,
 }: RoutineSessionExerciseCardProps) => {
-  const [sets, setSets] = useState([
-    { setNumber: 1, repetitions: "", weight: "" },
-    { setNumber: 2, repetitions: "", weight: "" },
-    { setNumber: 3, repetitions: "", weight: "" },
-  ]);
+  const [sets, setSets] = useState<RoutineSessionExerciseFormFields["sets"]>(
+    []
+  );
 
-const validationSchema = Yup.object().shape({
-  sets: Yup.array().of(
-    Yup.object().shape({
-      repetitions: Yup.string()
-        .matches(/^[1-9]\d*$/)
-        .required(),
-      weight: Yup.string()
-        .matches(/^[1-9]\d*$/)
-        .required(),
-    })
-  ),
-});
+  useEffect(() => {
+    if (formRef && "current" in formRef && formRef.current) {
+      setSets(formRef.current.values.sets);
+    }
+  }, [formRef]);
+
+  const validationSchema = Yup.object().shape({
+    sets: Yup.array().of(
+      Yup.object().shape({
+        repetitions: Yup.number().min(1).required(),
+        weight: showWeightFields
+          ? Yup.number().min(1).required()
+          : Yup.number().notRequired(),
+      })
+    ),
+  });
 
   const addSet = (
     values: any,
@@ -57,6 +62,11 @@ const validationSchema = Yup.object().shape({
     values: any,
     setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void
   ) => {
+    if (values.sets.length <= 1) {
+      onDeletePress && onDeletePress();
+      return;
+    }
+
     const updatedSets = values.sets
       .filter((_: any, i: number) => i !== index)
       .map(
@@ -71,6 +81,7 @@ const validationSchema = Yup.object().shape({
     setFieldValue("sets", updatedSets);
   };
 
+ 
   return (
     <Formik
       innerRef={formRef}
@@ -100,10 +111,15 @@ const validationSchema = Yup.object().shape({
             </View>
             {values.sets.map(
               (
-                set: { setNumber: number; repetitions: string; weight: string },
+                set: {
+                  setNumber: number;
+                  repetitions: string;
+                  weight: string;
+                },
                 index: number
               ) => (
                 <RoutineSessionExerciseSetRow
+                  showWeightField={showWeightFields}
                   key={index}
                   setNumber={set.setNumber}
                   repetitions={set.repetitions}

@@ -14,5 +14,4 @@ export interface RoutineSessionExerciseSet {
   id: number;
   setNumber: number;
   repetitions: number;
-  weight: number;
 }

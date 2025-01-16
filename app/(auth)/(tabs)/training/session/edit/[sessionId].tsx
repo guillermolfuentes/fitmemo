@@ -27,6 +27,16 @@ import { Formik, FormikProps } from "formik";
 import { RoutineSessionUpdateRequest } from "@/types/training/services/RoutineSessionUpdateRequest";
 import * as Yup from "yup";
 
+export interface RoutineSessionExerciseFormFields {
+  sets: RoutineSessionExerciseSetFormFields[];
+}
+
+export interface RoutineSessionExerciseSetFormFields {
+  setNumber: number;
+  repetitions: string;
+  weight: string;
+}
+
 const SessionNameSchema = Yup.object().shape({
   sessionName: Yup.string().required("El nombre de la sesión es obligatorio"),
 });
@@ -42,7 +52,9 @@ export default function EditTrainingSessionScreen() {
   const [routineSession, setRoutineSession] =
     useState<RoutineSessionResponse | null>(null);
   const sessionNameFormRef = useRef<FormikProps<{ sessionName: string }>>(null);
-  const routineSessionExerciseFormRefs = useRef<FormikProps<any>[]>([]);
+  const routineSessionExerciseFormRefs = useRef<
+    FormikProps<RoutineSessionExerciseFormFields>[]
+  >([]);
   const router = useRouter();
   const [
     deleteExerciseConfirmationModalVisible,
@@ -90,7 +102,6 @@ export default function EditTrainingSessionScreen() {
       }
     }
 
-    allValid = true;
     if (allValid) {
       if (!routineSession) {
         console.error("Routine session to edit is null or undefined");
@@ -108,12 +119,11 @@ export default function EditTrainingSessionScreen() {
           editedSession.sessionExercises.push({
             id: routineSession!.sessionExercises[index].id,
             exerciseId: routineSession!.sessionExercises[index].exerciseId,
-            recommendedOrder:
-              routineSession!.sessionExercises[index].recommendedOrder,
+            recommendedOrder: index + 1,
             sets: form.values.sets.map((set: any) => ({
+              id: set.id,
               setNumber: Number(set.setNumber),
-              repetitionsCompleted: Number(set.repetitions),
-              weightUsed: Number(set.weight),
+              repetitions: Number(set.repetitions),
             })),
           });
         }
@@ -176,6 +186,31 @@ export default function EditTrainingSessionScreen() {
     fetchUserRoutine();
   }, [sessionId]);
 
+  useEffect(() => {
+    if (routineSession && sessionNameFormRef.current) {
+      sessionNameFormRef.current.setValues({
+        sessionName: routineSession.name,
+      });
+    }
+
+    routineSession?.sessionExercises.forEach((exercise, index) => {
+      if (routineSessionExerciseFormRefs.current[index]) {
+        
+        exercise.sets.forEach((set, setIndex) => {
+          
+          routineSessionExerciseFormRefs.current[index].setFieldValue(
+            `sets[${setIndex}].setNumber`,
+            String(set.setNumber)
+          );
+          routineSessionExerciseFormRefs.current[index].setFieldValue(
+            `sets[${setIndex}].repetitions`,
+            String(set.repetitions)
+          );
+        });
+      }
+    });
+  }, [routineSession]);
+
   useFocusEffect(() => {
     const data = getData("EditTrainingSessionScreen");
     if (data) {
@@ -213,6 +248,11 @@ export default function EditTrainingSessionScreen() {
         sessionId: sessionId,
       },
     });
+  };
+
+  const handleDeleteSession = () => {
+    console.log("Borrando la session: " + sessionId + "...");
+    router.back();
   };
 
   /*const deleteExercise = (id: number) => {
@@ -295,6 +335,7 @@ export default function EditTrainingSessionScreen() {
               routineSession.sessionExercises.map(
                 (exercise: RoutineSessionExercise, index: number) => (
                   <RoutineSessionExerciseCard
+                    showWeightFields={false}
                     key={exercise.id}
                     id={exercise.id}
                     name={`${exercise.exerciseName}`}
@@ -317,6 +358,17 @@ export default function EditTrainingSessionScreen() {
           >
             Añadir ejercicio
           </Button>
+
+          <View style={styles.buttonContainer}>
+            <Button
+              style={styles.deleteSessionButton}
+              mode="contained"
+              icon="delete"
+              onPress={handleDeleteSession}
+            >
+              Eliminar sesión
+            </Button>
+          </View>
         </ScrollView>
       )}
     </Formik>
@@ -326,6 +378,8 @@ export default function EditTrainingSessionScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    flexDirection: "column",
+    justifyContent: "center",
   },
   routineTitle: {
     padding: 10,
@@ -349,4 +403,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addSessionButton: {},
+  deleteSessionButton: {
+    marginTop: 30,
+    marginBottom: 20,
+    backgroundColor: "#8B0000",
+    borderWidth: 3,
+  },
+  buttonContainer: {
+    alignItems: "center",
+  },
 });

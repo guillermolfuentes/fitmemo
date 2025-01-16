@@ -14,9 +14,10 @@ interface RoutineSessionExerciseSetRowProps {
   onDeletePress?: () => void;
   errorRepetitions?: boolean;
   errorWeight?: boolean;
+  showWeightField?: boolean; 
 }
 
-const RoutineSessionExerciseSetRow = ({
+const RoutineSessionExerciseSetRow: React.FC<RoutineSessionExerciseSetRowProps> = ({
   setNumber,
   repetitions,
   weight,
@@ -27,10 +28,13 @@ const RoutineSessionExerciseSetRow = ({
   onDeletePress,
   errorRepetitions,
   errorWeight,
-}: RoutineSessionExerciseSetRowProps) => {
+  showWeightField = false, 
+}) => {
   return (
     <View style={styles.row}>
-      <Text style={styles.setName}>Serie {setNumber}</Text>
+      <View style={styles.setContainer}>
+        <Text style={styles.setName}>Serie {setNumber}</Text>
+      </View>
       <TextInput
         label="Reps"
         onChangeText={onRepetitionsChange}
@@ -40,15 +44,17 @@ const RoutineSessionExerciseSetRow = ({
         error={errorRepetitions}
         keyboardType="numeric"
       />
-      <TextInput
-        label="Kgs"
-        onChangeText={onWeightChange}
-        onBlur={onWeightBlur}
-        value={weight}
-        style={styles.input}
-        error={errorWeight}
-        keyboardType="numeric"
-      />
+      {showWeightField && (
+        <TextInput
+          label="Kgs"
+          onChangeText={onWeightChange}
+          onBlur={onWeightBlur}
+          value={weight}
+          style={styles.input}
+          error={errorWeight}
+          keyboardType="numeric"
+        />
+      )}
       {onDeletePress && (
         <TouchableOpacity onPress={onDeletePress}>
           <FontAwesome name="trash-o" size={24} color="black" />
@@ -66,13 +72,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    alignContent: "center",
+    justifyContent: "space-between",
+  },
+  setContainer:{
+    flexDirection: "row",
+    flexBasis: "20%",
   },
   setName: {
     flex: 1,
     fontSize: 16,
   },
   input: {
-    flex: 1,
     marginHorizontal: 5,
     marginRight: 10,
   },
