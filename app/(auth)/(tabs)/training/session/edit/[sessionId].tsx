@@ -60,6 +60,10 @@ export default function EditTrainingSessionScreen() {
     deleteExerciseConfirmationModalVisible,
     setDeleteExerciseConfirmationModalVisible,
   ] = useState(false);
+  const [
+    deleteActualSessionConfirmationModalVisible,
+    setDeleteActualSessionConfirmationModalVisible,
+  ] = useState(false);
   const [exerciseIdToDelete, setExerciseIdToDelete] = useState<number | null>(
     null
   );
@@ -264,9 +268,27 @@ export default function EditTrainingSessionScreen() {
     });
   };
 
-  const handleDeleteSession = () => {
+  const handleDeleteSession = async () => {
     console.log("Borrando la session: " + sessionId + "...");
-    router.back();
+
+    try {
+      setLoading(true);
+      const session = await getCurrentSession();
+      await RoutineSessionService.deleteRoutineSession(
+        Number(sessionId),
+        session.token!
+      );
+      setLoading(false);
+      showSuccessSnackbar("Training session deleted successfully.");
+      router.back();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error deleting training session:", error.message);
+      } else {
+        console.error("Error deleting training session:", error);
+      }
+      showErrorSnackbar("Error deleting session. Please try again later.");
+    }
   };
 
   const handleDeleteExerciseConfirm = () => {
@@ -289,6 +311,11 @@ export default function EditTrainingSessionScreen() {
       routineSessionExerciseFormRefs.current.splice(formIndexToDelete, 1);
     }
 
+    setDeleteExerciseConfirmationModalVisible(false);
+  };
+
+  const handleDeleteActualSessionConfirm = () => {
+    handleDeleteSession();
     setDeleteExerciseConfirmationModalVisible(false);
   };
 
@@ -374,11 +401,22 @@ export default function EditTrainingSessionScreen() {
               style={styles.deleteSessionButton}
               mode="contained"
               icon="delete"
-              onPress={handleDeleteSession}
+              onPress={() => {
+                setDeleteActualSessionConfirmationModalVisible(true);
+              }}
             >
               Eliminar sesión
             </Button>
           </View>
+          <ConfirmationModal
+            visible={deleteActualSessionConfirmationModalVisible}
+            onConfirm={handleDeleteActualSessionConfirm}
+            onCancel={() => {
+              setDeleteActualSessionConfirmationModalVisible(false);
+            }}
+            title="¿Estás seguro?"
+            message="¿Estás seguro de que quieres borrar la sesión actual?"
+          />
         </ScrollView>
       )}
     </Formik>
