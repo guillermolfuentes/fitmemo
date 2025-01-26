@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useContext, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useLayoutEffect,
+} from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
@@ -6,9 +12,15 @@ import ExerciseCard from "@/components/training/ExerciseCard";
 import ExerciseSearch from "@/components/training/ExerciseSearch";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { NavigationContext } from "@/context/NavigationContext";
+import ExerciseService from "@/services/exerciseService";
+import { AuthContext } from "@/context/AuthContext";
+import { Exercise } from "@/types/training/models/Exercise";
+import { useUIContext } from "@/context/UIContext";
 
 const AddExerciseScreen = () => {
   const { setData } = useContext(NavigationContext);
+  const { getCurrentSession } = useContext(AuthContext);
+  const { setLoading, showErrorSnackbar, showSuccessSnackbar } = useUIContext();
 
   const [backConfirmationModalVisible, setBackConfirmationModalVisible] =
     useState(false);
@@ -26,11 +38,9 @@ const AddExerciseScreen = () => {
 
   const isBackToSessionConfirmedRef = useRef(false);
 
-  const [selectedExerciseId, setSelectedExerciseId] = useState<number>();
+  const [selectedExercise, setSelectedExercise] = useState<Exercise>();
 
-  const [exercises, setExercises] = useState<
-    { id: number; name: string; muscleGroup: string; material: string }[]
-  >([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const router = useRouter();
   const navigation = useNavigation();
 
@@ -55,7 +65,7 @@ const AddExerciseScreen = () => {
     //setBackConfirmationModalVisible(false);
     setaddExerciseConfirmationModalVisible(false);
     setData("EditTrainingSessionScreen", {
-      selectedExerciseId: selectedExerciseId,
+      selectedExercise: selectedExercise,
     });
     navigation.goBack();
   };
@@ -82,38 +92,33 @@ const AddExerciseScreen = () => {
     };
   }, [navigation]);
 
-  const handleSearch = (filters: any) => {
-    const results = [
-      {
-        id: 1,
-        name: "Sentadilla",
-        muscleGroup: "Piernas",
-        material: "Pesas",
-      },
-      {
-        id: 2,
-        name: "Curl de Bíceps",
-        muscleGroup: "Brazos",
-        material: "Pesas",
-      },
-      {
-        id: 3,
-        name: "Curl de Bíceps",
-        muscleGroup: "Brazos",
-        material: "Pesas",
-      },
-      {
-        id: 44,
-        name: "Curl de Bíceps",
-        muscleGroup: "Brazos",
-        material: "Pesas",
-      },
-    ];
-    setExercises(results);
+  const handleSearch = async (filters: any) => {
+    console.log("Filtros de búsqueda: ", filters);
+
+    try {
+      setLoading(true);
+      const session = await getCurrentSession();
+      let searchResult: Exercise[] = await ExerciseService.searchExercises(
+        filters,
+        session.token!
+      );
+      setExercises(searchResult);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error fetching exercise search:", error.message);
+      } else {
+        console.error("Error fetching exercise search:", error);
+      }
+      showErrorSnackbar(
+        "Error fetching exercise search. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddExercise = (exercise: any) => {
-    setSelectedExerciseId(exercise.id);
+    setSelectedExercise(exercise);
     setAddExerciseModalTitle(`Añadir ${exercise.name.toLowerCase()}`);
     setAddExerciseModalMessage(
       `¿Estás seguro de que deseas añadir el ejercicio ${exercise.name.toLowerCase()} a la sesión de entrenamiento?`
@@ -146,7 +151,7 @@ const AddExerciseScreen = () => {
               key={exercise.id}
               name={exercise.name}
               muscleGroup={exercise.muscleGroup}
-              material={exercise.material}
+              material={exercise.equipmentNeeded}
               onAdd={() => handleAddExercise(exercise)}
             />
           ))}

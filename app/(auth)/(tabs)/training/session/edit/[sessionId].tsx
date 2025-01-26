@@ -132,27 +132,6 @@ export default function EditTrainingSessionScreen() {
       console.log(
         `Datos para enviar:\n${JSON.stringify(editedSession, null, 2)}`
       );
-
-      /*try {
-        const session = await getCurrentSession();
-        await RoutineSessionService.updateRoutineSession(
-          editedSession,
-          Number(sessionId),
-          session.token!
-        );
-        showSuccessSnackbar("Edited Training session saved successfully.");
-
-        router.back();
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error("Error saving edited training session:", error.message);
-        } else {
-          console.error("Error saving edited training session:", error);
-        }
-        showErrorSnackbar(
-          "Error saving edited session. Please try again later."
-        );
-      }*/
     } else {
       console.log("Some forms are invalid.");
     }
@@ -169,7 +148,16 @@ export default function EditTrainingSessionScreen() {
           Number(sessionId),
           session.token!
         );
-        setRoutineSession(response);
+
+        const recentlyAddedResponse = {
+          ...response,
+          sessionExercises: response.sessionExercises.map((item) => ({
+            ...item,
+            recentlyAdded: true,
+          })),
+        };
+
+        setRoutineSession(recentlyAddedResponse);
       } catch (error) {
         if (error instanceof Error) {
           console.error("Error fetching routine session:", error.message);
@@ -195,24 +183,52 @@ export default function EditTrainingSessionScreen() {
 
     routineSession?.sessionExercises.forEach((exercise, index) => {
       if (routineSessionExerciseFormRefs.current[index]) {
-        exercise.sets.forEach((set, setIndex) => {
-          routineSessionExerciseFormRefs.current[index].setFieldValue(
-            `sets[${setIndex}].setNumber`,
-            String(set.setNumber)
-          );
-          routineSessionExerciseFormRefs.current[index].setFieldValue(
-            `sets[${setIndex}].repetitions`,
-            String(set.repetitions)
-          );
-        });
+        // Si el ejercicio ha sido recientemente añadido
+        // hay que crear el formulario asociado con sus series.
+        // Si no ha sido recientemente añadid el ejercicio no hace falta
+        // volver a rellenar las series puesto que ya se manejaran con los controles
+        if (exercise.recentlyAdded == true) {
+          exercise.sets.forEach((set, setIndex) => {
+            routineSessionExerciseFormRefs.current[index].setFieldValue(
+              `sets[${setIndex}].setNumber`,
+              String(set.setNumber)
+            );
+            routineSessionExerciseFormRefs.current[index].setFieldValue(
+              `sets[${setIndex}].repetitions`,
+              String(set.repetitions)
+            );
+          });
+          exercise.recentlyAdded = false;
+        }
       }
     });
   }, [routineSession]);
 
   useFocusEffect(() => {
     const data = getData("EditTrainingSessionScreen");
-    if (data) {
-      console.log("Nuevo ejercicio seleccionado:", data.selectedExerciseId);
+    if (data?.selectedExercise) {
+      let newExercise: RoutineSessionExercise = {
+        exerciseId: data.selectedExercise.id,
+        exerciseName: data.selectedExercise.name,
+        recommendedOrder: (routineSession?.sessionExercises?.length ?? 0) + 1,
+        sets: Array.from({ length: 3 }, (_, i) => ({
+          setNumber: i + 1,
+          repetitions: 0,
+          weight: 0,
+        })),
+        recentlyAdded: true,
+      };
+
+      console.log("Nuevo ejercicio seleccionado:", newExercise);
+
+      setRoutineSession((prevSession) => {
+        if (!prevSession) return prevSession;
+        return {
+          ...prevSession,
+          sessionExercises: [...prevSession.sessionExercises, newExercise],
+        };
+      });
+
       clearData("EditTrainingSessionScreen");
     }
   });
@@ -252,13 +268,6 @@ export default function EditTrainingSessionScreen() {
     console.log("Borrando la session: " + sessionId + "...");
     router.back();
   };
-
-  /*const deleteExercise = (id: number) => {
-    const updatedExercises = exercises.filter((exercise) => exercise.id !== id);
-    setExercises(updatedExercises);
-  };
-
-  */
 
   const handleDeleteExerciseConfirm = () => {
     setRoutineSession((prevState) => {
@@ -335,10 +344,13 @@ export default function EditTrainingSessionScreen() {
                   <RoutineSessionExerciseCard
                     showWeightFields={false}
                     key={exercise.id}
-                    id={exercise.id}
+                    id={(exercise.id ?? 0) + exercise.recommendedOrder}
                     name={`${exercise.exerciseName}`}
                     canDeleteRows={true}
-                    onDeletePress={() => handleOnDeleteExercise(exercise.id)}
+                    onDeletePress={() =>
+                      exercise.id !== undefined &&
+                      handleOnDeleteExercise(exercise.id)
+                    }
                     formRef={(el) => {
                       if (el) {
                         routineSessionExerciseFormRefs.current[index] = el;

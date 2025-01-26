@@ -1,56 +1,69 @@
+import { Equipment } from "@/types/training/models/Equipment";
+import { MuscleGroup } from "@/types/training/models/MuscleGroup";
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
+import { Button, TextInput } from "react-native-paper";
 import { Dropdown } from "react-native-paper-dropdown";
 
 interface ExerciseSearchProps {
   onSearch: (filters: {
-    exerciseName: string;
-    material: string;
-    muscleGroup: string;
+    name: string;
+    muscleGroup?: MuscleGroup;
+    equipment?: Equipment;
   }) => void;
 }
 
 const ExerciseSearch = ({ onSearch }: ExerciseSearchProps) => {
-  const [exerciseName, setExerciseName] = useState("");
-  const [material, setMaterial] = useState("");
-  const [muscleGroup, setMuscleGroup] = useState("");
+  const [name, setExerciseName] = useState("");
+  const [equipment, setEquipment] = useState<Equipment>();
+  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>();
 
   const handleSearch = () => {
-    onSearch({ exerciseName, material, muscleGroup });
+    onSearch({ name, equipment, muscleGroup });
   };
 
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Buscar por nombre de ejercicio"
-        value={exerciseName}
+        placeholder="Nombre de ejercicio"
+        value={name}
         onChangeText={setExerciseName}
+        left={<TextInput.Icon icon="magnify" />}
       />
       <View style={styles.dropdownContainer}>
-        <Dropdown
-          label="Material"
-          value={material}
-          hideMenuHeader={true}
-          onSelect={(value) => {
-            setMaterial(value as string);
-          }}
-          options={[
-            { label: "Pesas", value: "pesas" },
-            { label: "Bandas", value: "bandas" },
-          ]}
-        />
+        <View style={styles.filterDropdown}>
+          <Dropdown
+            label="Material"
+            value={equipment}
+            hideMenuHeader={true}
+            onSelect={(value) => {
+              setEquipment(value as Equipment);
+            }}
+            options={[
+              { label: "Mancuernas", value: "dumbbells" },
+              { label: "Barra", value: "barbell" },
+              { label: "Bandas", value: "resistance_band" },
+              { label: "Gimnasio", value: "gym" },
+              { label: "Sin equipamiento", value: "no_equipment" },
+            ]}
+          />
+        </View>
+
         <Dropdown
           label="Músculo"
           value={muscleGroup}
           hideMenuHeader={true}
           onSelect={(value) => {
-            setMuscleGroup(value as string);
+            setMuscleGroup(value as MuscleGroup);
           }}
           options={[
-            { label: "Piernas", value: "piernas" },
-            { label: "Brazos", value: "brazos" },
+            { label: "Pecho", value: "chest" },
+            { label: "Espalda", value: "back" },
+            { label: "Piernas", value: "legs" },
+            { label: "Brazos", value: "arms" },
+            { label: "Hombros", value: "shoulders" },
+            { label: "Abdominales", value: "abs" },
           ]}
         />
       </View>
@@ -62,18 +75,17 @@ const ExerciseSearch = ({ onSearch }: ExerciseSearchProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   input: {
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
   },
   dropdownContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: "column",
     marginBottom: 15,
+    marginTop: 10,
+  },
+  filterDropdown: {
+    marginBottom: 10,
   },
 });
 

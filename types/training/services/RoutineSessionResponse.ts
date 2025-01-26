@@ -5,15 +5,16 @@ export interface RoutineSessionResponse {
 }
 
 export interface RoutineSessionExercise {
-  id: number;
+  id?: number;
   exerciseId: number;
   exerciseName: string;
   recommendedOrder: number;
   sets: RoutineSessionExerciseSet[];
+  recentlyAdded?: boolean;
 }
 
 export interface RoutineSessionExerciseSet {
-  id: number;
+  id?: number;
   setNumber: number;
   repetitions: number;
   weight: number;
