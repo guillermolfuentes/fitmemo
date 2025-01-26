@@ -14,6 +14,11 @@ interface RoutineSessionExerciseCardProps {
   canDeleteRows: boolean;
   showWeightFields?: boolean;
   formRef: React.Ref<FormikProps<RoutineSessionExerciseFormFields>>;
+  lastResults?: Array<{
+    setNumber: number;
+    repetitionsCompleted: number;
+    weightUsed: number;
+  }>;
 }
 
 const RoutineSessionExerciseCard = ({
@@ -23,6 +28,7 @@ const RoutineSessionExerciseCard = ({
   onDeletePress,
   formRef,
   showWeightFields = true,
+  lastResults,
 }: RoutineSessionExerciseCardProps) => {
   const [sets, setSets] = useState<RoutineSessionExerciseFormFields["sets"]>(
     []
@@ -81,7 +87,6 @@ const RoutineSessionExerciseCard = ({
     setFieldValue("sets", updatedSets);
   };
 
- 
   return (
     <Formik
       innerRef={formRef}
@@ -152,6 +157,11 @@ const RoutineSessionExerciseCard = ({
                       typeof errors.sets[index] === "object" &&
                       errors.sets[index]?.weight
                     )
+                  }
+                  lastResults={
+                    lastResults && lastResults.length > index
+                      ? lastResults[index]
+                      : undefined
                   }
                 />
               )

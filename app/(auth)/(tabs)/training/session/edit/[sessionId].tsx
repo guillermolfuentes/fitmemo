@@ -195,9 +195,7 @@ export default function EditTrainingSessionScreen() {
 
     routineSession?.sessionExercises.forEach((exercise, index) => {
       if (routineSessionExerciseFormRefs.current[index]) {
-        
         exercise.sets.forEach((set, setIndex) => {
-          
           routineSessionExerciseFormRefs.current[index].setFieldValue(
             `sets[${setIndex}].setNumber`,
             String(set.setNumber)

@@ -4,6 +4,7 @@ import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { UnknownError } from "@/errors/UnknownError";
 import { TrainingDiaryEntryRequest } from "../types/training/services/TrainingDiaryEntryRequest";
+import { ExerciseLastResultsResponse } from "@/types/diary/services/ExerciseLastResultsResponse";
 
 class TrainingDiaryService {
   constructor() {
@@ -32,6 +33,26 @@ class TrainingDiaryService {
           },
         }
       );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        TrainingDiaryService.handleAxiosError(error);
+      }
+      throw new UnknownError("Unknown error");
+    }
+  }
+
+  public static async getLastSessionExerciseResults(
+    exerciseId: number,
+    token: string
+  ): Promise<ExerciseLastResultsResponse> {
+    try {
+      const url_get_last_exercise_results = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/training-diary/last/${exerciseId}`;
+      const response = await axios.get(url_get_last_exercise_results, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -23,6 +23,17 @@ import {
 } from "@/types/training/services/RoutineSessionResponse";
 import { TrainingDiaryEntryRequest } from "@/types/training/services/TrainingDiaryEntryRequest";
 import { FormikProps } from "formik";
+import { ExerciseLastResultsResponse } from "@/types/diary/services/ExerciseLastResultsResponse";
+
+export interface RoutineSessionExerciseFormFields {
+  sets: RoutineSessionExerciseSetFormFields[];
+}
+
+export interface RoutineSessionExerciseSetFormFields {
+  setNumber: number;
+  repetitionsCompleted: number;
+  weightUsed: number;
+}
 
 export default function TrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
@@ -33,12 +44,18 @@ export default function TrainingSessionScreen() {
   const colorScheme = useColorScheme();
   const [routineSession, setRoutineSession] =
     useState<RoutineSessionResponse | null>(null);
-  const formRefs = useRef<FormikProps<any>[]>([]);
+  const routineSessionExerciseFormRefs = useRef<
+    FormikProps<RoutineSessionExerciseFormFields>[]
+  >([]);
   const router = useRouter();
+  const [
+    routineSessionsExercisesLastResults,
+    setRoutineSessionsExercisesLastResults,
+  ] = useState<ExerciseLastResultsResponse[]>([]);
 
   const handleSaveSession = async () => {
     let allValid = true;
-    for (const form of formRefs.current) {
+    for (const form of routineSessionExerciseFormRefs.current) {
       if (form) {
         form.setTouched(
           {
@@ -63,7 +80,7 @@ export default function TrainingSessionScreen() {
       let entry: TrainingDiaryEntryRequest = {
         exercises: [],
       };
-      formRefs.current.forEach((form, index) => {
+      routineSessionExerciseFormRefs.current.forEach((form, index) => {
         if (form) {
           entry.exercises.push({
             exerciseId: routineSession!.sessionExercises[index].exerciseId,
@@ -112,6 +129,22 @@ export default function TrainingSessionScreen() {
           session.token!
         );
         setRoutineSession(response);
+
+        // Obtenemos los últimos resultados de cada ejercicio (si los hay)
+        for (const exercise of response.sessionExercises) {
+          const lastResults =
+            await TrainingDiaryService.getLastSessionExerciseResults(
+              exercise.exerciseId,
+              session.token!
+            );
+
+          if (lastResults.sets.length > 0) {
+            setRoutineSessionsExercisesLastResults((prev) => [
+              ...prev,
+              lastResults,
+            ]);
+          }
+        }
       } catch (error) {
         if (error instanceof Error) {
           console.error("Error fetching routine session:", error.message);
@@ -127,6 +160,23 @@ export default function TrainingSessionScreen() {
     };
     fetchUserRoutine();
   }, [sessionId]);
+
+  useEffect(() => {
+    routineSession?.sessionExercises.forEach((exercise, index) => {
+      if (routineSessionExerciseFormRefs.current[index]) {
+        exercise.sets.forEach((set, setIndex) => {
+          routineSessionExerciseFormRefs.current[index].setFieldValue(
+            `sets[${setIndex}].setNumber`,
+            String(set.setNumber)
+          );
+          routineSessionExerciseFormRefs.current[index].setFieldValue(
+            `sets[${setIndex}].repetitions`,
+            String(set.repetitions)
+          );
+        });
+      }
+    });
+  }, [routineSession]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -160,15 +210,17 @@ export default function TrainingSessionScreen() {
           routineSession.sessionExercises.map(
             (exercise: RoutineSessionExercise, index: number) => (
               <RoutineSessionExerciseCard
+                showWeightFields={true}
                 key={exercise.id}
                 id={exercise.id}
                 name={`${exercise.exerciseName}`}
                 canDeleteRows={false}
                 formRef={(el) => {
                   if (el) {
-                    formRefs.current[index] = el;
+                    routineSessionExerciseFormRefs.current[index] = el;
                   }
                 }}
+                lastResults={routineSessionsExercisesLastResults[index]?.sets}
               />
             )
           )}

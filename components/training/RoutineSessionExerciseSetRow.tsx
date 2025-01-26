@@ -14,10 +14,18 @@ interface RoutineSessionExerciseSetRowProps {
   onDeletePress?: () => void;
   errorRepetitions?: boolean;
   errorWeight?: boolean;
-  showWeightField?: boolean; 
+  showWeightField?: boolean;
+  showLastResults?: boolean;
+  lastResults?: {
+    setNumber: number;
+    repetitionsCompleted: number;
+    weightUsed: number;
+  };
 }
 
-const RoutineSessionExerciseSetRow: React.FC<RoutineSessionExerciseSetRowProps> = ({
+const RoutineSessionExerciseSetRow: React.FC<
+  RoutineSessionExerciseSetRowProps
+> = ({
   setNumber,
   repetitions,
   weight,
@@ -28,13 +36,23 @@ const RoutineSessionExerciseSetRow: React.FC<RoutineSessionExerciseSetRowProps> 
   onDeletePress,
   errorRepetitions,
   errorWeight,
-  showWeightField = false, 
+  showWeightField = false,
+  lastResults,
 }) => {
   return (
     <View style={styles.row}>
       <View style={styles.setContainer}>
         <Text style={styles.setName}>Serie {setNumber}</Text>
       </View>
+      {lastResults && (
+        <View style={styles.lastResultsContainer}>
+          <Text style={styles.lastResults}>Últ.</Text>
+          <Text style={styles.lastResults}>
+            {`${lastResults.repetitionsCompleted}x${lastResults.weightUsed}`}
+          </Text>
+        </View>
+      )}
+
       <TextInput
         label="Reps"
         onChangeText={onRepetitionsChange}
@@ -75,13 +93,26 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "space-between",
   },
-  setContainer:{
+  setContainer: {
     flexDirection: "row",
     flexBasis: "20%",
+  },
+  lastResultsContainer: {
+    flexDirection: "column",
+    marginLeft: 10,
+    marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 8,
   },
   setName: {
     flex: 1,
     fontSize: 16,
+  },
+  lastResults: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: "bold",
   },
   input: {
     marginHorizontal: 5,
