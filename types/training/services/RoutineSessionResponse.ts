@@ -1,6 +1,6 @@
 export interface RoutineSessionResponse {
   name: string;
-  recommendedOrder: number;
+  recommendedOrder?: number;
   sessionExercises: RoutineSessionExercise[];
 }
 

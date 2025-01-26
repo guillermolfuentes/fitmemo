@@ -1,21 +1,42 @@
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View, Text } from "react-native";
 
-import { Text } from "@/components/Themed";
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+} from "react";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { Button, TextInput } from "react-native-paper";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import RoutineSessionExerciseCard from "@/components/training/RoutineSessionExerciseCard";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { NavigationContext } from "@/context/NavigationContext";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import {
+  RoutineSessionExercise,
+  RoutineSessionResponse,
+} from "@/types/training/services/RoutineSessionResponse";
+import RoutineSessionService from "@/services/routineSessionService";
+import { Formik, FormikProps } from "formik";
+import { RoutineSessionUpdateRequest } from "@/types/training/services/RoutineSessionUpdateRequest";
 import * as Yup from "yup";
-import { Formik } from "formik";
+import { use } from "i18next";
+
+export interface RoutineSessionExerciseFormFields {
+  sets: RoutineSessionExerciseSetFormFields[];
+}
+
+export interface RoutineSessionExerciseSetFormFields {
+  setNumber: number;
+  repetitions: string;
+  weight: string;
+}
 
 const SessionNameSchema = Yup.object().shape({
   sessionName: Yup.string().required("El nombre de la sesión es obligatorio"),
@@ -24,45 +45,156 @@ const SessionNameSchema = Yup.object().shape({
 export default function CreateTrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
   const { getData, clearData } = useContext(NavigationContext);
-  const { isLoading, setLoading } = useUIContext();
-  const router = useRouter();
+  const { setLoading, showErrorSnackbar, showSuccessSnackbar } = useUIContext();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const [exercises, setExercises] = useState<{ id: number; name: string }[]>(
-    []
-  );
+  const [routineSession, setRoutineSession] = useState<RoutineSessionResponse>({
+    name: "",
+    sessionExercises: [],
+  });
+  const sessionNameFormRef = useRef<FormikProps<{ sessionName: string }>>(null);
+  const routineSessionExerciseFormRefs = useRef<
+    FormikProps<RoutineSessionExerciseFormFields>[]
+  >([]);
+  const router = useRouter();
   const [
     deleteExerciseConfirmationModalVisible,
     setDeleteExerciseConfirmationModalVisible,
   ] = useState(false);
+  const [exerciseIdToDelete, setExerciseIdToDelete] = useState<number | null>(
+    null
+  );
 
-  const [exerciseToDelete, setExerciseToDelete] = useState<number | null>(null);
-  const [sessionName, setSessionName] = useState("");
+  const handleSaveCreatedSession = async () => {
+    let allValid = true;
 
-  const mockData = [{ id: 1, name: "Ejercicio 1" }];
+    if (sessionNameFormRef.current) {
+      sessionNameFormRef.current.setTouched(
+        {
+          sessionName: true,
+        },
+        true
+      );
+
+      const errors = await sessionNameFormRef.current.validateForm();
+
+      if (Object.keys(errors).length > 0) {
+        allValid = false;
+      }
+    }
+
+    for (const form of routineSessionExerciseFormRefs.current) {
+      if (form) {
+        form.setTouched(
+          {
+            sets: form.values.sets.map(() => ({
+              repetitions: true,
+              weight: true,
+            })),
+          },
+          true
+        );
+
+        const errors = await form.validateForm();
+
+        if (Object.keys(errors).length > 0) {
+          allValid = false;
+        }
+      }
+    }
+
+    if (allValid) {
+      if (routineSessionExerciseFormRefs.current.length === 0) {
+        showErrorSnackbar("Debes añadir al menos un ejercicio a la sesión");
+        return;
+      }
+
+      if (!routineSession) {
+        console.error("Routine session to edit is null or undefined");
+        return;
+      }
+      console.log("All forms are valid. Values:");
+      let editedSession: RoutineSessionUpdateRequest = {
+        name: sessionNameFormRef.current?.values.sessionName,
+        sessionExercises: [],
+      };
+
+      routineSessionExerciseFormRefs.current.forEach((form, index) => {
+        console.log("Form index:", index);
+        if (form) {
+          editedSession.sessionExercises.push({
+            id: routineSession!.sessionExercises[index].id,
+            exerciseId: routineSession!.sessionExercises[index].exerciseId,
+            recommendedOrder: index + 1,
+            sets: form.values.sets.map((set: any) => ({
+              id: set.id,
+              setNumber: Number(set.setNumber),
+              repetitions: Number(set.repetitions),
+            })),
+          });
+        }
+      });
+
+      console.log(
+        `Datos para enviar:\n${JSON.stringify(editedSession, null, 2)}`
+      );
+    } else {
+      console.log("Some forms are invalid.");
+    }
+  };
 
   useEffect(() => {
-    const fetchUserRoutine = async () => {
-      setLoading(true);
-
-      try {
-        setExercises(mockData);
-      } catch (error) {
-        console.error("Error fetching training session", error);
-      } finally {
-        setLoading(false);
+    routineSession?.sessionExercises.forEach((exercise, index) => {
+      if (routineSessionExerciseFormRefs.current[index]) {
+        // Si el ejercicio ha sido recientemente añadido
+        // hay que crear el formulario asociado con sus series.
+        // Si no ha sido recientemente añadid el ejercicio no hace falta
+        // volver a rellenar las series puesto que ya se manejaran con los controles
+        if (exercise.recentlyAdded == true) {
+          exercise.sets.forEach((set, setIndex) => {
+            routineSessionExerciseFormRefs.current[index].setFieldValue(
+              `sets[${setIndex}].setNumber`,
+              String(set.setNumber)
+            );
+            routineSessionExerciseFormRefs.current[index].setFieldValue(
+              `sets[${setIndex}].repetitions`,
+              String(set.repetitions)
+            );
+          });
+          exercise.recentlyAdded = false;
+        }
       }
-    };
-    fetchUserRoutine();
-  }, [sessionId]);
+    });
+  }, [routineSession]);
 
   useFocusEffect(() => {
-    const data = getData("EditTrainingSessionScreen");
-    if (data) {
-      console.log("Nuevo ejercicio seleccionado:", data.selectedExerciseId);
-      clearData("EditTrainingSessionScreen");
+    const data = getData("AddExerciseScreen");
+    if (data?.selectedExercise) {
+      let newExercise: RoutineSessionExercise = {
+        exerciseId: data.selectedExercise.id,
+        exerciseName: data.selectedExercise.name,
+        recommendedOrder: (routineSession?.sessionExercises?.length ?? 0) + 1,
+        sets: Array.from({ length: 3 }, (_, i) => ({
+          setNumber: i + 1,
+          repetitions: 0,
+          weight: 0,
+        })),
+        recentlyAdded: true,
+      };
+
+      console.log("Nuevo ejercicio seleccionado:", newExercise);
+
+      setRoutineSession((prevSession) => {
+        if (!prevSession) return prevSession;
+        return {
+          ...prevSession,
+          sessionExercises: [...prevSession.sessionExercises, newExercise],
+        };
+      });
+
+      clearData("AddExerciseScreen");
     }
   });
 
@@ -71,9 +203,7 @@ export default function CreateTrainingSessionScreen() {
       title: "Nueva sesión",
       headerRight: () => (
         <Pressable
-          onPressIn={() => {
-            console.log("Guardando sesion...!");
-          }}
+          onPressIn={handleSaveCreatedSession}
           style={({ pressed }) => ({
             marginRight: 15,
             opacity: pressed ? 0.5 : 1,
@@ -87,7 +217,7 @@ export default function CreateTrainingSessionScreen() {
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, routineSession]);
 
   const handleNewExercise = () => {
     console.log("Añadiendo nuevo ejercicio...");
@@ -99,30 +229,40 @@ export default function CreateTrainingSessionScreen() {
     });
   };
 
-  const deleteExercise = (id: number) => {
-    const updatedExercises = exercises.filter((exercise) => exercise.id !== id);
-    setExercises(updatedExercises);
-  };
-
   const handleDeleteExerciseConfirm = () => {
-    console.log("Borrando ejercicio con ID:", exerciseToDelete);
-    deleteExercise(exerciseToDelete as number);
+    setRoutineSession((prevState) => {
+      if (!prevState) return prevState;
+      return {
+        ...prevState,
+        sessionExercises: prevState.sessionExercises.filter(
+          (exercise) => exercise.exerciseId !== exerciseIdToDelete
+        ),
+      };
+    });
+
+    const formIndexToDelete =
+      routineSession?.sessionExercises.findIndex(
+        (exercise) => exercise.exerciseId === exerciseIdToDelete
+      ) ?? -1;
+
+    if (formIndexToDelete !== -1) {
+      routineSessionExerciseFormRefs.current.splice(formIndexToDelete, 1);
+    }
+
     setDeleteExerciseConfirmationModalVisible(false);
-    setExerciseToDelete(null);
   };
 
   const handleOnDeleteExercise = (exerciseId: number) => {
+    setExerciseIdToDelete(exerciseId);
     setDeleteExerciseConfirmationModalVisible(true);
-    setExerciseToDelete(exerciseId);
   };
 
   return (
     <Formik
       initialValues={{ sessionName: "" }}
       validationSchema={SessionNameSchema}
-      onSubmit={(values) => {
-        setSessionName(values.sessionName);
-      }}
+      onSubmit={() => {}}
+      innerRef={sessionNameFormRef}
     >
       {({
         handleChange,
@@ -154,17 +294,27 @@ export default function CreateTrainingSessionScreen() {
               title="¿Estás seguro?"
               message="¿Estás seguro de que quieres borrar el ejercicio?"
             />
-            {exercises.map((exercise) => (
-              <RoutineSessionExerciseCard
-                key={exercise.id}
-                id={exercise.id}
-                name={exercise.name}
-                onStartSession={() => {}}
-                onEditSession={() => {}}
-                onDeletePress={() => handleOnDeleteExercise(exercise.id)}
-                canDeleteRows={true}
-              />
-            ))}
+            {routineSession &&
+              routineSession.sessionExercises.map(
+                (exercise: RoutineSessionExercise, index: number) => (
+                  <RoutineSessionExerciseCard
+                    showWeightFields={false}
+                    key={exercise.id}
+                    id={(exercise.id ?? 0) + exercise.recommendedOrder}
+                    name={`${exercise.exerciseName}`}
+                    canDeleteRows={true}
+                    onDeletePress={() =>
+                      exercise.exerciseId !== undefined &&
+                      handleOnDeleteExercise(exercise.exerciseId)
+                    }
+                    formRef={(el) => {
+                      if (el) {
+                        routineSessionExerciseFormRefs.current[index] = el;
+                      }
+                    }}
+                  />
+                )
+              )}
           </View>
           <Button
             style={styles.addSessionButton}
@@ -183,6 +333,8 @@ export default function CreateTrainingSessionScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    flexDirection: "column",
+    justifyContent: "center",
   },
   routineTitle: {
     padding: 10,
@@ -196,9 +348,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   input: {
-   marginBottom: 15,
-   marginLeft: 10,
-   marginRight: 10,
+    marginBottom: 15,
+    marginLeft: 10,
+    marginRight: 10,
   },
   errorText: {
     color: "red",
@@ -206,4 +358,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addSessionButton: {},
+  deleteSessionButton: {
+    marginTop: 30,
+    marginBottom: 20,
+    backgroundColor: "#8B0000",
+    borderWidth: 3,
+  },
+  buttonContainer: {
+    alignItems: "center",
+  },
 });

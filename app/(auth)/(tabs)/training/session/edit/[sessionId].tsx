@@ -109,7 +109,7 @@ export default function EditTrainingSessionScreen() {
       }
       console.log("All forms are valid. Values:");
       let editedSession: RoutineSessionUpdateRequest = {
-        name: routineSession.name,
+        name: sessionNameFormRef.current?.values.sessionName,
         sessionExercises: [],
       };
 
@@ -205,7 +205,7 @@ export default function EditTrainingSessionScreen() {
   }, [routineSession]);
 
   useFocusEffect(() => {
-    const data = getData("EditTrainingSessionScreen");
+    const data = getData("AddExerciseScreen");
     if (data?.selectedExercise) {
       let newExercise: RoutineSessionExercise = {
         exerciseId: data.selectedExercise.id,
@@ -229,7 +229,7 @@ export default function EditTrainingSessionScreen() {
         };
       });
 
-      clearData("EditTrainingSessionScreen");
+      clearData("AddExerciseScreen");
     }
   });
 

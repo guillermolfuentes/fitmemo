@@ -64,7 +64,7 @@ const AddExerciseScreen = () => {
     isBackToSessionConfirmedRef.current = true;
     //setBackConfirmationModalVisible(false);
     setaddExerciseConfirmationModalVisible(false);
-    setData("EditTrainingSessionScreen", {
+    setData("AddExerciseScreen", {
       selectedExercise: selectedExercise,
     });
     navigation.goBack();
