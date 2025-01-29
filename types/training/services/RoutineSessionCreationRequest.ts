@@ -1,7 +1,6 @@
 export interface RoutineSessionCreationRequest {
-  body: {
-    exercises: RoutineSessionExercise[];
-  };
+  name: string;
+  sessionExercises: RoutineSessionExercise[];
 }
 
 export interface RoutineSessionExercise {
@@ -13,5 +12,4 @@ export interface RoutineSessionExercise {
 export interface RoutineSessionExerciseSet {
   setNumber: number;
   repetitions: number;
-  weight: number;
 }

@@ -121,7 +121,6 @@ export default function EditTrainingSessionScreen() {
         console.log("Form index:", index);
         if (form) {
           editedSession.sessionExercises.push({
-            id: routineSession!.sessionExercises[index].id,
             exerciseId: routineSession!.sessionExercises[index].exerciseId,
             recommendedOrder: index + 1,
             sets: form.values.sets.map((set: any) => ({
@@ -136,6 +135,26 @@ export default function EditTrainingSessionScreen() {
       console.log(
         `Datos para enviar:\n${JSON.stringify(editedSession, null, 2)}`
       );
+
+      try {
+        setLoading(true);
+        const session = await getCurrentSession();
+        await RoutineSessionService.updateRoutineSession(
+          editedSession,
+          Number(sessionId),
+          session.token!
+        );
+        setLoading(false);
+        showSuccessSnackbar("Training session edited successfully.");
+        router.back();
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error editing training session:", error.message);
+        } else {
+          console.error("Error editing training session:", error);
+        }
+        showErrorSnackbar("Error editing session. Please try again later.");
+      }
     } else {
       console.log("Some forms are invalid.");
     }

@@ -27,6 +27,7 @@ import { Formik, FormikProps } from "formik";
 import { RoutineSessionUpdateRequest } from "@/types/training/services/RoutineSessionUpdateRequest";
 import * as Yup from "yup";
 import { use } from "i18next";
+import { RoutineSessionCreationRequest } from "@/types/training/services/RoutineSessionCreationRequest";
 
 export interface RoutineSessionExerciseFormFields {
   sets: RoutineSessionExerciseSetFormFields[];
@@ -112,20 +113,19 @@ export default function CreateTrainingSessionScreen() {
       }
 
       if (!routineSession) {
-        console.error("Routine session to edit is null or undefined");
+        console.error("Routine session to create is null or undefined");
         return;
       }
       console.log("All forms are valid. Values:");
-      let editedSession: RoutineSessionUpdateRequest = {
-        name: sessionNameFormRef.current?.values.sessionName,
+      let newSession: RoutineSessionCreationRequest = {
+        name: sessionNameFormRef.current?.values.sessionName || "",
         sessionExercises: [],
       };
 
       routineSessionExerciseFormRefs.current.forEach((form, index) => {
         console.log("Form index:", index);
         if (form) {
-          editedSession.sessionExercises.push({
-            id: routineSession!.sessionExercises[index].id,
+          newSession.sessionExercises.push({
             exerciseId: routineSession!.sessionExercises[index].exerciseId,
             recommendedOrder: index + 1,
             sets: form.values.sets.map((set: any) => ({
@@ -137,9 +137,26 @@ export default function CreateTrainingSessionScreen() {
         }
       });
 
-      console.log(
-        `Datos para enviar:\n${JSON.stringify(editedSession, null, 2)}`
-      );
+      console.log(`Datos para enviar:\n${JSON.stringify(newSession, null, 2)}`);
+
+      try {
+        setLoading(true);
+        const session = await getCurrentSession();
+        await RoutineSessionService.createRoutineSession(
+          newSession,
+          session.token!
+        );
+        setLoading(false);
+        showSuccessSnackbar("Training session created successfully.");
+        router.back();
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error created training session:", error.message);
+        } else {
+          console.error("Error created training session:", error);
+        }
+        showErrorSnackbar("Error created session. Please try again later.");
+      }
     } else {
       console.log("Some forms are invalid.");
     }
