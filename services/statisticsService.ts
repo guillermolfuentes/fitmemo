@@ -100,6 +100,8 @@ class StatisticsService {
     try {
       const endDate = new Date();
       const startDate = new Date();
+      startDate.setFullYear(endDate.getFullYear() - 1);
+
       const formattedEndDate = endDate.toISOString().split("T")[0];
       const formattedStartDate = startDate.toISOString().split("T")[0];
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, useColorScheme, View } from "react-native";
 import { Text } from "@/components/Themed";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -12,6 +12,8 @@ import ExerciseService from "@/services/exerciseService";
 import { AuthContext } from "@/context/AuthContext";
 import { useUIContext } from "@/context/UIContext";
 import StatisticsService from "@/services/statisticsService";
+import { ExerciseLoadProgressResponse } from "@/types/progress/services/ExerciseLoadProgressResponse";
+import { MuscularGroupVolumeProgressResponse } from "@/types/progress/services/MuscularGroupVolumeProgressResponse";
 const inter = require("../../../../assets/fonts/SpaceMono-Regular.ttf");
 
 const MUSCLE_OPTIONS = [
@@ -120,61 +122,165 @@ export default function ProgressScreen() {
       };
 
       const fetchExerciseLoadProgress = async () => {
+        console.log(
+          "El ejercicio seleccionado ha cambiado a: ",
+          exerciseSelected
+        );
+
         try {
           setLoading(true);
           const session = await getCurrentSession();
+          let exerciseLoadProgress: ExerciseLoadProgressResponse =
+            await StatisticsService.getExerciseLoadProgress(
+              Number(exerciseSelected),
+              session.token!
+            );
 
-          const exerciseLoadProgress = [
-            { date: "2024-12-12", maxLoad: 80 },
-            { date: "2024-12-12", maxLoad: 81 },
-            { date: "2024-12-12", maxLoad: 83 },
-            { date: "2024-12-12", maxLoad: 83 },
-          ];
+          setExerciseLoadProgress(exerciseLoadProgress.loadProgressCoordinates);
 
-          setExerciseLoadProgress(exerciseLoadProgress);
-
-          setDataLoaded(true);
-        } catch (error) {
-          console.error("Error fetching exercise load progress", error);
-          showErrorSnackbar(
-            "Error fetching exercise load progress. Retry later."
+          console.log(
+            "Progreso del ejercicio: ",
+            exerciseLoadProgress.loadProgressCoordinates
           );
-        } finally {
           setLoading(false);
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error("Error fetching load progress:", error.message);
+          } else {
+            console.error("Error fetching load progress:", error);
+          }
+          showErrorSnackbar(
+            "Error fetching load progress. Please try again later."
+          );
         }
       };
 
       const fetchMuscleGroupVolumeProgress = async () => {
+        console.log(
+          "El grupo muscular seleccionado ha cambiado a: ",
+          muscleGroupSelected
+        );
+
         try {
           setLoading(true);
           const session = await getCurrentSession();
+          let muscleGroupLoadProgress: MuscularGroupVolumeProgressResponse =
+            await StatisticsService.getMuscleGroupVolumeProgress(
+              muscleGroupSelected,
+              session.token!
+            );
 
-          const muscleGroupVolumeProgress = [
-            { date: "2024-12-12", totalVolume: 800 },
-            { date: "2024-12-12", totalVolume: 498 },
-            { date: "2024-12-12", totalVolume: 83 },
-            { date: "2024-12-12", totalVolume: 83 },
-          ];
-
-          setMuscleGroupVolumeProgress(muscleGroupVolumeProgress);
-
-          setDataLoaded(true);
-        } catch (error) {
-          console.error("Error fetching muscle group volume progress", error);
-          showErrorSnackbar(
-            "Error fetching muscle groyp volume progress. Retry later."
+          setMuscleGroupVolumeProgress(
+            muscleGroupLoadProgress.volumeProgressCoordinates
           );
-        } finally {
+
+          console.log(
+            "Progreso del grupo muscular: ",
+            muscleGroupLoadProgress.volumeProgressCoordinates
+          );
           setLoading(false);
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(
+              "Error fetching muscle group load progress:",
+              error.message
+            );
+          } else {
+            console.error("Error fetching muscle group  load progress:", error);
+          }
+          showErrorSnackbar(
+            "Error fetching muscle group load progress. Please try again later."
+          );
         }
       };
 
-      fetchExercises();
       fetchExerciseLoadProgress();
       fetchMuscleGroupVolumeProgress();
+      fetchExercises();
       fetchBodyProgress();
     }, [dataLoaded])
   );
+
+  useEffect(() => {
+    const fetchExerciseLoadProgress = async () => {
+      console.log(
+        "El ejercicio seleccionado ha cambiado a: ",
+        exerciseSelected
+      );
+
+      try {
+        setLoading(true);
+        const session = await getCurrentSession();
+        let exerciseLoadProgress: ExerciseLoadProgressResponse =
+          await StatisticsService.getExerciseLoadProgress(
+            Number(exerciseSelected),
+            session.token!
+          );
+
+        setExerciseLoadProgress(exerciseLoadProgress.loadProgressCoordinates);
+
+        console.log(
+          "Progreso del ejercicio: ",
+          exerciseLoadProgress.loadProgressCoordinates
+        );
+        setLoading(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error fetching load progress:", error.message);
+        } else {
+          console.error("Error fetching load progress:", error);
+        }
+        showErrorSnackbar(
+          "Error fetching load progress. Please try again later."
+        );
+      }
+    };
+
+    fetchExerciseLoadProgress();
+  }, [exerciseSelected]);
+
+  useEffect(() => {
+    const fetchMuscleGroupVolumeProgress = async () => {
+      console.log(
+        "El grupo muscular seleccionado ha cambiado a: ",
+        muscleGroupSelected
+      );
+
+      try {
+        setLoading(true);
+        const session = await getCurrentSession();
+        let muscleGroupLoadProgress: MuscularGroupVolumeProgressResponse =
+          await StatisticsService.getMuscleGroupVolumeProgress(
+            muscleGroupSelected,
+            session.token!
+          );
+
+        setMuscleGroupVolumeProgress(
+          muscleGroupLoadProgress.volumeProgressCoordinates
+        );
+
+        console.log(
+          "Progreso del grupo muscular: ",
+          muscleGroupLoadProgress.volumeProgressCoordinates
+        );
+        setLoading(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(
+            "Error fetching muscle group load progress:",
+            error.message
+          );
+        } else {
+          console.error("Error fetching muscle group  load progress:", error);
+        }
+        showErrorSnackbar(
+          "Error fetching muscle group load progress. Please try again later."
+        );
+      }
+    };
+
+    fetchMuscleGroupVolumeProgress();
+  }, [muscleGroupSelected]);
 
   const handleNewMeasurement = () => {
     console.log("Añadir medición");
@@ -294,7 +400,6 @@ export default function ProgressScreen() {
             value={exerciseSelected}
             onSelect={(value) => {
               setExerciseSelected(value as string);
-              console.log("Ejercicio seleccionado: ", value);
             }}
           />
         </View>
@@ -380,7 +485,6 @@ export default function ProgressScreen() {
               value={muscleGroupSelected}
               onSelect={(value) => {
                 setMuscleGroupSelected(value as string);
-                console.log("Grupo muscular seleccionado: ", value);
               }}
             />
           </View>
