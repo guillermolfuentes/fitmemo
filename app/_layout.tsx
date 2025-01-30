@@ -54,7 +54,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  console.log("Renderizando RootLayout");
+  //console.log("Renderizando RootLayout");
 
   return (
     <I18nextProvider i18n={i18n}>

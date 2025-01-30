@@ -17,7 +17,7 @@ type AuthContextType = {
   signIn: (userData: AuthRequest) => Promise<AuthResponse>;
   signOut: () => void;
   getCurrentSession: () => Promise<Session>;
-  
+  currentSession: Session | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -27,10 +27,12 @@ export const AuthContext = createContext<AuthContextType>({
   getCurrentSession: async () => ({
     isAuthenticated: false,
   }),
+  currentSession: null,
 });
 
 export function SessionProvider(props: React.PropsWithChildren) {
   const {
+    value: sessionValue,
     setItem: setSession,
     deleteItem: deleteSession,
     getItem: getSession,
@@ -150,6 +152,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
         signIn,
         signOut,
         getCurrentSession,
+        currentSession,
       }}
     >
       {props.children}

@@ -30,7 +30,6 @@ class StatisticsService {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("respuesta:    --------------->"+response.data); 
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
