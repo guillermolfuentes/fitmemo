@@ -4,9 +4,14 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 
 export default function AppLayout() {
-  const { getCurrentSession, currentSession } = useContext(AuthContext);
+  const { currentSession, loadingStoredSession } = useContext(AuthContext);
 
-  console.log("Comprobando la session...");
+  if (loadingStoredSession) {
+    console.log("Cargando la session almacenada...");
+    return null;
+  }
+
+  console.log("Comprobando la session...", currentSession);
   if (!currentSession || !currentSession.isAuthenticated) {
     console.log("Redirecting to login");
     return <Redirect href="/login" />;

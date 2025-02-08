@@ -1,23 +1,19 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useUIContext } from "./UIContext";
 import { router } from "expo-router";
-import { useSecureStore } from "@/hooks/useSecureStore";
 import { Session } from "@/types/auth/contexts/Session";
-import { LoginResponse } from "@/types/auth/services/LoginResponse";
+import AuthService from "../services/authService";
+import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
 import { AuthRequest } from "@/types/auth/contexts/AuthLoginRequest";
 import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
-import { LoginRequest } from "@/types/auth/services/LoginRequest";
-import { RegisterResponse } from "@/types/auth/services/RegisterResponse";
-import { AuthRegisterRequest } from "@/types/auth/contexts/AuthRegisterRequest";
-import { RegisterRequest } from "@/types/auth/services/RegisterRequest";
-import AuthService from "../services/authService";
 
 type AuthContextType = {
   register: (userData: AuthRegisterRequest) => Promise<AuthResponse>;
   signIn: (userData: AuthRequest) => Promise<AuthResponse>;
   signOut: () => void;
-  getCurrentSession: () => Promise<Session>;
+  getCurrentSession: () => Promise<Session | null>;
   currentSession: Session | null;
+  loadingStoredSession: boolean;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -28,56 +24,47 @@ export const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
   }),
   currentSession: null,
+  loadingStoredSession: false,
 });
 
 export function SessionProvider(props: React.PropsWithChildren) {
-  const {
-    value: sessionValue,
-    setItem: setSession,
-    deleteItem: deleteSession,
-    getItem: getSession,
-  } = useSecureStore("userSession");
-
-  const [currentSession, setCurrentSession] = useState<Session>({
+  const { setLoading } = useUIContext();
+  const [currentSession, setCurrentSession] = useState<Session | null>({
     isAuthenticated: false,
   });
+    const [loadingStoredSession, setLoadingStoredSession] = useState(false);
+
 
   useEffect(() => {
     const loadSession = async () => {
-      const sessionData = await getSession("userSession");
-      if (sessionData) {
-        console.log("Nueva sesión cargada:", JSON.parse(sessionData));
-        setCurrentSession(JSON.parse(sessionData));
+      setLoadingStoredSession(true);
+      console.log("**** Cargando la session almacenada... ****");
+      const session = await AuthService.getStoredSession();
+      if (session) {
+        setCurrentSession(session);
       }
+      setLoadingStoredSession(false);
     };
     loadSession();
+
+    AuthService.subscribeToSessionChanges(setCurrentSession);
   }, []);
-  const { setLoading } = useUIContext();
 
   const register = async (
     userData: AuthRegisterRequest
   ): Promise<AuthResponse> => {
     try {
       setLoading(true);
-      let registerRequest: RegisterRequest = { ...userData };
-      const registerResponse: RegisterResponse = await AuthService.register(
-        registerRequest
-      );
-
-      setLoading(false);
+      const registerResponse = await AuthService.register(userData);
 
       if (registerResponse.user) {
-        const newSession: Session = {
+        setCurrentSession({
           token: registerResponse.token,
+          refreshToken: registerResponse.refreshToken,
           user: registerResponse.user,
           isAuthenticated: true,
-        };
-        await setSession("userSession", JSON.stringify(newSession));
-        setCurrentSession(newSession);
-        return {
-          token: registerResponse.token,
-          user: registerResponse.user,
-        };
+        });
+        return registerResponse;
       }
     } finally {
       setLoading(false);
@@ -88,36 +75,16 @@ export function SessionProvider(props: React.PropsWithChildren) {
   const signIn = async (userData: AuthRequest): Promise<AuthResponse> => {
     try {
       setLoading(true);
-
-      console.log("Inicio de sesión con:", userData);
-
-      let loginRequest: LoginRequest = {
-        email: userData.email,
-        password: userData.password,
-      };
-
-      let loginResponse: LoginResponse = await AuthService.login(loginRequest);
-
-      /*let loginResponse: LoginResponse = {
-        success: true,
-        token: 'registerResponse.token',
-        user: { name: 'registerResponse.user', email: 'registerResponse.user', id: '3' }
-      }*/
-
-      setLoading(false);
+      const loginResponse = await AuthService.login(userData);
 
       if (loginResponse.token) {
-        const newSession: Session = {
+        setCurrentSession({
           token: loginResponse.token,
+          refreshToken: loginResponse.refreshToken,
           user: loginResponse.user,
           isAuthenticated: true,
-        };
-        await setSession("userSession", JSON.stringify(newSession));
-        setCurrentSession(newSession);
-        return {
-          token: loginResponse.token,
-          user: loginResponse.user,
-        };
+        });
+        return loginResponse;
       }
     } finally {
       setLoading(false);
@@ -126,21 +93,20 @@ export function SessionProvider(props: React.PropsWithChildren) {
   };
 
   const signOut = () => {
-    deleteSession("userSession");
+    AuthService.logout();
     setCurrentSession({
       isAuthenticated: false,
       token: undefined,
+      refreshToken: undefined,
       user: undefined,
     });
     router.replace("/login");
-
-    console.log("Sesión cerrada");
   };
 
   const getCurrentSession = async () => {
-    const sessionData = await getSession("userSession");
-    if (sessionData) {
-      return JSON.parse(sessionData);
+    const session = await AuthService.getStoredSession();
+    if (session) {
+      return session;
     }
     return currentSession;
   };
@@ -153,6 +119,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
         signOut,
         getCurrentSession,
         currentSession,
+        loadingStoredSession,
       }}
     >
       {props.children}

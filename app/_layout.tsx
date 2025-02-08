@@ -12,11 +12,12 @@ import { UIProvider } from "@/context/UIContext";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { NavigationProvider } from "@/context/NavigationContext";
+import { configureAxios } from "@/services/axiosConfig";
 
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  initialRouteName: "login",
+  initialRouteName: "(auth)/(tabs)/home",
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -45,6 +46,10 @@ export default function RootLayout() {
       router.replace("/home");
     }
   }, [router, loaded]);
+
+  useEffect(() => {
+    configureAxios();
+  }, []);
 
   if (!loaded) {
     return null;
