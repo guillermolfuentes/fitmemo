@@ -8,6 +8,8 @@ import { NetworkError } from "@/errors/NetworkError";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { UnknownError } from "@/errors/UnknownError";
+import { RefreshTokenRequest } from "@/types/auth/services/RefreshTokenRequest";
+import { RefreshTokenResponse } from "@/types/auth/services/RefreshTokenResponse";
 
 class AuthService {
   constructor() {
@@ -40,6 +42,21 @@ class AuthService {
     try {
       const url_login = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/auth/login`;
       const response = await axios.post(url_login, loginData);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        AuthService.handleAxiosError(error);
+      }
+      throw new UnknownError("Unknown error");
+    }
+  }
+
+  public static async refreshToken(
+    refreshToken: RefreshTokenRequest
+  ): Promise<RefreshTokenResponse> {
+    try {
+      const url_refresh_token = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/auth/refresh-token`;
+      const response = await axios.post(url_refresh_token, refreshToken);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
