@@ -41,6 +41,8 @@ export const configureAxios = () => {
             return axios(originalRequest);
           } catch (refreshError) {
             // Si el refresh token falla, propagar el error
+            console.log("Error al refrescar el token: ", refreshError);
+            AuthService.logout();
             return Promise.reject(refreshError);
           }
         } else {
