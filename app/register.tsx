@@ -676,6 +676,11 @@ export default function Register() {
           t("screens.register.step4.errors.authentication_error")
         );
         break;
+      case 409:
+        setErrorRegisterMessage(
+          t("screens.register.step4.errors.user_already_registered_error")
+        );
+        break;
       default:
         setErrorRegisterMessage(
           t("screens.register.step4.errors.network_error")

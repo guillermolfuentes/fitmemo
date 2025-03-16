@@ -117,6 +117,7 @@
           "required_confirm_password": "La confirmación de la contraseña es obligatoria",
           "passwords_must_match": "Las contraseñas deben coincidir",
           "password_too_short": "La contraseña es demasiado corta",
+          "user_already_registered_error": "Usuario ya registrado. Por favor, inténtelo de nuevo",
           "authentication_error": "Registro fallido. Por favor, inténtelo de nuevo",
           "network_error": "Ha ocurrido un error red. Por favor, inténtelo de nuevo",
           "unknown_error": "Error desconocido. Por favor, inténtelo de nuevo"

@@ -40,7 +40,11 @@ class AuthService {
 
       return data;
     } catch (error) {
-      throw new Error("Registration failed");
+      if (axios.isAxiosError(error)) {
+        throw error; 
+      } else {
+        throw new Error("Registration failed");
+      }
     }
   }
 
