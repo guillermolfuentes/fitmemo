@@ -17,9 +17,12 @@ class UserService {
     );
   }
 
-  public static async getUserProfile(token: string): Promise<User> {
+  public static async getUserProfile(
+    token: string,
+    userId: number
+  ): Promise<User> {
     try {
-      const url_get_user_profile = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/user/profile`;
+      const url_get_user_profile = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}`;
       const response = await axios.get(url_get_user_profile, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -36,10 +39,11 @@ class UserService {
 
   public static async updateUserProfile(
     token: string,
+    userId: number,
     updatedUser: Partial<User>
   ): Promise<void> {
     try {
-      const url_update_user_profile = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/user/profile`;
+      const url_update_user_profile = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}`;
       const response = await axios.put(url_update_user_profile, updatedUser, {
         headers: {
           Authorization: `Bearer ${token}`,

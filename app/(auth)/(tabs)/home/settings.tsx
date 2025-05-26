@@ -5,7 +5,15 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Platform, Pressable } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+  Platform,
+  Pressable,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import { Formik, FormikProps } from "formik";
@@ -14,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import { AuthContext } from "@/context/AuthContext";
 import UserService from "@/services/userService";
 import { useUIContext } from "@/context/UIContext";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { FontAwesome } from "@expo/vector-icons";
 
 /*
@@ -52,7 +60,7 @@ const SettingsForm = ({
   const { signOut } = useContext(AuthContext);
 
   return (
-    <View >
+    <View>
       <Text style={styles.formDescription}>
         Esto son los datos que tenemos de ti
       </Text>
@@ -134,9 +142,30 @@ const SettingsModalScreen = () => {
     confirmPassword: "",
   });
   const { isLoading, setLoading } = useUIContext();
+  const [refreshForm, setRefreshForm] = useState(0);
 
-  const handleSubmit = (values: SettingsValues) => {
+  const handleSubmit = async (values: SettingsValues) => {
     console.log("Form values:", values);
+    try {
+      setLoading(true);
+      const updatedUser = {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      };
+      const session = await getCurrentSession();
+      await UserService.updateUserProfile(
+        session!.token!,
+        session!.user!.id,
+        updatedUser
+      );
+      setLoading(false);
+      setRefreshForm((prevKey) => prevKey + 1);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -144,7 +173,10 @@ const SettingsModalScreen = () => {
       try {
         setLoading(true);
         const session = await getCurrentSession();
-        const userProfile = await UserService.getUserProfile(session.token!);
+        const userProfile = await UserService.getUserProfile(
+          session!.token!,
+          session!.user!.id
+        );
         setInitialValues({
           name: userProfile.name,
           email: userProfile.email,
@@ -160,7 +192,7 @@ const SettingsModalScreen = () => {
     };
 
     fetchUserProfile();
-  }, []);
+  }, [refreshForm]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -184,9 +216,7 @@ const SettingsModalScreen = () => {
   }
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
-    >
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Formik
         innerRef={formikRef}
         initialValues={initialFormValues}
@@ -206,7 +236,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     justifyContent: "center",
-
   },
   formDescription: {
     textAlign: "center",

@@ -11,18 +11,21 @@ import { AuthContext } from "@/context/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function HomeScreen() {
-  const [achievements, setAchievements] =
-    useState<UserAchievementsResponse | null>(null);
-  const [trainingTip, setTrainingTip] = useState<TrainingTip | null>(null);
+  const [achievements, setAchievements] = useState<UserAchievementsResponse>();
+  const [trainingTip, setTrainingTip] = useState<TrainingTip>();
   const { getCurrentSession } = useContext(AuthContext);
   const { setLoading, showErrorSnackbar } = useUIContext();
+
   const fetchAchievements = async () => {
     try {
       setLoading(true);
       const session = await getCurrentSession();
+      if (!session || !session.token) {
+        throw new Error("Session or token is null");
+      }
 
       const response = await StatisticsService.getUserAchievements(
-        session.token!
+        session.token
       );
       setAchievements(response);
     } catch (error) {
@@ -37,8 +40,11 @@ export default function HomeScreen() {
     try {
       setLoading(true);
       const session = await getCurrentSession();
+      if (!session || !session.token) {
+        throw new Error("Session or token is null");
+      }
       const response = await TrainingTipsService.getDailyTrainingTip(
-        session.token!
+        session.token
       );
       setTrainingTip(response);
     } catch (error) {

@@ -27,7 +27,10 @@ export default function HomeLayout() {
       try {
         setLoading(true);
         const session = await getCurrentSession();
-        const userProfile = await UserService.getUserProfile(session.token!);
+        const userProfile = await UserService.getUserProfile(
+          session!.token!,
+          session!.user!.id
+        );
         setWelcomeTitle(`Bienvenido, ${userProfile.name}`);
         setLoading(false);
       } catch (error) {
