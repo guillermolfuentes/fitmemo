@@ -105,7 +105,8 @@ export default function ProgressScreen() {
           setLoading(true);
           const session = await getCurrentSession();
           const response = await StatisticsService.getBodyProgress(
-            session.token!
+            session!.token!,
+            session!.user!.id
           );
           const progress = response.bodyProgress.map((entry) => ({
             date: new Date(entry.date).toISOString().split("T")[0],
@@ -133,7 +134,8 @@ export default function ProgressScreen() {
           let exerciseLoadProgress: ExerciseLoadProgressResponse =
             await StatisticsService.getExerciseLoadProgress(
               Number(exerciseSelected),
-              session.token!
+              session!.token!,
+              session!.user!.id
             );
 
           setExerciseLoadProgress(exerciseLoadProgress.loadProgressCoordinates);
@@ -167,7 +169,8 @@ export default function ProgressScreen() {
           let muscleGroupLoadProgress: MuscularGroupVolumeProgressResponse =
             await StatisticsService.getMuscleGroupVolumeProgress(
               muscleGroupSelected,
-              session.token!
+              session!.token!,
+              session!.user!.id
             );
 
           setMuscleGroupVolumeProgress(
@@ -214,7 +217,8 @@ export default function ProgressScreen() {
         let exerciseLoadProgress: ExerciseLoadProgressResponse =
           await StatisticsService.getExerciseLoadProgress(
             Number(exerciseSelected),
-            session.token!
+            session!.token!,
+            session!.user!.id
           );
 
         setExerciseLoadProgress(exerciseLoadProgress.loadProgressCoordinates);
@@ -252,7 +256,8 @@ export default function ProgressScreen() {
         let muscleGroupLoadProgress: MuscularGroupVolumeProgressResponse =
           await StatisticsService.getMuscleGroupVolumeProgress(
             muscleGroupSelected,
-            session.token!
+            session!.token!,
+            session!.user!.id
           );
 
         setMuscleGroupVolumeProgress(

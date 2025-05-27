@@ -166,7 +166,8 @@ const MeasurementsModalScreen = () => {
       const session = await getCurrentSession();
       const response = await BodyMeasurementService.createBodyMeasurementEntry(
         bodyMeasurementEntry,
-        session.token!
+        session!.token!,
+        session!.user!.id
       );
       setLoading(false);
       showSuccessSnackbar("Measurement entry created successfully!");

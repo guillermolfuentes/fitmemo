@@ -21,10 +21,11 @@ class StatisticsService {
   }
 
   public static async getUserAchievements(
-    token: string
+    token: string,
+    userId: number
   ): Promise<UserAchievementsResponse> {
     try {
-      const url_get_user_achievements = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/statistics/achievements`;
+      const url_get_user_achievements = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/statistics/achievements`;
       const response = await axios.get(url_get_user_achievements, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -40,7 +41,8 @@ class StatisticsService {
   }
 
   public static async getBodyProgress(
-    token: string
+    token: string,
+    userId: number
   ): Promise<BodyProgressResponse> {
     try {
       const endDate = new Date();
@@ -50,7 +52,7 @@ class StatisticsService {
       const formattedEndDate = endDate.toISOString().split("T")[0];
       const formattedStartDate = startDate.toISOString().split("T")[0];
 
-      const url_get_body_progress = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/statistics/body?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+      const url_get_body_progress = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/statistics/body?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
       const response = await axios.get(url_get_body_progress, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -67,7 +69,8 @@ class StatisticsService {
 
   public static async getExerciseLoadProgress(
     exerciseId: number,
-    token: string
+    token: string,
+    userId: number
   ): Promise<ExerciseLoadProgressResponse> {
     try {
       const endDate = new Date();
@@ -77,7 +80,7 @@ class StatisticsService {
       const formattedEndDate = endDate.toISOString().split("T")[0];
       const formattedStartDate = startDate.toISOString().split("T")[0];
 
-      const url_get_load_progress = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/statistics/load?exerciseId=${exerciseId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+      const url_get_load_progress = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/statistics/loads?exerciseId=${exerciseId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
       const response = await axios.get(url_get_load_progress, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -94,7 +97,8 @@ class StatisticsService {
 
   public static async getMuscleGroupVolumeProgress(
     muscleGroup: string,
-    token: string
+    token: string,
+    userId: number
   ): Promise<MuscularGroupVolumeProgressResponse> {
     try {
       const endDate = new Date();
@@ -104,7 +108,7 @@ class StatisticsService {
       const formattedEndDate = endDate.toISOString().split("T")[0];
       const formattedStartDate = startDate.toISOString().split("T")[0];
 
-      const url_get_volume_progress = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/statistics/volume?muscleGroup=${muscleGroup}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+      const url_get_volume_progress = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/statistics/volume?muscleGroup=${muscleGroup}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
       const response = await axios.get(url_get_volume_progress, {
         headers: {
           Authorization: `Bearer ${token}`,

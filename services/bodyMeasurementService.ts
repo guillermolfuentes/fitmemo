@@ -19,10 +19,11 @@ class BodyMeasurementService {
 
   public static async createBodyMeasurementEntry(
     bodyMeasurementEntry: BodyMeasurementEntryRequest,
-    token: string
+    token: string,
+    userId: number
   ): Promise<void> {
     try {
-      const url_post_body_measurement = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/body-measurements`;
+      const url_post_body_measurement = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/body-measurements`;
       const response = await axios.post(
         url_post_body_measurement,
         bodyMeasurementEntry,

@@ -25,7 +25,8 @@ export default function HomeScreen() {
       }
 
       const response = await StatisticsService.getUserAchievements(
-        session.token
+        session.token,
+        session!.user!.id
       );
       setAchievements(response);
     } catch (error) {
