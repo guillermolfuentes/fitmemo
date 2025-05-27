@@ -99,7 +99,8 @@ export default function TrainingSessionScreen() {
         const session = await getCurrentSession();
         await TrainingDiaryService.createTrainingDiaryEntry(
           entry,
-          session.token!
+          session!.token!,
+          session!.user!.id
         );
         showSuccessSnackbar("Training session saved successfully.");
 
@@ -126,7 +127,8 @@ export default function TrainingSessionScreen() {
         const session = await getCurrentSession();
         const response = await RoutineSessionService.getRoutineSession(
           Number(sessionId),
-          session.token!
+          session!.token!,
+          session!.user!.id
         );
         setRoutineSession(response);
 
@@ -135,7 +137,8 @@ export default function TrainingSessionScreen() {
           const lastResults =
             await TrainingDiaryService.getLastSessionExerciseResults(
               exercise.exerciseId,
-              session.token!
+              session!.token!,
+              session!.user!.id
             );
 
           if (lastResults.sets.length > 0) {

@@ -82,7 +82,7 @@ export default function ProgressScreen() {
           const session = await getCurrentSession();
           const exercises: Exercise[] = await ExerciseService.searchExercises(
             {},
-            session.token!
+            session!.token!
           );
           const options = exercises
             .sort((a, b) => a.name.localeCompare(b.name))

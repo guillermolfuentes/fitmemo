@@ -144,7 +144,8 @@ export default function CreateTrainingSessionScreen() {
         const session = await getCurrentSession();
         await RoutineSessionService.createRoutineSession(
           newSession,
-          session.token!
+          session!.token!,
+          session!.user!.id
         );
         setLoading(false);
         showSuccessSnackbar("Training session created successfully.");

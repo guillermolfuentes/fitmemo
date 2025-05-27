@@ -20,10 +20,11 @@ class TrainingDiaryService {
 
   public static async createTrainingDiaryEntry(
     diaryEntry: TrainingDiaryEntryRequest,
-    token: string
+    token: string,
+    userId: number
   ): Promise<void> {
     try {
-      const url_post_training_diary_entry = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/training-diary`;
+      const url_post_training_diary_entry = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/training-diary`;
       const response = await axios.post(
         url_post_training_diary_entry,
         diaryEntry,
@@ -44,10 +45,11 @@ class TrainingDiaryService {
 
   public static async getLastSessionExerciseResults(
     exerciseId: number,
-    token: string
+    token: string,
+    userId: number
   ): Promise<ExerciseLastResultsResponse> {
     try {
-      const url_get_last_exercise_results = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/training-diary/last/${exerciseId}`;
+      const url_get_last_exercise_results = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/training-diary/exercises/${exerciseId}/last`;
       const response = await axios.get(url_get_last_exercise_results, {
         headers: {
           Authorization: `Bearer ${token}`,

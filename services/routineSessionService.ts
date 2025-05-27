@@ -22,10 +22,11 @@ class RoutineSessionService {
 
   public static async createRoutineSession(
     routineSession: RoutineSessionCreationRequest,
-    token: string
+    token: string,
+    userId: number
   ): Promise<RoutineSession> {
     try {
-      const url_post_routine_session = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/routine-sessions`;
+      const url_post_routine_session = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/routine/sessions`;
       const response = await axios.post(
         url_post_routine_session,
         routineSession,
@@ -46,10 +47,11 @@ class RoutineSessionService {
 
   public static async getRoutineSession(
     sessionId: number,
-    token: string
+    token: string,
+    userId: number
   ): Promise<RoutineSessionResponse> {
     try {
-      const url_get_routine_session = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/routine-sessions/
+      const url_get_routine_session = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/routine/sessions/
       ${sessionId}`;
       const response = await axios.get(url_get_routine_session, {
         headers: {
@@ -68,10 +70,11 @@ class RoutineSessionService {
   public static async updateRoutineSession(
     routineSession: RoutineSessionUpdateRequest,
     sessionId: number,
-    token: string
+    token: string,
+    userId: number
   ): Promise<RoutineSessionResponse> {
     try {
-      const url_put_routine_session = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/routine-sessions/${sessionId}`;
+      const url_put_routine_session = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/routine/sessions/${sessionId}`;
       const response = await axios.put(
         url_put_routine_session,
         routineSession,
@@ -92,10 +95,11 @@ class RoutineSessionService {
 
   public static async deleteRoutineSession(
     sessionId: number,
-    token: string
+    token: string,
+    userId: number
   ): Promise<RoutineSessionResponse> {
     try {
-      const url_delete_user_routine = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/routine-sessions/${sessionId}`;
+      const url_delete_user_routine = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/routine/sessions/${sessionId}`;
       const response = await axios.delete(url_delete_user_routine, {
         headers: {
           Authorization: `Bearer ${token}`,

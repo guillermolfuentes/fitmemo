@@ -3,7 +3,6 @@ import { NetworkError } from "@/errors/NetworkError";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { UnknownError } from "@/errors/UnknownError";
-import { BodyMeasurementEntryRequest } from "@/types/progress/services/BodyMeasurementEntryRequest";
 import { SearchExerciseRequest } from "@/types/training/services/SearchExerciseRequest";
 import { Exercise } from "@/types/training/models/Exercise";
 
@@ -25,7 +24,7 @@ class ExerciseService {
   ): Promise<Exercise[]> {
     try {
       const url_search_exercises = new URL(
-        `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/exercises/search`
+        `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/exercises`
       );
       const params = new URLSearchParams();
 

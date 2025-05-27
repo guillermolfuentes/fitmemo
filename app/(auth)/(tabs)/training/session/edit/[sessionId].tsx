@@ -142,7 +142,8 @@ export default function EditTrainingSessionScreen() {
         await RoutineSessionService.updateRoutineSession(
           editedSession,
           Number(sessionId),
-          session.token!
+          session!.token!,
+          session!.user!.id
         );
         setLoading(false);
         showSuccessSnackbar("Training session edited successfully.");
@@ -169,7 +170,8 @@ export default function EditTrainingSessionScreen() {
         const session = await getCurrentSession();
         const response = await RoutineSessionService.getRoutineSession(
           Number(sessionId),
-          session.token!
+          session!.token!,
+          session!.user!.id
         );
 
         const recentlyAddedResponse = {
@@ -295,7 +297,8 @@ export default function EditTrainingSessionScreen() {
       const session = await getCurrentSession();
       await RoutineSessionService.deleteRoutineSession(
         Number(sessionId),
-        session.token!
+        session!.token!,
+        session!.user!.id
       );
       setLoading(false);
       showSuccessSnackbar("Training session deleted successfully.");

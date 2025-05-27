@@ -100,7 +100,7 @@ const AddExerciseScreen = () => {
       const session = await getCurrentSession();
       let searchResult: Exercise[] = await ExerciseService.searchExercises(
         filters,
-        session.token!
+        session!.token!
       );
       setExercises(searchResult);
     } catch (error) {

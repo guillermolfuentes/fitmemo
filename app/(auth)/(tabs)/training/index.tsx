@@ -43,7 +43,7 @@ export default function TrainingScreen() {
     try {
       const session = await getCurrentSession();
       const userRoutine: UserRoutineResponse =
-        await RoutineService.getUserRoutine(session.token!);
+        await RoutineService.getUserRoutine(session!.token!, session!.user!.id);
       setUserRoutine(userRoutine);
       setLoading(true);
     } catch (error) {

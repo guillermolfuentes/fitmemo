@@ -18,10 +18,11 @@ class RoutineService {
   }
 
   public static async getUserRoutine(
-    token: string
+    token: string,
+    userId: number
   ): Promise<UserRoutineResponse> {
     try {
-      const url_get_user_routine = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/routines`;
+      const url_get_user_routine = `${process.env.EXPO_PUBLIC_API_URL}/${process.env.EXPO_PUBLIC_API_VERSION}/users/${userId}/routine`;
       const response = await axios.get(url_get_user_routine, {
         headers: {
           Authorization: `Bearer ${token}`,
