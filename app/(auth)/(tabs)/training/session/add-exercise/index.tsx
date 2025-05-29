@@ -16,11 +16,13 @@ import ExerciseService from "@/services/exerciseService";
 import { AuthContext } from "@/context/AuthContext";
 import { Exercise } from "@/types/training/models/Exercise";
 import { useUIContext } from "@/context/UIContext";
+import { useTranslation } from "react-i18next";
 
 const AddExerciseScreen = () => {
   const { setData } = useContext(NavigationContext);
   const { getCurrentSession } = useContext(AuthContext);
   const { setLoading, showErrorSnackbar, showSuccessSnackbar } = useUIContext();
+  const { t } = useTranslation();
 
   const [backConfirmationModalVisible, setBackConfirmationModalVisible] =
     useState(false);
@@ -30,10 +32,11 @@ const AddExerciseScreen = () => {
     setaddExerciseConfirmationModalVisible,
   ] = useState(false);
 
-  const [addExerciseModalTitle, setAddExerciseModalTitle] =
-    useState("Añadir ejercicio");
+  const [addExerciseModalTitle, setAddExerciseModalTitle] = useState(
+    t("screens.training.add_exercise.title")
+  );
   const [addExerciseModalMessage, setAddExerciseModalMessage] = useState(
-    "¿Estás seguro de que deseas añadir el ejercicio a la sesión?"
+    t("screens.training.add_exercise.add_confirmation_default_label")
   );
 
   const isBackToSessionConfirmedRef = useRef(false);
@@ -46,7 +49,7 @@ const AddExerciseScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Añadir ejercicio",
+      title: t("screens.training.add_exercise.title"),
     });
   }, [navigation]);
 
@@ -62,7 +65,6 @@ const AddExerciseScreen = () => {
 
   const handleAddExerciseConfirm = () => {
     isBackToSessionConfirmedRef.current = true;
-    //setBackConfirmationModalVisible(false);
     setaddExerciseConfirmationModalVisible(false);
     setData("AddExerciseScreen", {
       selectedExercise: selectedExercise,
@@ -110,7 +112,7 @@ const AddExerciseScreen = () => {
         console.error("Error fetching exercise search:", error);
       }
       showErrorSnackbar(
-        "Error fetching exercise search. Please try again later."
+        t("screens.training.add_exercise.errors.fetching_exercises")
       );
     } finally {
       setLoading(false);
@@ -119,9 +121,15 @@ const AddExerciseScreen = () => {
 
   const handleAddExercise = (exercise: any) => {
     setSelectedExercise(exercise);
-    setAddExerciseModalTitle(`Añadir ${exercise.name.toLowerCase()}`);
+    setAddExerciseModalTitle(
+      `${t("common.add")} ${exercise.name.toLowerCase()}`
+    );
     setAddExerciseModalMessage(
-      `¿Estás seguro de que deseas añadir el ejercicio ${exercise.name.toLowerCase()} a la sesión de entrenamiento?`
+      `${t(
+        "screens.training.add_exercise.add_confirmation_message_label_1"
+      )} ${exercise.name.toLowerCase()} ${t(
+        "screens.training.add_exercise.add_confirmation_message_label_2"
+      )}`
     );
 
     setaddExerciseConfirmationModalVisible(true);
@@ -134,8 +142,12 @@ const AddExerciseScreen = () => {
           visible={backConfirmationModalVisible}
           onConfirm={handleBackConfirm}
           onCancel={handleBackCancel}
-          title="¿Estás seguro?"
-          message="¿Estás seguro de que quieres salir sin guardar los cambios?"
+          title={t(
+            "screens.training.add_exercise.add_confirmation_title_label"
+          )}
+          message={t(
+            "screens.training.add_exercise.exit_confirmation_title_label"
+          )}
         />
         <ConfirmationModal
           visible={addExerciseConfirmationModalVisible}

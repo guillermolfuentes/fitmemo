@@ -1,12 +1,11 @@
 import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
+import { Tabs } from "expo-router";
 
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import { useTranslation } from "react-i18next";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -18,6 +17,7 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { t } = useTranslation();
 
   console.log("Renderizando TabLayout");
 
@@ -34,8 +34,8 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="home"
-        options={{          
-          tabBarLabel: "Inicio",
+        options={{
+          tabBarLabel: t("screens.home.tab_label"),
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="home" color={color} size={24} />
           ),
@@ -44,7 +44,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="training"
         options={{
-          title: "Entrenamiento",
+          title: t("screens.training.tab_label"),
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="dumbbell" color={color} size={24} />
           ),
@@ -53,7 +53,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="progress"
         options={{
-          title: "Progreso",
+          title: t("screens.progress.tab_label"),
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="chart-bar" color={color} size={24} />
           ),

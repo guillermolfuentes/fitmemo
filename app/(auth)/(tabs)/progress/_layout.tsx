@@ -1,22 +1,24 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import { Pressable, useColorScheme } from "react-native";
-import Colors from "@/constants/Colors";
+import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function ProgressLayout() {
   console.log("Renderizando ProgressLayout");
-  const colorScheme = useColorScheme();
-  const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <Stack>
       <Stack.Screen
         name="index"
         options={{
-          title: "Mi progreso",
+          title: t("screens.progress.title"),
         }}
       />
-      <Stack.Screen name="measurements" options={{ title: "Measurements" }} />
+      <Stack.Screen
+        name="measurements"
+        options={{
+          title: t("screens.progress.add_body_measurement.title"),
+        }}
+      />
     </Stack>
   );
 }

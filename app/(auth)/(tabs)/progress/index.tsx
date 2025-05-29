@@ -14,34 +14,8 @@ import { useUIContext } from "@/context/UIContext";
 import StatisticsService from "@/services/statisticsService";
 import { ExerciseLoadProgressResponse } from "@/types/progress/services/ExerciseLoadProgressResponse";
 import { MuscularGroupVolumeProgressResponse } from "@/types/progress/services/MuscularGroupVolumeProgressResponse";
+import { useTranslation } from "react-i18next";
 const inter = require("../../../../assets/fonts/SpaceMono-Regular.ttf");
-
-const MUSCLE_OPTIONS = [
-  {
-    label: "Pecho",
-    value: "chest",
-  },
-  {
-    label: "Espalda",
-    value: "back",
-  },
-  {
-    label: "Piernas",
-    value: "legs",
-  },
-  {
-    label: "Brazos",
-    value: "arms",
-  },
-  {
-    label: "Hombros",
-    value: "shoulders",
-  },
-  {
-    label: "Abdominales",
-    value: "abs",
-  },
-];
 
 export default function ProgressScreen() {
   const font = useFont(inter, 12);
@@ -61,6 +35,34 @@ export default function ProgressScreen() {
     { label: string; value: string }[]
   >([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const { t } = useTranslation();
+
+  const MUSCLE_OPTIONS = [
+    {
+      label: t("screens.training.muscle_group.chest"),
+      value: "chest",
+    },
+    {
+      label: t("screens.training.muscle_group.back"),
+      value: "back",
+    },
+    {
+      label: t("screens.training.muscle_group.legs"),
+      value: "legs",
+    },
+    {
+      label: t("screens.training.muscle_group.arms"),
+      value: "arms",
+    },
+    {
+      label: t("screens.training.muscle_group.shoulders"),
+      value: "shoulders",
+    },
+    {
+      label: t("screens.training.muscle_group.abs"),
+      value: "abs",
+    },
+  ];
 
   const [bodyProgress, setBodyProgress] = useState<
     { date: string; bodyWeight: number }[]
@@ -94,7 +96,7 @@ export default function ProgressScreen() {
           setDataLoaded(true);
         } catch (error) {
           console.error("Error fetching exercises", error);
-          showErrorSnackbar("Error fetching exercises. Retry later.");
+          showErrorSnackbar(t("screens.progress.errors.fetching_exercises"));
         } finally {
           setLoading(false);
         }
@@ -116,7 +118,9 @@ export default function ProgressScreen() {
           setDataLoaded(true);
         } catch (error) {
           console.error("Error fetching body progress", error);
-          showErrorSnackbar("Error fetching body progress. Retry later.");
+          showErrorSnackbar(
+            t("screens.progress.errors.fetching_body_progress")
+          );
         } finally {
           setLoading(false);
         }
@@ -152,7 +156,7 @@ export default function ProgressScreen() {
             console.error("Error fetching load progress:", error);
           }
           showErrorSnackbar(
-            "Error fetching load progress. Please try again later."
+            t("screens.progress.errors.fetching_load_progress")
           );
         }
       };
@@ -185,14 +189,17 @@ export default function ProgressScreen() {
         } catch (error) {
           if (error instanceof Error) {
             console.error(
-              "Error fetching muscle group load progress:",
+              "Error fetching muscle group volume progress:",
               error.message
             );
           } else {
-            console.error("Error fetching muscle group  load progress:", error);
+            console.error(
+              "Error fetching muscle group volume progress:",
+              error
+            );
           }
           showErrorSnackbar(
-            "Error fetching muscle group load progress. Please try again later."
+            t("screens.progress.errors.fetching_muscle_group_volume_progress")
           );
         }
       };
@@ -234,9 +241,7 @@ export default function ProgressScreen() {
         } else {
           console.error("Error fetching load progress:", error);
         }
-        showErrorSnackbar(
-          "Error fetching load progress. Please try again later."
-        );
+        showErrorSnackbar(t("screens.progress.errors.fetching_load_progress"));
       }
     };
 
@@ -272,14 +277,14 @@ export default function ProgressScreen() {
       } catch (error) {
         if (error instanceof Error) {
           console.error(
-            "Error fetching muscle group load progress:",
+            "Error fetching muscle group volume progress:",
             error.message
           );
         } else {
-          console.error("Error fetching muscle group  load progress:", error);
+          console.error("Error fetching muscle group volume progress:", error);
         }
         showErrorSnackbar(
-          "Error fetching muscle group load progress. Please try again later."
+          t("screens.progress.errors.fetching_muscle_group_volume_progress")
         );
       }
     };
@@ -322,11 +327,13 @@ export default function ProgressScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Estadísticas de rendimiento</Text>
+        <Text style={styles.sectionTitle}>
+          {t("screens.progress.performance_stats_label")}
+        </Text>
 
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>
-            Progresión de cargas por ejercicio
+            {t("screens.progress.loads_progression_label")}
           </Text>
           <View style={styles.chart}>
             {exerciseLoadProgress.length < 4 && (
@@ -338,7 +345,7 @@ export default function ProgressScreen() {
                 }}
                 textStyle={{ color: "red", flexWrap: "wrap" }}
               >
-                Próximamente se mostrará la gráfica
+                {t("screens.progress.coming_soon_chart_label")}
               </Chip>
             )}
             <CartesianChart
@@ -399,7 +406,7 @@ export default function ProgressScreen() {
             </CartesianChart>
           </View>
           <Dropdown
-            label={"Selecciona ejercicio"}
+            label={t("screens.progress.select_exercise_placeholder")}
             options={exerciseOptions}
             hideMenuHeader={true}
             value={exerciseSelected}
@@ -410,7 +417,7 @@ export default function ProgressScreen() {
         </View>
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>
-            Progresión del volumen por grupo muscular
+            {t("screens.progress.volume_progression_label")}
           </Text>
           <View style={styles.chart}>
             {muscleGroupVolumeProgress.length < 4 && (
@@ -422,7 +429,7 @@ export default function ProgressScreen() {
                 }}
                 textStyle={{ color: "red", flexWrap: "wrap" }}
               >
-                Próximamente se mostrará la gráfica
+                {t("screens.progress.coming_soon_chart_label")}
               </Chip>
             )}
             <CartesianChart
@@ -484,7 +491,7 @@ export default function ProgressScreen() {
               )}
             </CartesianChart>
             <Dropdown
-              label={"Selecciona grupo muscular"}
+              label={t("screens.progress.select_muscle_group_placeholder")}
               options={MUSCLE_OPTIONS}
               hideMenuHeader={true}
               value={muscleGroupSelected}
@@ -497,12 +504,16 @@ export default function ProgressScreen() {
       </View>
       <View style={styles.section}>
         <View style={styles.headerContainer}>
-          <Text style={styles.sectionTitle}>Estadísticas corporales</Text>
+          <Text style={styles.sectionTitle}>
+            {t("screens.progress.body_stats_label")}
+          </Text>
           <Button icon="plus" mode="outlined" onPress={handleNewMeasurement}>
-            Añadir
+            {t("common.add")}
           </Button>
         </View>
-        <Text style={styles.chartTitle}>Evolución peso corporal </Text>
+        <Text style={styles.chartTitle}>
+          {t("screens.progress.body_weight_evolution_label")}
+        </Text>
         <View style={styles.chart}>
           {bodyProgress.length < 3 && (
             <Chip

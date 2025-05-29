@@ -26,6 +26,7 @@ import RoutineSessionService from "@/services/routineSessionService";
 import { Formik, FormikProps } from "formik";
 import { RoutineSessionUpdateRequest } from "@/types/training/services/RoutineSessionUpdateRequest";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 
 export interface RoutineSessionExerciseFormFields {
   sets: RoutineSessionExerciseSetFormFields[];
@@ -36,10 +37,6 @@ export interface RoutineSessionExerciseSetFormFields {
   repetitions: string;
   weight: string;
 }
-
-const SessionNameSchema = Yup.object().shape({
-  sessionName: Yup.string().required("El nombre de la sesión es obligatorio"),
-});
 
 export default function EditTrainingSessionScreen() {
   const { getCurrentSession } = useContext(AuthContext);
@@ -67,6 +64,13 @@ export default function EditTrainingSessionScreen() {
   const [exerciseIdToDelete, setExerciseIdToDelete] = useState<number | null>(
     null
   );
+  const { t } = useTranslation();
+
+  const SessionNameSchema = Yup.object().shape({
+    sessionName: Yup.string().required(
+      t("screens.training.edit_session.errors.required_name")
+    ),
+  });
 
   const handleSaveEditedSession = async () => {
     let allValid = true;
@@ -146,7 +150,9 @@ export default function EditTrainingSessionScreen() {
           session!.user!.id
         );
         setLoading(false);
-        showSuccessSnackbar("Training session edited successfully.");
+        showSuccessSnackbar(
+          t("screens.training.edit_session.success.session_edited")
+        );
         router.back();
       } catch (error) {
         if (error instanceof Error) {
@@ -154,7 +160,9 @@ export default function EditTrainingSessionScreen() {
         } else {
           console.error("Error editing training session:", error);
         }
-        showErrorSnackbar("Error editing session. Please try again later.");
+        showErrorSnackbar(
+          t("screens.training.edit_session.errors.session_edition")
+        );
       }
     } else {
       console.log("Some forms are invalid.");
@@ -190,7 +198,7 @@ export default function EditTrainingSessionScreen() {
           console.error("Error fetching routine session:", error);
         }
         showErrorSnackbar(
-          "Error fetching routine session. Please try again later."
+          t("screens.training.edit_session.errors.fetching_session")
         );
       } finally {
         setLoading(false);
@@ -260,7 +268,7 @@ export default function EditTrainingSessionScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Editar sesión",
+      title: t("screens.training.edit_session.title"),
       headerRight: () => (
         <Pressable
           onPressIn={handleSaveEditedSession}
@@ -301,7 +309,9 @@ export default function EditTrainingSessionScreen() {
         session!.user!.id
       );
       setLoading(false);
-      showSuccessSnackbar("Training session deleted successfully.");
+      showSuccessSnackbar(
+        t("screens.training.edit_session.success.session_deleted")
+      );
       router.back();
     } catch (error) {
       if (error instanceof Error) {
@@ -309,7 +319,9 @@ export default function EditTrainingSessionScreen() {
       } else {
         console.error("Error deleting training session:", error);
       }
-      showErrorSnackbar("Error deleting session. Please try again later.");
+      showErrorSnackbar(
+        t("screens.training.edit_session.errors.session_deletion")
+      );
     }
   };
 
@@ -367,13 +379,17 @@ export default function EditTrainingSessionScreen() {
       }) => (
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.container}>
-            <Text style={styles.sessionTitle}>Nombre de sesión</Text>
+            <Text style={styles.sessionTitle}>
+              {t("screens.training.edit_session.session_name_label")}
+            </Text>
             <TextInput
               style={styles.input}
               onChangeText={handleChange("sessionName")}
               onBlur={handleBlur("sessionName")}
               value={values.sessionName}
-              placeholder="Introduce el nombre de la sesión"
+              placeholder={t(
+                "screens.training.edit_session.session_name_placeholder"
+              )}
             />
             {touched.sessionName && errors.sessionName ? (
               <Text style={styles.errorText}>{errors.sessionName}</Text>
@@ -384,8 +400,12 @@ export default function EditTrainingSessionScreen() {
               onCancel={() => {
                 setDeleteExerciseConfirmationModalVisible(false);
               }}
-              title="¿Estás seguro?"
-              message="¿Estás seguro de que quieres borrar el ejercicio?"
+              title={t(
+                "screens.training.edit_session.add_confirmation_title_label"
+              )}
+              message={t(
+                "screens.training.edit_session.add_confirmation_message_label"
+              )}
             />
             {routineSession &&
               routineSession.sessionExercises.map(
@@ -415,7 +435,7 @@ export default function EditTrainingSessionScreen() {
             icon="plus"
             onPress={handleNewExercise}
           >
-            Añadir ejercicio
+            {t("screens.training.edit_session.add_exercise_button")}
           </Button>
 
           <View style={styles.buttonContainer}>
@@ -427,7 +447,7 @@ export default function EditTrainingSessionScreen() {
                 setDeleteActualSessionConfirmationModalVisible(true);
               }}
             >
-              Eliminar sesión
+              {t("screens.training.edit_session.delete_session_button")}
             </Button>
           </View>
           <ConfirmationModal

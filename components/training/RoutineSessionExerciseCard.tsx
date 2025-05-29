@@ -6,6 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { RoutineSessionExerciseFormFields } from "@/app/(auth)/(tabs)/training/session/edit/[sessionId]";
+import { useTranslation } from "react-i18next";
 
 interface RoutineSessionExerciseCardProps {
   id: number;
@@ -33,6 +34,7 @@ const RoutineSessionExerciseCard = ({
   const [sets, setSets] = useState<RoutineSessionExerciseFormFields["sets"]>(
     []
   );
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (formRef && "current" in formRef && formRef.current) {
@@ -171,7 +173,7 @@ const RoutineSessionExerciseCard = ({
               onPress={() => addSet(values, setFieldValue)}
               style={styles.addButton}
             >
-              Añadir serie
+              {t("components.routine_session_exercise_card.add_set_button")}
             </Button>
           </Card.Content>
         </Card>

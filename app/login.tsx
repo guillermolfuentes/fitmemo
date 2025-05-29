@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { AuthRequest } from "@/types/auth/contexts/AuthLoginRequest";
 import { AuthResponse } from "@/types/auth/contexts/AuthResponse";
-import axios, { AxiosError } from "axios";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { NetworkError } from "@/errors/NetworkError";
 import { ForbiddenError } from "@/errors/ForbiddenError";

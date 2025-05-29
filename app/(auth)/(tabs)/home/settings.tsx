@@ -31,17 +31,6 @@ Workaround para el headerRight mientras solucionan el bug:
 https://github.com/expo/expo/issues/29489
 * */
 
-const SettingsSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password is too short"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), undefined], "Passwords must match")
-    .required("Confirm password is required"),
-});
-
 interface SettingsValues {
   name: string;
   email: string;
@@ -58,14 +47,15 @@ const SettingsForm = ({
   handleSubmit,
 }: FormikProps<SettingsValues>) => {
   const { signOut } = useContext(AuthContext);
+  const { t } = useTranslation();
 
   return (
     <View>
       <Text style={styles.formDescription}>
-        Esto son los datos que tenemos de ti
+        {t("screens.home.settings.user_info_description")}
       </Text>
       <TextInput
-        label="Name"
+        label={t("screens.home.settings.name")}
         onChangeText={handleChange("name")}
         onBlur={handleBlur("name")}
         value={values.name}
@@ -77,7 +67,7 @@ const SettingsForm = ({
       )}
 
       <TextInput
-        label="Email"
+        label={t("screens.home.settings.email")}
         onChangeText={handleChange("email")}
         onBlur={handleBlur("email")}
         value={values.email}
@@ -89,7 +79,7 @@ const SettingsForm = ({
       )}
 
       <TextInput
-        label="Password"
+        label={t("screens.home.settings.password")}
         onChangeText={handleChange("password")}
         onBlur={handleBlur("password")}
         value={values.password}
@@ -102,7 +92,7 @@ const SettingsForm = ({
       )}
 
       <TextInput
-        label="Confirm Password"
+        label={t("screens.home.settings.confirm_password")}
         onChangeText={handleChange("confirmPassword")}
         onBlur={handleBlur("confirmPassword")}
         value={values.confirmPassword}
@@ -123,7 +113,7 @@ const SettingsForm = ({
           signOut();
         }}
       >
-        Logout
+        {t("screens.home.settings.logout_button")}
       </Button>
     </View>
   );
@@ -133,6 +123,34 @@ const SettingsModalScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const SettingsSchema = Yup.object().shape({
+    name: Yup.string().required(
+      t("screens.home.settings.errors.required_name")
+    ),
+    email: Yup.string()
+      .email(t("screens.home.settings.errors.invalid_email"))
+      .required(t("screens.home.settings.errors.required_email")),
+    password: Yup.string()
+      .required(
+        t("screens.home.settings.errors.required_password") ||
+          "Password is required"
+      )
+      .min(
+        8,
+        t("screens.home.settings.errors.password_too_short") ||
+          "Password is too short"
+      ),
+    confirmPassword: Yup.string()
+      .oneOf(
+        [Yup.ref("password"), undefined],
+        t("screens.home.settings.errors.passwords_must_match") ||
+          "Passwords must match"
+      )
+      .required(
+        t("screens.home.settings.errors.required_confirm_password") ||
+          "Confirm password is required"
+      ),
+  });
   const formikRef = useRef<FormikProps<SettingsValues>>(null);
   const { getCurrentSession } = useContext(AuthContext);
   const [initialFormValues, setInitialValues] = useState<SettingsValues>({
@@ -196,7 +214,7 @@ const SettingsModalScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Settings",
+      title: t("screens.home.settings.title"),
       headerRight: () => (
         <Pressable
           onPressIn={() => formikRef.current?.handleSubmit()}

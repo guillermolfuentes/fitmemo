@@ -11,11 +11,11 @@ import {
 import TrainingSessionCard from "@/components/training/RoutineSessionCard";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
-import TrainingDiaryService from "@/services/trainingDiaryService";
 import { UserRoutineResponse } from "@/types/training/services/UserRoutineResponse";
 import { Button } from "react-native-paper";
-import { Href, useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import RoutineService from "@/services/routineService";
+import { useTranslation } from "react-i18next";
 
 export default function TrainingScreen() {
   const [userRoutine, setUserRoutine] = useState<UserRoutineResponse>({
@@ -30,10 +30,11 @@ export default function TrainingScreen() {
   const { isLoading, setLoading } = useUIContext();
   const navigation = useNavigation();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Entrenamiento",
+      title: t("screens.training.title"),
     });
   }, [navigation]);
 
@@ -74,9 +75,11 @@ export default function TrainingScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.routineTitle}>My routine</Text>
+      <Text style={styles.routineTitle}>
+        {t("screens.training.routine.title")}
+      </Text>
       {userRoutine.sessions.length === 0 ? (
-        <Text>No hay sesiones disponibles.</Text>
+        <Text>{t("screens.training.routine.no_sessions_available")}</Text>
       ) : (
         userRoutine.sessions.map((session) => (
           <TrainingSessionCard
@@ -94,7 +97,7 @@ export default function TrainingScreen() {
         icon="plus"
         onPress={handleNewSession}
       >
-        Add new session
+        {t("screens.training.routine.add_new_session")}
       </Button>
     </ScrollView>
   );

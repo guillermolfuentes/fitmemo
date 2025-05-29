@@ -9,12 +9,14 @@ import { TrainingTip } from "@/types/home/models/TrainingTip";
 import { useUIContext } from "@/context/UIContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 export default function HomeScreen() {
   const [achievements, setAchievements] = useState<UserAchievementsResponse>();
   const [trainingTip, setTrainingTip] = useState<TrainingTip>();
   const { getCurrentSession } = useContext(AuthContext);
   const { setLoading, showErrorSnackbar } = useUIContext();
+  const { t } = useTranslation();
 
   const fetchAchievements = async () => {
     try {
@@ -31,7 +33,7 @@ export default function HomeScreen() {
       setAchievements(response);
     } catch (error) {
       console.error("Error fetching achievements:", error);
-      showErrorSnackbar("Error fetching achievements. Please try again later.");
+      showErrorSnackbar(t("screens.home.errors.fetching_achievements"));
     } finally {
       setLoading(false);
     }
@@ -50,9 +52,7 @@ export default function HomeScreen() {
       setTrainingTip(response);
     } catch (error) {
       console.error("Error fetching daily training tip:", error);
-      showErrorSnackbar(
-        "Error fetching daily training tip. Please try again later."
-      );
+      showErrorSnackbar(t("screens.home.errors.fetching_tip"));
     } finally {
       setLoading(false);
     }
@@ -71,29 +71,33 @@ export default function HomeScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <AchievementCard
             image={require("../../../../assets/images/total-sessions.png")}
-            title="Sesiones totales"
+            title={t("screens.home.achievements.total_sessions.title")}
             achievement={
               achievements
-                ? `${achievements.totalTrainings} sesiones`
-                : "Cargando..."
+                ? `${achievements.totalTrainings} ${t(
+                    "screens.home.achievements.total_sessions.sessions"
+                  )}`
+                : t("common.loading")
             }
           />
           <AchievementCard
             image={require("../../../../assets/images/total-weight.png")}
-            title="Kilos levantados"
+            title={t("screens.home.achievements.total_weight_lifted")}
             achievement={
               achievements
                 ? `${achievements.totalWeightLifted} kgs.`
-                : "Cargando..."
+                : t("common.loading")
             }
           />
           <AchievementCard
             image={require("../../../../assets/images/weekly-average.png")}
-            title="Media semanal"
+            title={t("screens.home.achievements.weekly_average.title")}
             achievement={
               achievements
-                ? `${achievements.averageTrainingsPerWeek} sesiones`
-                : "Cargando..."
+                ? `${achievements.averageTrainingsPerWeek} ${t(
+                    "screens.home.achievements.weekly_average.sessions"
+                  )}`
+                : t("common.loading")
             }
           />
         </ScrollView>

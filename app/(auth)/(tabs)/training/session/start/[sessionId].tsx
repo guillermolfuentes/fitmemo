@@ -24,6 +24,7 @@ import {
 import { TrainingDiaryEntryRequest } from "@/types/training/services/TrainingDiaryEntryRequest";
 import { FormikProps } from "formik";
 import { ExerciseLastResultsResponse } from "@/types/diary/services/ExerciseLastResultsResponse";
+import { useTranslation } from "react-i18next";
 
 export interface RoutineSessionExerciseFormFields {
   sets: RoutineSessionExerciseSetFormFields[];
@@ -48,6 +49,7 @@ export default function TrainingSessionScreen() {
     FormikProps<RoutineSessionExerciseFormFields>[]
   >([]);
   const router = useRouter();
+  const { t } = useTranslation();
   const [
     routineSessionsExercisesLastResults,
     setRoutineSessionsExercisesLastResults,
@@ -102,7 +104,9 @@ export default function TrainingSessionScreen() {
           session!.token!,
           session!.user!.id
         );
-        showSuccessSnackbar("Training session saved successfully.");
+        showSuccessSnackbar(
+          t("screens.training.start_session.success.session_saved")
+        );
 
         router.back();
       } catch (error) {
@@ -111,7 +115,9 @@ export default function TrainingSessionScreen() {
         } else {
           console.error("Error saving training session:", error);
         }
-        showErrorSnackbar("Error saving session. Please try again later.");
+        showErrorSnackbar(
+          t("screens.training.start_session.errors.save_session")
+        );
       }
     } else {
       console.log("Some forms are invalid.");
@@ -155,7 +161,7 @@ export default function TrainingSessionScreen() {
           console.error("Error fetching routine session:", error);
         }
         showErrorSnackbar(
-          "Error fetching routine session. Please try again later."
+          t("screens.training.start_session.errors.fetching_session")
         );
       } finally {
         setLoading(false);
@@ -183,7 +189,7 @@ export default function TrainingSessionScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Registro de sesión",
+      title: t("screens.training.start_session.title"),
       headerRight: () => (
         <Pressable
           onPressIn={handleSaveSession}
@@ -203,7 +209,7 @@ export default function TrainingSessionScreen() {
   }, [navigation, routineSession]);
 
   if (!routineSession) {
-    return <Text>Cargando...</Text>;
+    return <Text>{t("common.loading")}</Text>;
   }
 
   return (

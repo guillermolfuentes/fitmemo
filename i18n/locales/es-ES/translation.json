@@ -129,23 +129,198 @@
       "login_return_button": "Volver al login"
     },
     "home": {
-      "title": "Inicio",
-      "welcome_message": "Bienvenido a la aplicación"
+      "tab_label": "Inicio",
+      "welcome_message": "Bienvenido,",
+      "achievements": {
+        "total_sessions": {
+          "title": "Sesiones totales",
+          "sessions": "sesiones"
+        },
+        "total_weight_lifted": "Kilos levantados",
+        "weekly_average": {
+          "title": "Media semanal",
+          "sessions": "sesiones"
+        },
+        "errors": {
+          "fetching_achievements": "Error al obtener los logros. Por favor, inténtalo de nuevo más tarde.",
+          "fetching_tip": "Error al obtener el consejo diario de entrenamiento. Por favor, inténtalo de nuevo más tarde."
+        }
+      },
+      "settings": {
+        "title": "Ajustes",
+        "user_info_description": "Estos son los datos que tenemos de ti",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "confirm_password": "Confirmar contraseña",
+        "logout_button": "Cerrar sesión",
+        "errors": {
+          "required_name": "El nombre es obligatorio",
+          "required_email": "El correo electrónico es obligatorio",
+          "invalid_email": "Correo electrónico inválido",
+          "required_password": "La confirmación de la contraseña es obligatoria",
+          "required_confirm_password": "La confirmación de la contraseña es obligatoria",
+          "passwords_must_match": "Las contraseñas deben coincidir",
+          "password_too_short": "La contraseña es demasiado corta"
+        }
+      }
     },
     "training": {
+      "tab_label": "Entrenamiento",
       "title": "Entrenamiento",
       "start_button": "Comenzar entrenamiento",
-      "stop_button": "Detener entrenamiento"
+      "stop_button": "Detener entrenamiento",
+      "muscle_group": {
+        "chest": "Pecho",
+        "back": "Espalda",
+        "legs": "Piernas",
+        "arms": "Brazos",
+        "shoulders": "Hombros",
+        "abs": "Abdominales"
+      },
+      "equipment": {
+        "gym": "Gimnasio",
+        "dumbbells": "Mancuernas",
+        "barbell": "Barra",
+        "no_equipment": "Sin equipo"
+      },
+      "routine": {
+        "title": "Mi rutina",
+        "no_sessions_available": "No hay sesiones disponibles",
+        "add_new_session": "Añadir nueva sesión"
+      },
+      "create_session": {
+        "title": "Nueva sesión",
+        "session_name_label": "Nombre de la sesión",
+        "session_name_placeholder": "Introduce el nombre de la sesión",
+        "add_confirmation_title_label": "¿Estás seguro?",
+        "add_confirmation_message_label": "¿Estás seguro de que deseas borrar el ejercicio",
+        "add_exercise_button": "Añadir ejercicio",
+        "errors": {
+          "required_name": "El nombre de la sesión es obligatorio",
+          "required_minimum_exercises": "Debes añadir al menos un ejercicio a la sesión",
+          "session_creation": "Error al crear la sesión. Por favor, inténtalo de nuevo más tarde."
+        },
+        "success": {
+          "session_created": "Sesión creada con éxito"
+        }
+      },
+      "edit_session": {
+        "title": "Editar sesión",
+        "session_name_label": "Nombre de la sesión",
+        "session_name_placeholder": "Introduce el nombre de la sesión",
+        "add_confirmation_title_label": "¿Estás seguro?",
+        "add_confirmation_message_label": "¿Estás seguro de que deseas borrar el ejercicio",
+        "add_exercise_button": "Añadir ejercicio",
+        "delete_session_button": "Eliminar sesión",
+        "errors": {
+          "required_name": "El nombre de la sesión es obligatorio",
+          "required_minimum_exercises": "Debes añadir al menos un ejercicio a la sesión",
+          "session_edition": "Error al editar la sesión. Por favor, inténtalo de nuevo más tarde.",
+          "session_deletion": "Error al eliminar la sesión. Por favor, inténtalo de nuevo más tarde.",
+          "fetching_session": "Error al obtener la sesión. Por favor, inténtalo de nuevo más tarde."
+        },
+        "success": {
+          "session_edited": "Sesión editada con éxito",
+          "session_deleted": "Sesión eliminada con éxito"
+        }
+      },
+      "add_exercise": {
+        "title": "Añadir ejercicio",
+        "no_results": "No se han encontrado resultados",
+        "add_button": "Añadir ejercicio",
+        "add_confirmation_default_label": "¿Estás seguro de que deseas añadir el ejercicio a la sesión?",
+        "add_confirmation_title_label": "¿Estás seguro?",
+        "add_confirmation_message_label_1": "¿Estás seguro de que deseas añadir el ejercicio",
+        "add_confirmation_message_label_2": "a la sesión de entrenamiento?",
+        "exit_confirmation_title_label": "¿Estás seguro de que quieres salir sin guardar los cambios?",
+        "errors": {
+          "required_exercise": "El ejercicio es obligatorio",
+          "fetching_exercises": "Error al obtener los ejercicios. Por favor, inténtalo de nuevo más tarde."
+        }
+      },
+      "start_session": {
+        "title": "Registro de sesión",
+        "errors": {
+          "fetching_session": "Error al obtener la sesión. Por favor, inténtalo de nuevo más tarde.",
+          "save_session": "Error al guardar la sesión. Por favor, inténtalo de nuevo más tarde."
+        },
+        "success": {
+          "session_saved": "Sesión guardada con éxito"
+        }
+      }
     },
     "progress": {
-      "title": "Progreso",
-      "view_details": "Ver detalles",
-      "no_data": "No hay datos disponibles"
+      "tab_label": "Progreso",
+      "title": "Mi progreso",
+      "performance_stats_label": "Estadísticas de rendimiento",
+      "loads_progression_label": "Progresión de cargas por ejercicio",
+      "select_exercise_placeholder": "Selecciona ejercicio",
+      "volume_progression_label": "Progresión del volumen por grupo muscular",
+      "select_muscle_group_placeholder": "Selecciona grupo muscular",
+      "body_stats_label": "Estadísticas corporales",
+      "body_weight_evolution_label": "Evolución del peso corporal",
+      "coming_soon_chart_label": "Próximamente se mostrará la gráfica",
+      "add_body_measurement": {
+        "title": "Registro corporal",
+        "height_label": "Altura (cms)",
+        "weight_label": "Peso (kgs)",
+        "waist_circumference_label": "Perímetro cintura (cms)",
+        "hip_circumference_label": "Perímetro cadera (cms)",
+        "thigh_circumference_label": "Perímetro muslo (cms)",
+        "add_button": "Añadir medida",
+        "errors": {
+          "required_weight": "El peso es obligatorio",
+          "invalid_weight": "El peso debe ser un número entre 40 y 500 kg",
+          "invalid_waist_circumference": "El perímetro del ombligo debe ser un número entre 50 y 200 cm",
+          "invalid_hip_circumference": "El perímetro de la cadera debe ser un número entre 30 y 200 cm",
+          "invalid_thigh_circumference": "El perímetro del muslo debe ser un número entre 30 y 200 cm",
+          "measurement_create": "Error al añadir la medida. Por favor, inténtalo de nuevo más tarde."
+        },
+        "success": {
+          "measurement_added": "Medida añadida con éxito"
+        }
+      },
+      "errors": {
+        "fetching_exercises": "Error al obtener los ejercicios. Por favor, inténtalo de nuevo más tarde.",
+        "fetching_body_progress": "Error al obtener el progreso corporal. Por favor, inténtalo de nuevo más tarde.",
+        "fetching_load_progress": "Error al obtener la progresión de cargas. Por favor, inténtalo de nuevo más tarde.",
+        "fetching_muscle_group_volume_progress": "Error al obtener la progresión del volumen por grupo muscular. Por favor, inténtalo de nuevo más tarde."
+      }
+    }
+  },
+  "components": {
+    "advice_card": {
+      "fitness_tip": "Consejo fitness",
+      "science_title": "Ciencia detrás"
+    },
+    "exercise_card": {
+      "muscle_group_title": "Grupo muscular:",
+      "equipment_title": "Material:"
+    },
+    "exercise_search": {
+      "search_placeholder": "Nombre del ejercicio",
+      "equipment_label": "Material",
+      "muscle_group_label": "Músculo",
+      "search_button": "Buscar"
+    },
+    "routine_session_card": {
+      "start_session_button": "Empezar sesión"
+    },
+    "routine_session_exercise_card": {
+      "add_set_button": "Añadir serie"
+    },
+    "routine_session_exercise_set_row": {
+      "set_label": "Serie",
+      "last_set_label": "Últ.",
+      "reps_label": "Reps",
+      "weight_label": "Kgs"
     }
   },
   "common": {
     "cancel": "Cancelar",
     "confirm": "Confirmar",
+    "add": "Añadir",
     "yes": "Sí",
     "no": "No",
     "loading": "Cargando...",

@@ -13,28 +13,6 @@ import BodyMeasurementService from "@/services/bodyMeasurementService";
 import { BodyMeasurementEntryRequest } from "@/types/progress/services/BodyMeasurementEntryRequest";
 import { useRouter } from "expo-router";
 
-const MeasurementsSchema = Yup.object().shape({
-  bodyWeight: Yup.number()
-    .required("El peso es obligatorio")
-    .min(10, "El peso debe ser un número entre 10 y 500 kg")
-    .max(500, "El peso debe ser un número entre 10 y 500 kg"),
-  waistCircumference: Yup.number()
-    .transform((value, originalValue) => (originalValue === "" ? null : value))
-    .min(30, "El perímetro del ombligo debe ser un número entre 30 y 200 cm")
-    .max(200, "El perímetro del ombligo debe ser un número entre 30 y 200 cm")
-    .notRequired(),
-  hipCircumference: Yup.number()
-    .transform((value, originalValue) => (originalValue === "" ? null : value))
-    .min(30, "El perímetro de la cadera debe ser un número entre 30 y 200 cm")
-    .max(200, "El perímetro de la cadera debe ser un número entre 30 y 200 cm")
-    .notRequired(),
-  thighCircumference: Yup.number()
-    .transform((value, originalValue) => (originalValue === "" ? null : value))
-    .min(30, "El perímetro del muslo debe ser un número entre 30 y 200 cm")
-    .max(200, "El perímetro del muslo debe ser un número entre 30 y 200 cm")
-    .notRequired(),
-});
-
 interface MeasurementsValues {
   bodyWeight: string;
   waistCircumference: string;
@@ -51,6 +29,7 @@ const MeasurementsForm = ({
   handleSubmit,
 }: FormikProps<MeasurementsValues>) => {
   const { signOut } = useContext(AuthContext);
+  const { t } = useTranslation();
 
   const today = new Date().toLocaleDateString("es-ES", {
     year: "numeric",
@@ -62,7 +41,7 @@ const MeasurementsForm = ({
     <View>
       <Text style={styles.formDescription}>{today}</Text>
       <TextInput
-        label="bodyWeight"
+        label={t("screens.progress.add_body_measurement.weight_label")}
         keyboardType="numeric"
         onChangeText={handleChange("bodyWeight")}
         onBlur={handleBlur("bodyWeight")}
@@ -75,7 +54,9 @@ const MeasurementsForm = ({
       )}
 
       <TextInput
-        label="waistCircumference"
+        label={t(
+          "screens.progress.add_body_measurement.waist_circumference_label"
+        )}
         keyboardType="numeric"
         onChangeText={handleChange("waistCircumference")}
         onBlur={handleBlur("waistCircumference")}
@@ -88,7 +69,9 @@ const MeasurementsForm = ({
       )}
 
       <TextInput
-        label="hipCircumference"
+        label={t(
+          "screens.progress.add_body_measurement.hip_circumference_label"
+        )}
         keyboardType="numeric"
         onChangeText={handleChange("hipCircumference")}
         onBlur={handleBlur("hipCircumference")}
@@ -101,7 +84,9 @@ const MeasurementsForm = ({
       )}
 
       <TextInput
-        label="thighCircumference"
+        label={t(
+          "screens.progress.add_body_measurement.thigh_circumference_label"
+        )}
         keyboardType="numeric"
         onChangeText={handleChange("thighCircumference")}
         onBlur={handleBlur("thighCircumference")}
@@ -123,6 +108,69 @@ const MeasurementsModalScreen = () => {
   const formikRef = useRef<FormikProps<MeasurementsValues>>(null);
   const { getCurrentSession } = useContext(AuthContext);
   const router = useRouter();
+
+  const MeasurementsSchema = Yup.object().shape({
+    bodyWeight: Yup.number()
+      .required(
+        t("screens.progress.add_body_measurement.errors.required_weight")
+      )
+      .min(40, t("screens.progress.add_body_measurement.errors.invalid_weight"))
+      .max(
+        500,
+        t("screens.progress.add_body_measurement.errors.invalid_weight")
+      ),
+    waistCircumference: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? null : value
+      )
+      .min(
+        50,
+        t(
+          "screens.progress.add_body_measurement.errors.invalid_waist_circumference"
+        )
+      )
+      .max(
+        200,
+        t(
+          "screens.progress.add_body_measurement.errors.invalid_waist_circumference"
+        )
+      )
+      .notRequired(),
+    hipCircumference: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? null : value
+      )
+      .min(
+        30,
+        t(
+          "screens.progress.add_body_measurement.errors.invalid_hip_circumference"
+        )
+      )
+      .max(
+        200,
+        t(
+          "screens.progress.add_body_measurement.errors.invalid_hip_circumference"
+        )
+      )
+      .notRequired(),
+    thighCircumference: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? null : value
+      )
+      .min(
+        30,
+        t(
+          "screens.progress.add_body_measurement.errors.invalid_thigh_circumference"
+        )
+      )
+      .max(
+        200,
+        t(
+          "screens.progress.add_body_measurement.errors.invalid_thigh_circumference"
+        )
+      )
+      .notRequired(),
+  });
 
   const [initialFormValues, setInitialValues] = useState<MeasurementsValues>({
     bodyWeight: "",
@@ -170,11 +218,15 @@ const MeasurementsModalScreen = () => {
         session!.user!.id
       );
       setLoading(false);
-      showSuccessSnackbar("Measurement entry created successfully!");
+      showSuccessSnackbar(
+        t("screens.progress.add_body_measurement.success.measurement_added")
+      );
       router.back();
     } catch (error) {
       console.error("Error creating body measurement entry", error);
-      showErrorSnackbar("Error creating measurement entry");
+      showErrorSnackbar(
+        t("screens.progress.add_body_measurement.errors.measurement_create")
+      );
     } finally {
       setLoading(false);
     }

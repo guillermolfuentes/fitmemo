@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Card, Title, Paragraph, Button, IconButton } from "react-native-paper";
+import { Card, Title, Button, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 interface RoutineSessionCardProps {
   id: number;
@@ -18,7 +19,7 @@ const RoutineSessionCard = ({
 }: RoutineSessionCardProps) => {
   const navigation = useNavigation();
   const [routineSessionId, setRoutineSessionId] = useState<number | null>(null);
-
+  const { t } = useTranslation();
   useEffect(() => {
     setRoutineSessionId(id);
   }, [id]);
@@ -33,7 +34,7 @@ const RoutineSessionCard = ({
       </Card.Content>
       <Card.Actions>
         <Button mode="contained" icon="play" onPress={() => onStartSession(id)}>
-          Start session
+          {t("components.routine_session_card.start_session_button")}
         </Button>
       </Card.Actions>
     </Card>

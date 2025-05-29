@@ -2,6 +2,7 @@ import React from "react";
 import { TextInput } from "react-native-paper";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useTranslation } from "react-i18next";
 
 interface RoutineSessionExerciseSetRowProps {
   setNumber: number;
@@ -39,14 +40,20 @@ const RoutineSessionExerciseSetRow: React.FC<
   showWeightField = false,
   lastResults,
 }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.row}>
       <View style={styles.setContainer}>
-        <Text style={styles.setName}>Serie {setNumber}</Text>
+        <Text style={styles.setName}>
+          {t("components.routine_session_exercise_set_row.set_label")}{" "}
+          {setNumber}
+        </Text>
       </View>
       {lastResults && (
         <View style={styles.lastResultsContainer}>
-          <Text style={styles.lastResults}>Últ.</Text>
+          <Text style={styles.lastResults}>
+            {t("components.routine_session_exercise_set_row.last_set_label")}
+          </Text>
           <Text style={styles.lastResults}>
             {`${lastResults.repetitionsCompleted}x${lastResults.weightUsed}`}
           </Text>
@@ -54,7 +61,7 @@ const RoutineSessionExerciseSetRow: React.FC<
       )}
 
       <TextInput
-        label="Reps"
+        label={t("components.routine_session_exercise_set_row.reps_label")}
         onChangeText={onRepetitionsChange}
         onBlur={onRepetitionsBlur}
         value={repetitions}
@@ -64,7 +71,7 @@ const RoutineSessionExerciseSetRow: React.FC<
       />
       {showWeightField && (
         <TextInput
-          label="Kgs"
+          label={t("components.routine_session_exercise_set_row.weight_label")}
           onChangeText={onWeightChange}
           onBlur={onWeightBlur}
           value={weight}

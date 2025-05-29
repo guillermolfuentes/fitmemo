@@ -24,10 +24,9 @@ import {
 } from "@/types/training/services/RoutineSessionResponse";
 import RoutineSessionService from "@/services/routineSessionService";
 import { Formik, FormikProps } from "formik";
-import { RoutineSessionUpdateRequest } from "@/types/training/services/RoutineSessionUpdateRequest";
 import * as Yup from "yup";
-import { use } from "i18next";
 import { RoutineSessionCreationRequest } from "@/types/training/services/RoutineSessionCreationRequest";
+import { useTranslation } from "react-i18next";
 
 export interface RoutineSessionExerciseFormFields {
   sets: RoutineSessionExerciseSetFormFields[];
@@ -39,11 +38,14 @@ export interface RoutineSessionExerciseSetFormFields {
   weight: string;
 }
 
-const SessionNameSchema = Yup.object().shape({
-  sessionName: Yup.string().required("El nombre de la sesión es obligatorio"),
-});
-
 export default function CreateTrainingSessionScreen() {
+  const { t } = useTranslation();
+  const SessionNameSchema = Yup.object().shape({
+    sessionName: Yup.string().required(
+      t("screens.training.create_session.errors.required_name")
+    ),
+  });
+
   const { getCurrentSession } = useContext(AuthContext);
   const { getData, clearData } = useContext(NavigationContext);
   const { setLoading, showErrorSnackbar, showSuccessSnackbar } = useUIContext();
@@ -108,7 +110,9 @@ export default function CreateTrainingSessionScreen() {
 
     if (allValid) {
       if (routineSessionExerciseFormRefs.current.length === 0) {
-        showErrorSnackbar("Debes añadir al menos un ejercicio a la sesión");
+        showErrorSnackbar(
+          t("screens.training.create_session.errors.required_minimum_exercises")
+        );
         return;
       }
 
@@ -148,7 +152,9 @@ export default function CreateTrainingSessionScreen() {
           session!.user!.id
         );
         setLoading(false);
-        showSuccessSnackbar("Training session created successfully.");
+        showSuccessSnackbar(
+          t("screens.training.create_session.success.session_created")
+        );
         router.back();
       } catch (error) {
         if (error instanceof Error) {
@@ -156,7 +162,9 @@ export default function CreateTrainingSessionScreen() {
         } else {
           console.error("Error created training session:", error);
         }
-        showErrorSnackbar("Error created session. Please try again later.");
+        showErrorSnackbar(
+          t("screens.training.create_session.errors.session_creation")
+        );
       }
     } else {
       console.log("Some forms are invalid.");
@@ -218,7 +226,7 @@ export default function CreateTrainingSessionScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Nueva sesión",
+      title: t("screens.training.create_session.title"),
       headerRight: () => (
         <Pressable
           onPressIn={handleSaveCreatedSession}
@@ -292,13 +300,17 @@ export default function CreateTrainingSessionScreen() {
       }) => (
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.container}>
-            <Text style={styles.sessionTitle}>Nombre de sesión</Text>
+            <Text style={styles.sessionTitle}>
+              {t("screens.training.create_session.session_name_label")}
+            </Text>
             <TextInput
               style={styles.input}
               onChangeText={handleChange("sessionName")}
               onBlur={handleBlur("sessionName")}
               value={values.sessionName}
-              placeholder="Introduce el nombre de la sesión"
+              placeholder={t(
+                "screens.training.create_session.session_name_placeholder"
+              )}
             />
             {touched.sessionName && errors.sessionName ? (
               <Text style={styles.errorText}>{errors.sessionName}</Text>
@@ -309,8 +321,12 @@ export default function CreateTrainingSessionScreen() {
               onCancel={() => {
                 setDeleteExerciseConfirmationModalVisible(false);
               }}
-              title="¿Estás seguro?"
-              message="¿Estás seguro de que quieres borrar el ejercicio?"
+              title={t(
+                "screens.training.create_session.add_confirmation_title_label"
+              )}
+              message={t(
+                "screens.training.create_session.add_confirmation_message_label"
+              )}
             />
             {routineSession &&
               routineSession.sessionExercises.map(
@@ -340,7 +356,7 @@ export default function CreateTrainingSessionScreen() {
             icon="plus"
             onPress={handleNewExercise}
           >
-            Añadir ejercicio
+            {t("screens.training.create_session.add_exercise_button")}
           </Button>
         </ScrollView>
       )}

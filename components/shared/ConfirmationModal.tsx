@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Modal, View, StyleSheet } from "react-native";
 import { Text, Button, Portal, Dialog } from "react-native-paper";
 
@@ -6,17 +7,18 @@ interface ConfirmationModalProps {
   visible: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-  title?: string; 
-  message?: string; 
+  title?: string;
+  message?: string;
 }
 
 const ConfirmationModal = ({
   visible,
   onConfirm,
   onCancel,
-  title = "¿Estás seguro?", 
+  title = "¿Estás seguro?",
   message,
 }: ConfirmationModalProps) => {
+  const { t } = useTranslation();
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={onCancel} dismissable={false}>
@@ -25,8 +27,8 @@ const ConfirmationModal = ({
           <Text>{message}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={onCancel}>Cancelar</Button>
-          <Button onPress={onConfirm}>Confirmar</Button>
+          <Button onPress={onCancel}>{t("common.cancel")}</Button>
+          <Button onPress={onConfirm}>{t("common.confirm")}</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>

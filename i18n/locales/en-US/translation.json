@@ -3,7 +3,7 @@
   "screens": {
     "login": {
       "welcome_title": "Welcome 👋",
-      "welcome_subtitle": "It all starts here",
+      "welcome_subtitle": "Everything starts here",
       "email": "Email",
       "password": "Password",
       "login_button": "Log in",
@@ -78,12 +78,12 @@
             "legs": "Legs",
             "arms": "Arms",
             "shoulders": "Shoulders",
-            "abs": "Abs"           
+            "abs": "Abs"
           }
         },
         "errors": {
-          "required_training_days": "The number of training days is required",
-          "invalid_training_days": "The number of training days must be between 1 and 7",
+          "required_training_days": "Number of training days is required",
+          "invalid_training_days": "Number of training days must be between 1 and 7",
           "required_training_level": "Training level is required",
           "required_available_equipment": "Available equipment is required",
           "required_activity_level": "Physical activity level is required",
@@ -91,11 +91,11 @@
         }
       },
       "step3": {
-        "height_input": "Height (cms)",
-        "weight_input": "Weight (kgs)",
-        "waist_circumference_input": "Waist circumference in cms (optional)",
-        "hip_circumference_input": "Hip circumference in cms (optional)",
-        "thigh_circumference_input": "Thigh circumference in cms (optional)",
+        "height_input": "Height (cm)",
+        "weight_input": "Weight (kg)",
+        "waist_circumference_input": "Waist circumference at navel in cm (optional)",
+        "hip_circumference_input": "Hip circumference in cm (optional)",
+        "thigh_circumference_input": "Thigh circumference in cm (optional)",
         "errors": {
           "required_height": "Height is required",
           "invalid_height": "Height must be a number between 50 and 300 cm",
@@ -111,36 +111,216 @@
         "password_input": "Password",
         "confirm_password_input": "Confirm password",
         "errors": {
-          "height_input": "Height (cms)",
+          "height_input": "Height (cm)",
           "required_email": "Email is required",
           "invalid_email": "Invalid email",
           "required_confirm_password": "Password confirmation is required",
           "passwords_must_match": "Passwords must match",
-          "password_too_short": "Password is too short"
+          "password_too_short": "Password is too short",
+          "user_already_registered_error": "User already registered. Please try again",
+          "authentication_error": "Registration failed. Please try again",
+          "network_error": "A network error occurred. Please try again",
+          "unknown_error": "Unknown error. Please try again"
         }
       },
-      "confirm_password": "Confirm password",
-      "register_button": "Register",
-      "login_button": "Log in"
+      "previous_button": "Previous",
+      "next_button": "Next",
+      "register_button": "Start",
+      "login_return_button": "Back to login"
     },
     "home": {
-      "title": "Home",
-      "welcome_message": "Welcome to the app"
+      "tab_label": "Home",
+      "welcome_message": "Welcome,",
+      "achievements": {
+        "total_sessions": {
+          "title": "Total sessions",
+          "sessions": "sessions"
+        },
+        "total_weight_lifted": "Weight lifted",
+        "weekly_average": {
+          "title": "Weekly average",
+          "sessions": "sessions"
+        },
+        "errors": {
+          "fetching_achievements": "Error fetching achievements. Please try again later.",
+          "fetching_tip": "Error fetching daily training tip. Please try again later."
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "user_info_description": "This is the information we have about you",
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "confirm_password": "Confirm password",
+        "logout_button": "Log out",
+        "errors": {
+          "required_name": "Name is required",
+          "required_email": "Email is required",
+          "invalid_email": "Invalid email",
+          "required_password": "Password confirmation is required",
+          "required_confirm_password": "Password confirmation is required",
+          "passwords_must_match": "Passwords must match",
+          "password_too_short": "Password is too short"
+        }
+      }
     },
     "training": {
+      "tab_label": "Training",
       "title": "Training",
       "start_button": "Start training",
-      "stop_button": "Stop training"
+      "stop_button": "Stop training",
+      "muscle_group": {
+        "chest": "Chest",
+        "back": "Back",
+        "legs": "Legs",
+        "arms": "Arms",
+        "shoulders": "Shoulders",
+        "abs": "Abs"
+      },
+      "equipment": {
+        "gym": "Gym",
+        "dumbbells": "Dumbbells",
+        "barbell": "Barbell",
+        "no_equipment": "No equipment"
+      },
+      "routine": {
+        "title": "My routine",
+        "no_sessions_available": "No sessions available",
+        "add_new_session": "Add new session"
+      },
+      "create_session": {
+        "title": "New session",
+        "session_name_label": "Session name",
+        "session_name_placeholder": "Enter session name",
+        "add_confirmation_title_label": "Are you sure?",
+        "add_confirmation_message_label": "Are you sure you want to delete the exercise",
+        "add_exercise_button": "Add exercise",
+        "errors": {
+          "required_name": "Session name is required",
+          "required_minimum_exercises": "You must add at least one exercise to the session",
+          "session_creation": "Error creating session. Please try again later."
+        },
+        "success": {
+          "session_created": "Session created successfully"
+        }
+      },
+      "edit_session": {
+        "title": "Edit session",
+        "session_name_label": "Session name",
+        "session_name_placeholder": "Enter session name",
+        "add_confirmation_title_label": "Are you sure?",
+        "add_confirmation_message_label": "Are you sure you want to delete the exercise",
+        "add_exercise_button": "Add exercise",
+        "delete_session_button": "Delete session",
+        "errors": {
+          "required_name": "Session name is required",
+          "required_minimum_exercises": "You must add at least one exercise to the session",
+          "session_edition": "Error editing session. Please try again later.",
+          "session_deletion": "Error deleting session. Please try again later.",
+          "fetching_session": "Error fetching session. Please try again later."
+        },
+        "success": {
+          "session_edited": "Session edited successfully",
+          "session_deleted": "Session deleted successfully"
+        }
+      },
+      "add_exercise": {
+        "title": "Add exercise",
+        "no_results": "No results found",
+        "add_button": "Add exercise",
+        "add_confirmation_default_label": "Are you sure you want to add the exercise to the session?",
+        "add_confirmation_title_label": "Are you sure?",
+        "add_confirmation_message_label_1": "Are you sure you want to add the exercise",
+        "add_confirmation_message_label_2": "to the training session?",
+        "exit_confirmation_title_label": "Are you sure you want to exit without saving changes?",
+        "errors": {
+          "required_exercise": "Exercise is required",
+          "fetching_exercises": "Error fetching exercises. Please try again later."
+        }
+      },
+      "start_session": {
+        "title": "Session log",
+        "errors": {
+          "fetching_session": "Error fetching session. Please try again later.",
+          "save_session": "Error saving session. Please try again later."
+        },
+        "success": {
+          "session_saved": "Session saved successfully"
+        }
+      }
     },
     "progress": {
-      "title": "Progress",
-      "view_details": "View details",
-      "no_data": "No data available"
+      "tab_label": "Progress",
+      "title": "My progress",
+      "performance_stats_label": "Performance statistics",
+      "loads_progression_label": "Load progression by exercise",
+      "select_exercise_placeholder": "Select exercise",
+      "volume_progression_label": "Volume progression by muscle group",
+      "select_muscle_group_placeholder": "Select muscle group",
+      "body_stats_label": "Body statistics",
+      "body_weight_evolution_label": "Body weight evolution",
+      "coming_soon_chart_label": "Chart coming soon",
+      "add_body_measurement": {
+        "title": "Body log",
+        "height_label": "Height (cm)",
+        "weight_label": "Weight (kg)",
+        "waist_circumference_label": "Waist circumference (cm)",
+        "hip_circumference_label": "Hip circumference (cm)",
+        "thigh_circumference_label": "Thigh circumference (cm)",
+        "add_button": "Add measurement",
+        "errors": {
+          "required_weight": "Weight is required",
+          "invalid_weight": "Weight must be a number between 40 and 500 kg",
+          "invalid_waist_circumference": "Waist circumference must be a number between 50 and 200 cm",
+          "invalid_hip_circumference": "Hip circumference must be a number between 30 and 200 cm",
+          "invalid_thigh_circumference": "Thigh circumference must be a number between 30 and 200 cm",
+          "measurement_create": "Error adding measurement. Please try again later."
+        },
+        "success": {
+          "measurement_added": "Measurement added successfully"
+        }
+      },
+      "errors": {
+        "fetching_exercises": "Error fetching exercises. Please try again later.",
+        "fetching_body_progress": "Error fetching body progress. Please try again later.",
+        "fetching_load_progress": "Error fetching load progression. Please try again later.",
+        "fetching_muscle_group_volume_progress": "Error fetching muscle group volume progression. Please try again later."
+      }
+    }
+  },
+  "components": {
+    "advice_card": {
+      "fitness_tip": "Fitness tip",
+      "science_title": "Science behind"
+    },
+    "exercise_card": {
+      "muscle_group_title": "Muscle group:",
+      "equipment_title": "Equipment:"
+    },
+    "exercise_search": {
+      "search_placeholder": "Exercise name",
+      "equipment_label": "Equipment",
+      "muscle_group_label": "Muscle",
+      "search_button": "Search"
+    },
+    "routine_session_card": {
+      "start_session_button": "Start session"
+    },
+    "routine_session_exercise_card": {
+      "add_set_button": "Add set"
+    },
+    "routine_session_exercise_set_row": {
+      "set_label": "Set",
+      "last_set_label": "Last",
+      "reps_label": "Reps",
+      "weight_label": "Kgs"
     }
   },
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
+    "add": "Add",
     "yes": "Yes",
     "no": "No",
     "loading": "Loading...",
