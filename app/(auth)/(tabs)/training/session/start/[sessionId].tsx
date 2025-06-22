@@ -78,6 +78,7 @@ export default function TrainingSessionScreen() {
     }
 
     if (allValid) {
+      setLoading(true);
       console.log("All forms are valid. Values:");
       let entry: TrainingDiaryEntryRequest = {
         exercises: [],
@@ -110,6 +111,7 @@ export default function TrainingSessionScreen() {
 
         router.back();
       } catch (error) {
+        setLoading(false);
         if (error instanceof Error) {
           console.error("Error saving training session:", error.message);
         } else {

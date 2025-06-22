@@ -87,7 +87,11 @@ export default function Login() {
   console.log("Renderizando Login");
 
   return (
-    <KeyboardAwareScrollView scrollEnabled={true} bounces={false}>
+    <KeyboardAwareScrollView
+      scrollEnabled={true}
+      bounces={false}
+      contentContainerStyle={styles.scrollViewContent}
+    >
       <View style={styles.container}>
         <Logo width={400} height={200} />
         <Text style={styles.title}>{t("screens.login.welcome_title")}</Text>
@@ -153,12 +157,15 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 100,
+    paddingBottom: 20,
   },
   inputContainer: {
     width: "80%",
